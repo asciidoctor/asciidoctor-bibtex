@@ -2,14 +2,20 @@
 
 require "asciidoc-bib"
 
-biblio = AsciidocBib.find_bibliography "."
-if biblio.empty?
-  biblio = AsciidocBib.find_bibliography "#{ENV['HOME']}/Documents"
+bibfile = AsciidocBib.find_bibliography "."
+if bibfile.empty?
+  bibfile = AsciidocBib.find_bibliography "#{ENV['HOME']}/Documents"
 end
-if biblio.empty?
+if bibfile.empty?
   puts "Error: could not find a bibliography file"
   exit
 end
-puts "Reading biblio: #{biblio}"
+puts "Reading biblio: #{bibfile}"
 
-mybib = AsciidocBib.read_bibliography biblio
+biblio = AsciidocBib.read_bibliography bibfile
+
+cites_used = AsciidocBib.read_citations ARGV[0]
+puts "Cites: #{cites_used.join(",")}"
+
+AsciidocBib.add_citations(ARGV[0], cites_used, biblio)
+
