@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+
+require "asciidoc-bib"
+
+biblio = AsciidocBib.find_bibliography "."
+if biblio.empty?
+  biblio = AsciidocBib.find_bibliography "#{ENV['HOME']}/Documents"
+end
+if biblio.empty?
+  puts "Error: could not find a bibliography file"
+  exit
+end
+puts "Reading biblio: #{biblio}"
+
+mybib = AsciidocBib.read_bibliography biblio
