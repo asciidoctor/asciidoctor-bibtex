@@ -26,7 +26,7 @@ Looks for a bib file in current folder and in ~/Documents.
 Outputs a new file: filename-ref.txt
 which includes your references.  
 
-Check the new file,and process in the usual way with asciidoc.
+Check the new file, and process in the usual way with asciidoc.
 
 ## Limitations
 
@@ -46,6 +46,10 @@ the Open Works License: http://owl.apotheon.org
 
 There is a sample file and bibliography in the folder 'tests'.
 
+It is advisable to preview the -ref files before further processing, 
+to remove any Latex commands, and check the formatting.
+
 If you make a Bibliography/Reference heading, a2x interprets this specially,
 and will fail to make a pdf. To prevent a2x treating a heading specially, place
 a section template name, such as [sect1], before it. 
+
