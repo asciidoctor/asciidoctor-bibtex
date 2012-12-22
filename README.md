@@ -15,13 +15,17 @@ Features:
 ## Usage 
 
 Use [cite:bibref] within text to indicate a reference.
+
 Use [bibliography] on a line by itself to add bibliography.
 
  > asciidoc-bib filename.txt
 
 Looks for a bib file in current folder and in ~/Documents.
+
 Outputs a new file: filename-ref.txt
-which includes your references.  Process the new file with asciidoc.
+which includes your references.  
+
+Process the new file with asciidoc.
 
 ## Limitations
 
@@ -35,5 +39,5 @@ Currently:
 ## License
 
 The files within this project may be distributed under the terms of 
-the Open Works License http://owl.apotheon.org[].
+the Open Works License [http://owl.apotheon.org].
 
