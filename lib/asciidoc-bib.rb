@@ -103,7 +103,7 @@ module AsciidocBib
 			end
 		end
 
-		def author_harvard(authors=@author)
+		def author_chicago(authors=@author)
 			authors.split("and").collect do |name|
 				parts = name.strip.rpartition(" ")
 				"#{parts.third}, #{parts.first}"
@@ -121,13 +121,13 @@ module AsciidocBib
 		def reference
 			result = ""
 			unless @author.nil?
-				result << "#{author_harvard.comma_and_join} "
+				result << "#{author_chicago.comma_and_join} "
 			end
 			unless @year.nil?
-				result << "(#{@year}), "
+				result << "#{@year}. "
 			end
 			unless @title.nil?
-				result << "\"#{@title}\", "
+				result << "\"#{@title},\" "
 			end 
 			unless @journal.nil?
 				result << "_#{@journal}_, "
@@ -149,16 +149,16 @@ module AsciidocBib
 		def reference
 			result = ""
 			unless @author.nil?
-				result << "#{author_harvard.comma_and_join} "
+				result << "#{author_chicago.comma_and_join} "
 			end
 			unless @year.nil?
-				result << "(#{@year}), "
+				result << "#{@year}. "
 			end
 			unless @title.nil?
-				result << "\"#{@title}\", "
+				result << "_#{@title}_, "
 			end 
 			unless @publisher.nil?
-				result << "(#{@publisher})"
+				result << "#{@publisher}"
 			end
 			result << "."
 			return result
@@ -172,27 +172,26 @@ module AsciidocBib
 		def reference
 			result = ""
 			unless @author.nil?
-				result << "#{author_harvard.comma_and_join} "
+				result << "#{author_chicago.comma_and_join} "
 			end
 			unless @year.nil?
-				result << "(#{@year}), "
+				result << "#{@year}. "
 			end
 			unless @title.nil?
-				result << "\"#{@title}\", "
+				result << "\"#{@title},\" "
 			end 
-			unless @editor.nil?
-				result << "In #{author_harvard(editor).comma_and_join} (Eds.) "
-			end
 			unless @booktitle.nil?
-				result << "_#{@booktitle}_ "
+				result << "In _#{@booktitle}_, "
 			end
-			unless @publisher.nil?
-				result << "(#{@publisher})"
+			unless @editor.nil?
+				result << "ed. #{author_chicago(editor).comma_and_join}, "
 			end
 			unless @pages.nil?
-				result << ", pp. #{@pages}"
+				result << "#{@pages}."
 			end
-			result << "."
+			unless @publisher.nil?
+				result << "#{@publisher}."
+			end
 			return result
 		end
   end
@@ -203,13 +202,13 @@ module AsciidocBib
 		def reference
 			result = ""
 			unless @author.nil?
-				result << "#{author_harvard.comma_and_join} "
+				result << "#{author_chicago.comma_and_join} "
 			end
 			unless @year.nil?
-				result << "(#{@year}), "
+				result << "#{@year}. "
 			end
 			unless @title.nil?
-				result << "\"#{@title}\", "
+				result << "\"#{@title},\" "
 			end 
 			unless @note.nil?
 				result << "(#{@note})"
@@ -225,13 +224,13 @@ module AsciidocBib
 		def reference
 			result = ""
 			unless @author.nil?
-				result << "#{author_harvard.comma_and_join} "
+				result << "#{author_chicago.comma_and_join} "
 			end
 			unless @year.nil?
-				result << "(#{@year}), "
+				result << "#{@year}. "
 			end
 			unless @title.nil?
-				result << "\"#{@title}\", "
+				result << "\"#{@title},\" "
 			end 
 			unless @how_published.nil?
 				result << "(#{@how_published})"
@@ -247,13 +246,13 @@ module AsciidocBib
 		def reference
 			result = ""
 			unless @author.nil?
-				result << "#{author_harvard.comma_and_join} "
+				result << "#{author_chicago.comma_and_join} "
 			end
 			unless @year.nil?
-				result << "(#{@year}), "
+				result << "#{@year}. "
 			end
 			unless @title.nil?
-				result << "\"#{@title}\", "
+				result << "\"#{@title},\" "
 			end 
 			unless @school.nil?
 				result << "(#{@school})"
@@ -362,7 +361,7 @@ module AsciidocBib
 			if line.strip == "[bibliography]"
 				cites_used.sort_by do |ref|
 					if biblio.contains? ref
-						biblio[ref].author_harvard
+						biblio[ref].author_chicago
 					else 
 						ref
 					end
