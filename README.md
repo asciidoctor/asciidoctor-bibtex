@@ -14,9 +14,9 @@ Features:
 
 ## Usage 
 
-Use [cite:bibref] within text to indicate a reference.
+Indicate a reference within the text with [cite:bibref].
 
-Use [bibliography] on a line by itself to add bibliography.
+Add reference list into text with [bibliography] on a line by itself.
 
  > asciidoc-bib filename.txt
 
@@ -31,13 +31,13 @@ Process the new file with asciidoc.
 
 Currently:
 
-. latex formatting from bibtex file will be included in reference list
-. single ref per cite
-. no control over style
-. no included files
+- latex formatting from bibtex file will be included in reference list
+- single ref per cite
+- no control over style
+- no included files
 
 ## License
 
 The files within this project may be distributed under the terms of 
-the Open Works License [http://owl.apotheon.org].
+the Open Works License: http://owl.apotheon.org
 
