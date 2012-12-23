@@ -20,6 +20,8 @@ END
     "README.md",
     "bin/asciidoc-bib",
     "lib/asciidoc-bib.rb",
+		"lib/lib/asciidoc_classes.rb",
+		"lib/lib/asciidoc_helpers.rb"
   ]
   s.require_path = "lib"
   s.has_rdoc = true

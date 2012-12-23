@@ -9,6 +9,8 @@ Features:
 - formatting of references and reference list in author-date style after 'The 
 Chicago Manual of Style'
 - follows included files
+- supports some styling of citation text (page numbers, bracket placement, 
+and pretext)
 
 ## Install (to come)
 
@@ -16,9 +18,26 @@ Chicago Manual of Style'
 
 ## Use 
 
-Indicate a reference within the text with [cite:bibref].
+### Include a citation
 
-Add reference list into text with [bibliography] on a line by itself.
+Syntax for inserting a citation is [cite|citenp:(pretext:)ref(,pages)] 
+where 'pretext' and 'pages' are optional.
+
+Examples:
+
+[cite:Lane12] produces "(Lane 2012)"
+
+[citenp:Lane12] produces "Lane (2012)"
+
+[cite:Lane12,59] produces "(Lane 2012, 59)"
+
+[cite:See:Lane12,59] produces "(See Lane 2012, 59)"
+
+### Place bibliography in text
+
+[bibliography] on a line by itself.
+
+### Processing text
 
  > asciidoc-bib filename.txt
 
@@ -31,11 +50,10 @@ Check the new file, and process in the usual way with asciidoc.
 
 ## Limitations
 
+- assumes a simplified format for bibtex file
 - latex formatting from bibtex file will be included in reference list
 - single ref per cite
-- no control of reference format (e.g. brackets, page numbers)
 - no choice of style
-- multi-line values in bibtex file
 
 ## License
 
@@ -44,12 +62,25 @@ the Open Works License: http://owl.apotheon.org
 
 ## Notes on Using
 
-There is a sample file and bibliography in the folder 'tests'.
+There is a sample document and bibliography in the folder 'tests'.
 
-It is advisable to preview the -ref files before further processing, 
-to remove any Latex commands, and check the formatting.
+It is advisable to preview the -ref files before further processing, to remove
+any Latex commands, and check the formatting; in particular, all curly braces
+are removed when outputting the reference list, to avoid skipping of lines by
+asciidoc.
 
 If you make a Bibliography/Reference heading, a2x interprets this specially,
 and will fail to make a pdf. To prevent a2x treating a heading specially, place
 a section template name, such as [sect1], before it. 
+
+The bibtex file is not correctly passed. The format for entries is assumed 
+to be:
+
+@TYPE{ref,
+  KEY = VAL,
+}
+
+with the type on one line and closing brace on its own.  
+VAL is wrapped in {..} or ".." and may span multiple lines, but intermediate 
+lines should not end with } or ".
 

@@ -3,34 +3,8 @@
 # Copyright (c) Peter Lane, 2012.
 # Released under Open Works License, 0.9.2
 
-# monkey patch some convenience methods to Array
-class Array
-	def second
-		self[1]
-	end
-
-	def third
-		self[2]
-	end
-
-	def comma_and_join
-		if size < 2
-			return self.join("")
-		end
-		result = ""
-		self.each_with_index do |item, index|
-			if index.zero?
-				result << item
-			elsif index == size-1
-				result << " and #{item}"
-			else
-				result << ", #{item}"
-			end
-		end
-
-		return result
-	end
-end
+require_relative "lib/asciidoc_classes.rb"
+require_relative "lib/asciidoc_helpers.rb"
 
 module AsciidocBib
 
@@ -49,229 +23,6 @@ module AsciidocBib
     end
   end
 
-  # -- class for handling a bibliography
-
-  class Biblio
-
-    def initialize
-      @store = {}
-    end
-
-		# retrieve citation text
-		def get_citation ref
-			if contains?(ref)
-				return @store[ref].citation
-			else
-				puts "Unknown citation #{ref}"
-				return ref
-			end
-		end
-
-		# retrieve full reference text
-		def get_reference ref
-			if contains?(ref)
-				return @store[ref].reference
-			else
-				return ref
-			end
-		end
-
-    # store given ref/bibitem pair
-    def []=(ref, bibitem)
-      @store[ref] = bibitem
-    end
-
-    # look up given reference value, returns nil if not found
-    def [](ref)
-      @store[ref]
-    end
-
-    # check if given reference present
-    def contains? ref
-      @store.has_key? ref
-    end
-  end
-
-  # -- classes for storing different bibitems
-
-	class BibItem
-		attr_accessor :author, :title, :year
-
-		def author_surnames
-			@author.split("and").collect do |name|
-				name.split(" ").last.strip
-			end
-		end
-
-		def author_chicago(authors=@author)
-			authors.split("and").collect do |name|
-				parts = name.strip.rpartition(" ")
-				"#{parts.third}, #{parts.first}"
-			end
-		end
-
-		def citation
-			"(#{author_surnames.comma_and_join}, #{@year})"
-		end
-	end
-
-  class Article < BibItem
-    attr_accessor :journal, :volume, :number, :pages
-
-		def reference
-			result = ""
-			unless @author.nil?
-				result << "#{author_chicago.comma_and_join} "
-			end
-			unless @year.nil?
-				result << "#{@year}. "
-			end
-			unless @title.nil?
-				result << "\"#{@title},\" "
-			end 
-			unless @journal.nil?
-				result << "_#{@journal}_, "
-			end
-			unless @volume.nil?
-				result << "#{@volume}:"
-			end
-			unless @pages.nil?
-				result << "#{@pages}"
-			end
-			result << "."
-			return result
-		end
-  end
-
-  class Book < BibItem
-    attr_accessor :publisher
-
-		def reference
-			result = ""
-			unless @author.nil?
-				result << "#{author_chicago.comma_and_join} "
-			end
-			unless @year.nil?
-				result << "#{@year}. "
-			end
-			unless @title.nil?
-				result << "_#{@title}_, "
-			end 
-			unless @publisher.nil?
-				result << "#{@publisher}"
-			end
-			result << "."
-			return result
-		end
-
-  end
-
-  class InCollection < BibItem
-    attr_accessor :pages, :editor, :booktitle, :publisher
-
-		def reference
-			result = ""
-			unless @author.nil?
-				result << "#{author_chicago.comma_and_join} "
-			end
-			unless @year.nil?
-				result << "#{@year}. "
-			end
-			unless @title.nil?
-				result << "\"#{@title},\" "
-			end 
-			unless @booktitle.nil?
-				result << "In _#{@booktitle}_, "
-			end
-			unless @editor.nil?
-				result << "ed. #{author_chicago(editor).comma_and_join}, "
-			end
-			unless @pages.nil?
-				result << "#{@pages}."
-			end
-			unless @publisher.nil?
-				result << "#{@publisher}."
-			end
-			return result
-		end
-  end
-
-  class Manual < BibItem
-    attr_accessor :note
-
-		def reference
-			result = ""
-			unless @author.nil?
-				result << "#{author_chicago.comma_and_join} "
-			end
-			unless @year.nil?
-				result << "#{@year}. "
-			end
-			unless @title.nil?
-				result << "\"#{@title},\" "
-			end 
-			unless @note.nil?
-				result << "(#{@note})"
-			end
-			result << "."
-			return result
-		end
-  end
-
-  class Misc < BibItem
-    attr_accessor :how_published
-
-		def reference
-			result = ""
-			unless @author.nil?
-				result << "#{author_chicago.comma_and_join} "
-			end
-			unless @year.nil?
-				result << "#{@year}. "
-			end
-			unless @title.nil?
-				result << "\"#{@title},\" "
-			end 
-			unless @how_published.nil?
-				result << "(#{@how_published})"
-			end
-			result << "."
-			return result
-		end
-  end
-
-	class PhdThesis < BibItem
-		attr_accessor :school
-
-		def reference
-			result = ""
-			unless @author.nil?
-				result << "#{author_chicago.comma_and_join} "
-			end
-			unless @year.nil?
-				result << "#{@year}. "
-			end
-			unless @title.nil?
-				result << "\"#{@title},\" "
-			end 
-			unless @school.nil?
-				result << "(#{@school})"
-			end
-			result << "."
-			return result
-		end
-	end
-
-	# -- utility functions
-	
-	def AsciidocBib.extract_cites line
-		cites_used = []
-		line.split("[cite:").drop(1).each do |reftext|
-			cites_used << reftext.partition("]").first
-		end
-		return cites_used
-	end
-
   # -- read in a given bibliography file and return a biblio instance
 
   def AsciidocBib.read_bibliography filename
@@ -281,43 +32,41 @@ module AsciidocBib
       File.open(filename) do |input|
 				curr = nil
 				ref = ""
-        while ((line = input.readline) and (not input.eof?))
+        while ((not input.eof?) and (line = input.readline))
 					line.strip!
 					next if line.empty?
-					if line.downcase.start_with? "@article"
-						curr = Article.new
-						ref = line.split("{").second.gsub(",", "")
-					elsif line.downcase.start_with? "@book"
-						curr = Book.new
-						ref = line.split("{").second.gsub(",", "")
-					elsif line.downcase.start_with? "@conference"
-						curr = InCollection.new
-						ref = line.split("{").second.gsub(",", "")
-					elsif line.downcase.start_with? "@incollection"
-						curr = InCollection.new
-						ref = line.split("{").second.gsub(",", "")
-					elsif line.downcase.start_with? "@inproceedings"
-						curr = InCollection.new
-						ref = line.split("{").second.gsub(",", "")
-					elsif line.downcase.start_with? "@manual"
-						curr = Manual.new
-						ref = line.split("{").second.gsub(",", "")
-					elsif line.downcase.start_with? "@misc"
-						curr = Misc.new
-						ref = line.split("{").second.gsub(",", "")
-					elsif line.downcase.start_with? "@phdthesis"
-						curr = PhdThesis.new
-						ref = line.split("{").second.gsub(",", "")
+					md = /@([\w-]+){([\w-]+),/.match(line)
+					if not md.nil?
+						type = md[1]
+						ref = md[2]
+						curr = case type.downcase
+									 when "article" then Article.new
+									 when "book" then   Book.new
+									 when "conference", "incollection", "inproceedings" then
+										 InCollection.new
+									 when "manual" then Manual.new
+									 when "misc" then Misc.new
+									 when "phdthesis" then PhdThesis.new
+									 end
 					elsif line == "}"
 						biblio[ref] = curr
 						curr = nil
 						ref = ""
 					else
-						fields = line.split "="
+						fields = line.partition "="
+						key_term = fields.first.strip
+						val_term = fields.third.strip
+						if val_term.reverse[0] == "," and (val_term.reverse[1] == "}" or val_term.reverse[1] == "\"")
+							val_term = val_term[0..val_term.length-2] # remove comma
+						end
+						until (val_term[0] == "{" and val_term[val_term.length - 1] == "}") or (val_term[0] == "\"" and val_term[val_term.length - 1] == "\"")
+							val_term += " " + input.readline.strip
+							if val_term.reverse[0] == "," and (val_term.reverse[1] == "}" or val_term.reverse[1] == "\"")
+								val_term = val_term[0..val_term.length-2] # remove comma
+							end
+						end
 						begin
-  						curr.send("#{fields.first.strip}=", 
-												fields.second.strip.gsub(/{|}|,|\"/,"")
-											 )
+  						curr.send("#{key_term}=", val_term[1..val_term.length-2])
 						rescue # ignore errors
 						end
 					end
@@ -362,13 +111,6 @@ module AsciidocBib
 
 	# -- read given text to add cites and biblio
 
-  def AsciidocBib.add_ref filename
-    file_dir = File.dirname(File.expand_path(filename))
-    file_base = File.basename(filename, ".*")
-    file_ext = File.extname(filename)
-    return "#{file_dir}#{File::SEPARATOR}#{file_base}-ref#{file_ext}"
-  end
-
 	def AsciidocBib.add_citations(filename, cites_used, biblio)
     files_to_process = [filename]
     files_done = []
@@ -396,15 +138,18 @@ module AsciidocBib
 		  			if biblio.contains? ref
 			  			biblio[ref].author_chicago
 				  	else 
-  						ref
+  						[ref]
 	  				end
 		  		end.each do |ref|
-			  		output.puts biblio.get_reference(ref)
+			  		output.puts biblio.get_reference(ref).gsub("{","").gsub("}","")
   					output.puts
 	  			end
 		  	else
 			  	extract_cites(line).each do |ref|
-				  	line.gsub!("[cite:#{ref}]", biblio.get_citation(ref))
+						md = /\[(cite|citenp):(([\w ]+):)?#{ref}(,([\w\.\- ]+))?\]/.match(line)
+				  	line.gsub!(md[0], 
+											 biblio.get_citation(ref, md[1], md[3], md[5])
+											)
   				end
 	  			output.puts line
 		  	end
