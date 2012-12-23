@@ -76,9 +76,11 @@ a section template name, such as [sect1], before it.
 The bibtex file is not correctly passed. The format for entries is assumed 
 to be:
 
+----------------
 @TYPE{ref,
   KEY = VAL,
 }
+----------------
 
 with the type on one line and closing brace on its own.  
 VAL is wrapped in {..} or ".." and may span multiple lines, but intermediate 
