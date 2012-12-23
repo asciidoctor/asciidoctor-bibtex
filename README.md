@@ -8,6 +8,7 @@ Features:
 - transformation of source text to include references and full reference list
 - formatting of references and reference list in author-date style after 'The 
 Chicago Manual of Style'
+- follows included files
 
 ## Install (to come)
 
@@ -34,7 +35,6 @@ Check the new file, and process in the usual way with asciidoc.
 - single ref per cite
 - no control of reference format (e.g. brackets, page numbers)
 - no choice of style
-- no included files
 - multi-line values in bibtex file
 
 ## License

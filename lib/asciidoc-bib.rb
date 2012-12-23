@@ -336,49 +336,82 @@ module AsciidocBib
 	def AsciidocBib.read_citations filename
 		puts "Reading file: #{filename}"
 		cites_used = []
+    files_to_process = [filename]
+    files_done = []
 
-		File.new(filename).each_line do |line|
-			AsciidocBib.extract_cites(line).each do |cite|
-				unless cites_used.include? cite
-					cites_used << cite
-				end
-			end
-		end
+    begin
+      files_done << files_to_process.first
+	  	File.new(files_to_process.shift).each_line do |line|
+        if line.include?("include::")
+          line.split("include::").drop(1).each do |filetxt|
+            file = File.expand_path(filetxt.partition(/\s|\[/).first)
+            files_to_process << file unless files_done.include?(file)
+          end
+        else
+		  	  AsciidocBib.extract_cites(line).each do |cite|
+			  	  unless cites_used.include? cite
+				  	  cites_used << cite
+				    end
+  			  end
+        end
+		  end
+    end until files_to_process.empty?
 
 		return cites_used
 	end
 
 	# -- read given text to add cites and biblio
 
+  def AsciidocBib.add_ref filename
+    file_dir = File.dirname(File.expand_path(filename))
+    file_base = File.basename(filename, ".*")
+    file_ext = File.extname(filename)
+    return "#{file_dir}#{File::SEPARATOR}#{file_base}-ref#{file_ext}"
+  end
+
 	def AsciidocBib.add_citations(filename, cites_used, biblio)
-		# TODO: improve this code
-		ref_filename = "#{filename.rpartition(".").first}-ref.#{filename.rpartition(".").third}"
+    files_to_process = [filename]
+    files_done = []
 
-		puts "Writing file:	#{ref_filename}"
-		output = File.new(ref_filename, "w")
+    begin
+      curr_file = files_to_process.shift
+      files_done << curr_file
 
-    File.new(filename).each_line do |line|
-			if line.strip == "[bibliography]"
-				cites_used.sort_by do |ref|
-					if biblio.contains? ref
-						biblio[ref].author_chicago
-					else 
-						ref
-					end
-				end.each do |ref|
-					output.puts biblio.get_reference ref
-					output.puts
-				end
-			else
-				extract_cites(line).each do |ref|
-					line.gsub!("[cite:#{ref}]", biblio.get_citation(ref))
-				end
-				output.puts line
-			end
-		end
+      ref_filename = AsciidocBib.add_ref(curr_file)
+		  puts "Writing file:	#{ref_filename}"
+  		output = File.new(ref_filename, "w")
 
-		output.close
-	end
+      File.new(curr_file).each_line do |line|
+        if line.include?("include::")
+          line.split("include::").drop(1).each do |filetxt|
+            ifile = filetxt.partition(/\s|\[/).first
+            file = File.expand_path(ifile)
+            files_to_process << file unless files_done.include?(file)
+            # make sure included file points to the -ref version
+            line.gsub!("include::#{ifile}", "include::#{AsciidocBib.add_ref(file)}")
+          end
+          output.puts line
+  			elsif line.strip == "[bibliography]"
+	  			cites_used.sort_by do |ref|
+		  			if biblio.contains? ref
+			  			biblio[ref].author_chicago
+				  	else 
+  						ref
+	  				end
+		  		end.each do |ref|
+			  		output.puts biblio.get_reference(ref)
+  					output.puts
+	  			end
+		  	else
+			  	extract_cites(line).each do |ref|
+				  	line.gsub!("[cite:#{ref}]", biblio.get_citation(ref))
+  				end
+	  			output.puts line
+		  	end
+  		end
 
+  		output.close
+    end until files_to_process.empty?
+  end
 end
 
