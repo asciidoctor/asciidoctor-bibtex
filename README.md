@@ -73,7 +73,7 @@ If you make a Bibliography/Reference heading, a2x interprets this specially,
 and will fail to make a pdf. To prevent a2x treating a heading specially, place
 a section template name, such as [sect1], before it. 
 
-The bibtex file is not correctly passed. The format for entries is assumed 
+The bibtex file is not correctly parsed. The format for entries is assumed 
 to be:
 
     @TYPE{ref,
