@@ -52,7 +52,7 @@ module AsciidocBib
 						biblio[ref] = curr
 						curr = nil
 						ref = ""
-					else
+					else # TODO: correctly parse bibtex file
 						fields = line.partition "="
 						key_term = fields.first.strip
 						val_term = fields.third.strip
@@ -145,12 +145,27 @@ module AsciidocBib
   					output.puts
 	  			end
 		  	else
-			  	extract_cites(line).each do |ref|
-						md = /\[(cite|citenp):(([\w ]+):)?#{ref}(,([\w\.\- ]+))?\]/.match(line)
-				  	line.gsub!(md[0], 
-											 biblio.get_citation(ref, md[1], md[3], md[5])
+					md = CITATION_FULL.match(line)
+					while md
+						cite_refs = []
+						cite_pages = []
+						cite_text = md[4]
+						cm = CITATION.match(cite_text)
+						while cm
+							# process ref 
+							cite_refs << cm[1]
+							cite_pages << cm[3]
+							# look for next ref within citation
+							cm = CITATION.match(cm.post_match)
+						end
+						# replace text on line
+						line.gsub!(md[0],
+											 biblio.get_citation(md[1], md[3], cite_refs, cite_pages)
 											)
-  				end
+						# look for next citation on line
+						md = CITATION_FULL.match(md.post_match)
+					end
+
 	  			output.puts line
 		  	end
   		end

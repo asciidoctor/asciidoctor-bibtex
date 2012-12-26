@@ -10,13 +10,27 @@ module AsciidocBib
     end
 
 		# retrieve citation text
-		def get_citation(ref, type="cite", pre="", pages="")
-			if contains?(ref)
-				return @store[ref].citation(type, pre, pages)
-			else
-				puts "Unknown citation #{ref}"
-				return ref
+		def get_citation(type="cite", pre="", refs=[], pages=[])
+			result = ""
+
+			result << "(" if type == "cite" 
+			result << "#{pre} " unless pre.nil? or pre.empty?
+
+			(refs.zip(pages)).each_with_index do |ref_page_pair, index|
+				ref = ref_page_pair[0]
+				page = ref_page_pair[1]
+
+				result << "; " unless index.zero?
+				if contains?(ref)
+					result << @store[ref].citation(type, page)
+				else
+					puts "Unknown reference: #{ref}"
+					result << "#{ref} (unknown)"
+				end
 			end
+			result << ")" if type == "cite"
+
+			return result
 		end
 
 		# retrieve full reference text
@@ -62,17 +76,15 @@ module AsciidocBib
 			end
 		end
 
-		def citation(type, pre, pages)
+		def citation(type, pages)
 			result = ""
 
-			result << "(" if type == "cite" 
-			result << "#{pre} " unless pre.nil? or pre.empty?
 			result << author_surnames.comma_and_join
 			result << " "
 			result << "(" if type == "citenp"
 			result << @year
 			result << ", #{pages}" unless pages.nil? or pages.empty?
-			result << ")"
+			result << ")" if type == "citenp"
 
 			return result
 		end

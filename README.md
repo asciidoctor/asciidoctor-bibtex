@@ -11,6 +11,7 @@ Chicago Manual of Style'
 - follows included files
 - supports some styling of citation text (page numbers, bracket placement, 
 and pretext)
+- multiple references within a single citation
 
 ## Install (to come)
 
@@ -21,17 +22,21 @@ and pretext)
 ### Include a citation
 
 Syntax for inserting a citation is [cite|citenp:(pretext:)ref(,pages)] 
-where 'pretext' and 'pages' are optional.
+where 'pretext' and 'pages' are optional.  The ref and optional pages may 
+be repeated multiple times, separated by ';'.  A citation _must_ be 
+complete on a single line of text.
 
 Examples:
 
-[cite:Lane12] produces "(Lane 2012)"
+[cite:Lane12] becomes "(Lane 2012)"
 
-[citenp:Lane12] produces "Lane (2012)"
+[citenp:Lane12] becomes "Lane (2012)"
 
-[cite:Lane12,59] produces "(Lane 2012, 59)"
+[cite:Lane12,59] becomes "(Lane 2012, 59)"
 
-[cite:See:Lane12,59] produces "(See Lane 2012, 59)"
+[cite:See:Lane12,59] becomes "(See Lane 2012, 59)"
+
+[cite:See:Lane12,59;Lane11] becomes "(See Lane 2012, 59; Lane 2011)"
 
 ### Place bibliography in text
 
@@ -52,7 +57,6 @@ Check the new file, and process in the usual way with asciidoc.
 
 - assumes a simplified format for bibtex file
 - latex formatting from bibtex file will be included in reference list
-- single ref per cite
 - no choice of style
 
 ## License
@@ -62,7 +66,8 @@ the Open Works License: http://owl.apotheon.org
 
 ## Notes on Using
 
-There is a sample document and bibliography in the folder 'tests'.
+There is a sample document and bibliography in the folder 'samples'; build
+"sample-1.txt", which includes "sample-2.txt".
 
 It is advisable to preview the -ref files before further processing, to remove
 any Latex commands, and check the formatting; in particular, all curly braces
@@ -71,7 +76,7 @@ asciidoc.
 
 If you make a Bibliography/Reference heading, a2x interprets this specially,
 and will fail to make a pdf. To prevent a2x treating a heading specially, place
-a section template name, such as [sect1], before it. 
+a section template name, [sect1], before it. 
 
 The bibtex file is not correctly parsed. The format for entries is assumed 
 to be:

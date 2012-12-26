@@ -1,0 +1,18 @@
+== Sample file 2: multiple authors ==
+
+References can use different styles such as: (Lane and Smith 2000) or
+Lane and Smith (2000).
+
+Page numbers can be added: (Lane and Smith 2000, 89) or Lane and Smith (2000, 89-93).
+
+A bit of pretext can be included too: (See Lane and Smith 2000, 89)
+
+=== multiple refs ===
+
+One citation can include several references, such as (Lane 2000; Lane and Smith 2000).
+
+These can include pages and be in-text: Lane (2000, 78); Lane and Smith (2000, 89-93).
+
+And include pretext: (See Lane 2000; Lane and Smith 2000, 89-93)
+
+Note: citations cannot be split over lines; each citation must be on one line.
