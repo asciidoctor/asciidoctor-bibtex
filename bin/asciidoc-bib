@@ -1,10 +1,20 @@
 #!/usr/bin/env ruby
 
-require "asciidoc-bib"
+# Executable for asciidoc-bib
+#
+# Provides some command line options for adding reference material 
+# to asciidoc files, generating revised files for processing by 
+# asciidoc.
+#
+# Copyright (c) Peter Lane, 2012.
+# Released under Open Works License, 0.9.2
 
-bibfile = AsciidocBib.find_bibliography "."
+require "asciidoc-bib"
+include AsciidocBib
+
+bibfile = find_bibliography "."
 if bibfile.empty?
-  bibfile = AsciidocBib.find_bibliography "#{ENV['HOME']}/Documents"
+  bibfile = find_bibliography "#{ENV['HOME']}/Documents"
 end
 if bibfile.empty?
   puts "Error: could not find a bibliography file"
@@ -12,10 +22,10 @@ if bibfile.empty?
 end
 puts "Reading biblio: #{bibfile}"
 
-biblio = AsciidocBib.read_bibliography bibfile
+biblio = read_bibliography bibfile
 
-cites_used = AsciidocBib.read_citations ARGV[0]
+cites_used = read_citations ARGV[0]
 puts "Cites: #{cites_used.join(",")}"
 
-AsciidocBib.add_citations(ARGV[0], cites_used, biblio)
+add_citations(ARGV[0], cites_used, biblio)
 

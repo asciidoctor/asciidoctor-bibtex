@@ -1,4 +1,7 @@
 # Classes for use in asciidoc-bib
+#
+# Copyright (c) Peter Lane, 2012.
+# Released under Open Works License, 0.9.2
 
 module AsciidocBib
   # -- class for handling a bibliography

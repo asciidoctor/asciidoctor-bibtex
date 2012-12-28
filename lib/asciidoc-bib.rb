@@ -3,14 +3,14 @@
 # Copyright (c) Peter Lane, 2012.
 # Released under Open Works License, 0.9.2
 
-require_relative "lib/asciidoc_classes.rb"
-require_relative "lib/asciidoc_helpers.rb"
+require "asciidoc-bib/bibitem_classes.rb"
+require "asciidoc-bib/extensions.rb"
 
 module AsciidocBib
 
   # -- locate a bibliography file to read in given dir
 
-  def AsciidocBib.find_bibliography dir
+  def find_bibliography dir
     begin
       candidates = Dir.glob("#{dir}/*.bib")
       if candidates.empty?
@@ -25,7 +25,7 @@ module AsciidocBib
 
   # -- read in a given bibliography file and return a biblio instance
 
-  def AsciidocBib.read_bibliography filename
+  def read_bibliography filename
     biblio = Biblio.new
     
     begin
@@ -82,7 +82,7 @@ module AsciidocBib
 
 	# -- read given text to locate cites, return list of used references
 
-	def AsciidocBib.read_citations filename
+	def read_citations filename
 		puts "Reading file: #{filename}"
 		cites_used = []
     files_to_process = [filename]
@@ -97,7 +97,7 @@ module AsciidocBib
             files_to_process << file unless files_done.include?(file)
           end
         else
-		  	  AsciidocBib.extract_cites(line).each do |cite|
+		  	  extract_cites(line).each do |cite|
 			  	  unless cites_used.include? cite
 				  	  cites_used << cite
 				    end
@@ -111,7 +111,7 @@ module AsciidocBib
 
 	# -- read given text to add cites and biblio
 
-	def AsciidocBib.add_citations(filename, cites_used, biblio)
+	def add_citations(filename, cites_used, biblio)
     files_to_process = [filename]
     files_done = []
 
@@ -119,7 +119,7 @@ module AsciidocBib
       curr_file = files_to_process.shift
       files_done << curr_file
 
-      ref_filename = AsciidocBib.add_ref(curr_file)
+      ref_filename = add_ref(curr_file)
 		  puts "Writing file:	#{ref_filename}"
   		output = File.new(ref_filename, "w")
 
@@ -130,7 +130,7 @@ module AsciidocBib
             file = File.expand_path(ifile)
             files_to_process << file unless files_done.include?(file)
             # make sure included file points to the -ref version
-            line.gsub!("include::#{ifile}", "include::#{AsciidocBib.add_ref(file)}")
+            line.gsub!("include::#{ifile}", "include::#{add_ref(file)}")
           end
           output.puts line
   			elsif line.strip == "[bibliography]"

@@ -16,15 +16,10 @@ an in-text reference is simply [cite:bibref], and a line containing
 examples and options.  Currently, the reference format is author-year, in a 
 style after that in 'The Chicago Manual of Style'.
 END
-  s.files = [
+  s.files = Dir["lib/**/*"] + Dir["samples/*"] + [
     "LICENSE.txt",
     "README.md",
-    "bin/asciidoc-bib",
-    "lib/asciidoc-bib.rb",
-		"lib/lib/asciidoc_classes.rb",
-		"lib/lib/asciidoc_helpers.rb",
-		"samples/sample-1.txt",
-		"samples/sample-2.txt"
+    "bin/asciidoc-bib"
   ]
   s.require_path = "lib"
   s.has_rdoc = true

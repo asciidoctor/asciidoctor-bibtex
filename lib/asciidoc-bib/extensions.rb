@@ -1,9 +1,17 @@
-# monkey patch some convenience methods to Array
-class Array
+# Some extension and other helper methods. 
+#
+# Copyright (c) Peter Lane, 2012.
+# Released under Open Works License, 0.9.2
+
+module AsciidocBibArrayExtensions
+
+# Retrieve the third item of an array
+  # Note: no checks for validity
 	def third
 		self[2]
 	end
 
+  # Join items in array using commas and 'and' on last item
 	def comma_and_join
 		if size < 2
 			return self.join("")
@@ -23,6 +31,11 @@ class Array
 	end
 end
 
+# monkey patch the extension methods to Array
+class Array
+  include AsciidocBibArrayExtensions
+end
+
 module AsciidocBib
 
 	# matches a single ref with optional pages
@@ -32,7 +45,7 @@ module AsciidocBib
 
 	# -- utility functions
 	
-	def AsciidocBib.extract_cites line
+	def extract_cites line
 		cites_used = []
 		md = CITATION_FULL.match(line)
 		while md
@@ -49,7 +62,8 @@ module AsciidocBib
 		return cites_used
 	end
 
-  def AsciidocBib.add_ref filename
+  # Add '-ref' before the extension of a filename
+  def add_ref filename
     file_dir = File.dirname(File.expand_path(filename))
     file_base = File.basename(filename, ".*")
     file_ext = File.extname(filename)
