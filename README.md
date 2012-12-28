@@ -17,6 +17,9 @@ and pretext)
 
  > gem install asciidoc-bib
 
+asciidoc-bib depends on 'bibtex-ruby'.  You may need to ensure 
+you have installed 'ruby-dev' this dependencies will compile.
+
 ## Use 
 
 ### Include a citation
@@ -55,7 +58,6 @@ Check the new file, and process in the usual way with asciidoc.
 
 ## Limitations
 
-- assumes a simplified format for bibtex file
 - latex formatting from bibtex file will be included in reference list
 - no choice of style
 
@@ -77,15 +79,4 @@ asciidoc.
 If you make a Bibliography/Reference heading, a2x interprets this specially,
 and will fail to make a pdf. To prevent a2x treating a heading specially, place
 a section template name, [sect1], before it. 
-
-The bibtex file is not correctly parsed. The format for entries is assumed 
-to be:
-
-    @TYPE{ref,
-      KEY = VAL,
-    }
-
-with the type on one line and closing brace on its own.  
-VAL is wrapped in {..} or ".." and may span multiple lines, but intermediate 
-lines should not end with } or ".
 

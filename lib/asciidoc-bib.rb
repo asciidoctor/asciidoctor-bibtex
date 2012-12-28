@@ -3,8 +3,8 @@
 # Copyright (c) Peter Lane, 2012.
 # Released under Open Works License, 0.9.2
 
-require 'asciidoc-bib/bibitem_classes'
 require 'asciidoc-bib/extensions'
+require 'bibtex'
 
 module AsciidocBib
 
@@ -23,60 +23,8 @@ module AsciidocBib
   end
 
   # Read in a given bibliography file and return a biblio instance
-
   def read_bibliography filename
-    biblio = Biblio.new
-    
-    begin
-      File.open(filename) do |input|
-				curr = nil
-				ref = ""
-        while ((not input.eof?) and (line = input.readline))
-					line.strip!
-					next if line.empty?
-					md = /@([\w-]+){([\w-]+),/.match(line)
-					if not md.nil?
-						type = md[1]
-						ref = md[2]
-						curr = case type.downcase
-									 when "article" then Article.new
-									 when "book" then   Book.new
-									 when "conference", "incollection", "inproceedings" then
-										 InCollection.new
-									 when "manual" then Manual.new
-									 when "misc" then Misc.new
-									 when "phdthesis" then PhdThesis.new
-									 end
-					elsif line == "}"
-						biblio[ref] = curr
-						curr = nil
-						ref = ""
-					else # TODO: correctly parse bibtex file
-						fields = line.partition "="
-						key_term = fields.first.strip
-						val_term = fields.third.strip
-						if val_term.reverse[0] == "," and (val_term.reverse[1] == "}" or val_term.reverse[1] == "\"")
-							val_term = val_term[0..val_term.length-2] # remove comma
-						end
-						until (val_term[0] == "{" and val_term[val_term.length - 1] == "}") or (val_term[0] == "\"" and val_term[val_term.length - 1] == "\"")
-							val_term += " " + input.readline.strip
-							if val_term.reverse[0] == "," and (val_term.reverse[1] == "}" or val_term.reverse[1] == "\"")
-								val_term = val_term[0..val_term.length-2] # remove comma
-							end
-						end
-						begin
-  						curr.send("#{key_term}=", val_term[1..val_term.length-2])
-						rescue # ignore errors
-						end
-					end
-        end
-      end
-    rescue Exception => e # abort on any error
-      puts "Error in reading bibliography #{e}"
-      exit
-    end
-
-    return biblio
+    BibTeX.open(filename)
   end
 
 	# Read given text to locate cites, return list of used references
@@ -132,13 +80,14 @@ module AsciidocBib
           output.puts line
   			elsif line.strip == "[bibliography]"
 	  			cites_used.sort_by do |ref|
-		  			if biblio.contains? ref
-			  			biblio[ref].author_chicago
+		  			unless biblio[ref].nil?
+              # extract the reference
+			  			author_chicago(biblio[ref].author)
 				  	else 
   						[ref]
 	  				end
 		  		end.each do |ref|
-			  		output.puts biblio.get_reference(ref).gsub("{","").gsub("}","")
+			  		output.puts get_reference(biblio, ref).gsub("{","").gsub("}","")
   					output.puts
 	  			end
 		  	else
@@ -147,7 +96,7 @@ module AsciidocBib
 						cite_refs, cite_pages = extract_refs_pages md[4]
 						# replace text on line
 						line.gsub!(md[0],
-											 biblio.get_citation(md[1], md[3], cite_refs, cite_pages)
+											 get_citation(biblio, md[1], md[3], cite_refs, cite_pages)
 											)
 						# look for next citation on line
 						md = CITATION_FULL.match(md.post_match)

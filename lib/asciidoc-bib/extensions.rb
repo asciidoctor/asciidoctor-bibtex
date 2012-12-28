@@ -86,5 +86,135 @@ module AsciidocBib
     return "#{file_dir}#{File::SEPARATOR}#{file_base}-ref#{file_ext}"
   end
 
+  # Arrange given author string into Chicago format
+  def author_chicago(authors)
+		authors.split("and").collect do |name|
+			parts = name.strip.rpartition(" ")
+			"#{parts.third}, #{parts.first}"
+		end
+	end
+
+  # Based on type of bibitem, format the reference in chicago style
+  def get_reference(biblio, ref)
+		result = ""
+    item = biblio[ref]
+
+    return ref if item.nil? # escape if no entry for reference in biblio
+
+    # add information for author and year
+  	unless item.author.nil?
+			result << "#{author_chicago(item.author).comma_and_join} "
+		end
+		unless item.year.nil?
+			result << "#{item.year}. "
+		end
+	
+    # add information which varies on document type
+    if item.article?
+			unless item.title.nil?
+				result << "\"#{item.title},\" "
+			end 
+			unless item.journal.nil?
+				result << "_#{item.journal}_, "
+			end
+			unless item.volume.nil?
+				result << "#{item.volume}:"
+			end
+			unless item.pages.nil?
+				result << "#{item.pages}"
+			end
+			result << "."
+    elsif item.book?
+			unless item.title.nil?
+				result << "_#{item.title}_, "
+			end 
+			unless item.publisher.nil?
+				result << "#{item.publisher}"
+			end
+			result << "."
+    elsif item.collection?
+  		unless item.title.nil?
+				result << "\"#{item.title},\" "
+			end 
+			unless item.booktitle.nil?
+				result << "In _#{item.booktitle}_, "
+			end
+			unless item.editor.nil?
+				result << "ed. #{author_chicago(item.editor).comma_and_join}, "
+			end
+			unless item.pages.nil?
+				result << "#{item.pages}."
+			end
+			unless item.publisher.nil?
+				result << "#{item.publisher}."
+			end
+    else
+  		unless item.title.nil?
+				result << "\"#{item.title},\" "
+			end 
+      unless item.school.nil? and item.howpublished.nil? and item.note.nil?
+        result << "("
+        space = ""
+    		unless item.school.nil?
+  				result << "#{item.school}"
+          space = "; "
+			  end 
+  	  	unless item.howpublished.nil?
+	  			result << "#{space}#{item.howpublished}"
+          space = "; "
+  			end 
+  		  unless item.note.nil?
+		  		result << "#{space}#{item.note}"
+	  		end 
+        result << ")"
+      end
+	  end
+
+  	return result
+  end
+
+	# retrieve citation text
+	def get_citation(biblio, type="cite", pre="", refs=[], pages=[])
+		result = ""
+
+		result << "(" if type == "cite" 
+		result << "#{pre} " unless pre.nil? or pre.empty?
+
+		(refs.zip(pages)).each_with_index do |ref_page_pair, index|
+			ref = ref_page_pair[0]
+			page = ref_page_pair[1]
+
+			result << "; " unless index.zero?
+			unless biblio[ref].nil?
+				result << citation(biblio[ref].author, biblio[ref].year, type, page)
+			else
+				puts "Unknown reference: #{ref}"
+				result << "#{ref} (unknown)"
+			end
+		end
+		result << ")" if type == "cite"
+
+    return result
+	end
+
+  # return an array of the author surnames extracted from author_string
+  def author_surnames(author_string)
+    author_string.split("and").collect do |name|
+			name.split(" ").first.strip
+		end
+  end
+
+  def citation(author, year, type, pages)
+		result = ""
+
+		result << author_surnames(author).comma_and_join
+		result << " "
+		result << "(" if type == "citenp"
+		result << year
+		result << ", #{pages}" unless pages.nil? or pages.empty?
+		result << ")" if type == "citenp"
+
+		return result
+  end
 end
 

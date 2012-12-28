@@ -25,5 +25,6 @@ END
   s.has_rdoc = true
   s.extra_rdoc_files << "README.md"
   s.executables << "asciidoc-bib"
+  s.add_dependency("bibtex-ruby", ">=2.2.0")
 end
 
