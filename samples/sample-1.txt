@@ -1,6 +1,6 @@
 = Sample of using asciidoc-bib =
 
-The bibliograhy is searched in the folder of the document, and then 
+The bibliography is searched in the folder of the document, and then 
 in ~/Documents.
 
 References can use different styles such as: [cite:Lane12a] or

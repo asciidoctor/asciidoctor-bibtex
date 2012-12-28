@@ -62,6 +62,22 @@ module AsciidocBib
 		return cites_used
 	end
 
+  # Given the text for one or more references (i.e. the ... in [cite:...])
+  # return two arrays, the first of the references, and the second of the pages
+  def extract_refs_pages cite_text
+		refs = []
+		pages = []
+		cm = CITATION.match(cite_text)
+		while cm
+			# process ref 
+			refs << cm[1]
+			pages << cm[3]
+			# look for next ref within citation
+			cm = CITATION.match(cm.post_match)
+		end
+    return refs, pages
+  end
+
   # Add '-ref' before the extension of a filename
   def add_ref filename
     file_dir = File.dirname(File.expand_path(filename))

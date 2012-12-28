@@ -3,13 +3,12 @@
 # Copyright (c) Peter Lane, 2012.
 # Released under Open Works License, 0.9.2
 
-require "asciidoc-bib/bibitem_classes.rb"
-require "asciidoc-bib/extensions.rb"
+require 'asciidoc-bib/bibitem_classes'
+require 'asciidoc-bib/extensions'
 
 module AsciidocBib
 
-  # -- locate a bibliography file to read in given dir
-
+  # Locate a bibliography file to read in given dir
   def find_bibliography dir
     begin
       candidates = Dir.glob("#{dir}/*.bib")
@@ -23,7 +22,7 @@ module AsciidocBib
     end
   end
 
-  # -- read in a given bibliography file and return a biblio instance
+  # Read in a given bibliography file and return a biblio instance
 
   def read_bibliography filename
     biblio = Biblio.new
@@ -80,8 +79,7 @@ module AsciidocBib
     return biblio
   end
 
-	# -- read given text to locate cites, return list of used references
-
+	# Read given text to locate cites, return list of used references
 	def read_citations filename
 		puts "Reading file: #{filename}"
 		cites_used = []
@@ -109,8 +107,7 @@ module AsciidocBib
 		return cites_used
 	end
 
-	# -- read given text to add cites and biblio
-
+	# Read given text to add cites and biblio to a new file
 	def add_citations(filename, cites_used, biblio)
     files_to_process = [filename]
     files_done = []
@@ -147,17 +144,7 @@ module AsciidocBib
 		  	else
 					md = CITATION_FULL.match(line)
 					while md
-						cite_refs = []
-						cite_pages = []
-						cite_text = md[4]
-						cm = CITATION.match(cite_text)
-						while cm
-							# process ref 
-							cite_refs << cm[1]
-							cite_pages << cm[3]
-							# look for next ref within citation
-							cm = CITATION.match(cm.post_match)
-						end
+						cite_refs, cite_pages = extract_refs_pages md[4]
 						# replace text on line
 						line.gsub!(md[0],
 											 biblio.get_citation(md[1], md[3], cite_refs, cite_pages)
