@@ -89,8 +89,8 @@ module AsciidocBib
   # Arrange given author string into Chicago format
   def author_chicago(authors)
 		authors.split("and").collect do |name|
-			parts = name.strip.rpartition(" ")
-			"#{parts.third}, #{parts.first}"
+			parts = name.strip.rpartition(", ")
+			"#{parts.first}, #{parts.third}"
 		end
 	end
 
@@ -132,7 +132,7 @@ module AsciidocBib
 				result << "#{item.publisher}"
 			end
 			result << "."
-    elsif item.collection?
+    elsif item.collection? or (not item.title.nil? and not item.booktitle.nil?)
   		unless item.title.nil?
 				result << "\"#{item.title},\" "
 			end 
@@ -151,20 +151,23 @@ module AsciidocBib
     else
   		unless item.title.nil?
 				result << "\"#{item.title},\" "
-			end 
-      unless item.school.nil? and item.howpublished.nil? and item.note.nil?
+			end
+      school = if item.respond_to?(:school) then item.school else "" end
+      howpublished = if item.respond_to?(:howpublished) then item.howpublished else "" end
+      note = if item.respond_to?(:note) then item.note else "" end
+      unless school.nil? and howpublished.nil? and note.nil?
         result << "("
         space = ""
-    		unless item.school.nil?
-  				result << "#{item.school}"
+    		unless school.nil? or school.empty?
+  				result << "#{school}"
           space = "; "
 			  end 
-  	  	unless item.howpublished.nil?
-	  			result << "#{space}#{item.howpublished}"
+  	  	unless howpublished.nil? or howpublished.empty?
+	  			result << "#{space}#{howpublished}"
           space = "; "
   			end 
-  		  unless item.note.nil?
-		  		result << "#{space}#{item.note}"
+  		  unless note.nil? or note.empty?
+		  		result << "#{space}#{note}"
 	  		end 
         result << ")"
       end
@@ -200,7 +203,7 @@ module AsciidocBib
   # return an array of the author surnames extracted from author_string
   def author_surnames(author_string)
     author_string.split("and").collect do |name|
-			name.split(" ").first.strip
+			name.split(", ").first.strip
 		end
   end
 

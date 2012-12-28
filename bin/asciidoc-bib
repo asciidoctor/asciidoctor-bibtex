@@ -10,11 +10,35 @@
 # Released under Open Works License, 0.9.2
 
 require 'asciidoc-bib'
+require 'optparse'
+
 include AsciidocBib
 
-bibfile = find_bibliography "."
+bibfile = ""
+
+options = OptionParser.new do |opts|
+  opts.banner = "Usage: asciidoc-bib filename"
+  opts.on("-h", "--help", "help message") do |v|
+    puts options
+    exit!
+  end
+  opts.on("-b", "--bibfile FILE", "location of bib file") do |v|
+    bibfile = v
+  end
+end
+
+begin
+  options.parse!
+rescue
+  puts options
+  exit!
+end
+
 if bibfile.empty?
-  bibfile = find_bibliography "#{ENV['HOME']}/Documents"
+  bibfile = find_bibliography "."
+  if bibfile.empty?
+    bibfile = find_bibliography "#{ENV['HOME']}/Documents"
+  end
 end
 if bibfile.empty?
   puts "Error: could not find a bibliography file"
