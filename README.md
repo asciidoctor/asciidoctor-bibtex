@@ -17,7 +17,7 @@ and pretext)
 
  > gem install asciidoc-bib
 
-asciidoc-bib depends on http://github.com/inukshuk/bibtex-ruby[bibtex-ruby].
+asciidoc-bib depends on [bibtex-ruby](http://github.com/inukshuk/bibtex-ruby).
 (Ensure 'ruby-dev' is installed, so this dependency will compile.)
 
 ## Use 
