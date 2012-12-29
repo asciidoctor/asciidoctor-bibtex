@@ -3,7 +3,7 @@ Gem::Specification.new do |s|
   s.name = "asciidoc-bib"
   s.platform = Gem::Platform::RUBY
   s.author = "Peter Lane"
-  s.version = "1.0.0"
+  s.version = "1.1.0"
   s.email = "peter@peterlane.info"
   s.homepage = "https://github.com/petercrlane/asciidoc-bib"
   s.summary = "asciidoc-bib adds references from a bibtex file to an asciidoc file."

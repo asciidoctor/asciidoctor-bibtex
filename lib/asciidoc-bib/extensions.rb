@@ -88,9 +88,13 @@ module AsciidocBib
 
   # Arrange given author string into Chicago format
   def author_chicago(authors)
-		authors.split("and").collect do |name|
-			parts = name.strip.rpartition(", ")
-			"#{parts.first}, #{parts.third}"
+		authors.split(/\band\b/).collect do |name|
+      if name.include?(", ")
+  			parts = name.strip.rpartition(", ")
+	  		"#{parts.first}, #{parts.third}"
+      else
+        name
+      end
 		end
 	end
 
@@ -117,10 +121,10 @@ module AsciidocBib
 			unless item.journal.nil?
 				result << "_#{item.journal}_, "
 			end
-			unless item.volume.nil?
+			unless (not item.respond_to?(:volume)) or item.volume.nil?
 				result << "#{item.volume}:"
 			end
-			unless item.pages.nil?
+			unless (not item.respond_to?(:pages)) or item.pages.nil?
 				result << "#{item.pages}"
 			end
 			result << "."
@@ -169,7 +173,7 @@ module AsciidocBib
   		  unless note.nil? or note.empty?
 		  		result << "#{space}#{note}"
 	  		end 
-        result << ")"
+        result << ")."
       end
 	  end
 
@@ -202,7 +206,7 @@ module AsciidocBib
 
   # return an array of the author surnames extracted from author_string
   def author_surnames(author_string)
-    author_string.split("and").collect do |name|
+    author_string.split(/\band\b/).collect do |name|
 			name.split(", ").first.strip
 		end
   end

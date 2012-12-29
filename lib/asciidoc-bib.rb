@@ -69,41 +69,45 @@ module AsciidocBib
   		output = File.new(ref_filename, "w")
 
       File.new(curr_file).each_line do |line|
-        if line.include?("include::")
-          line.split("include::").drop(1).each do |filetxt|
-            ifile = filetxt.partition(/\s|\[/).first
-            file = File.expand_path(ifile)
-            files_to_process << file unless files_done.include?(file)
-            # make sure included file points to the -ref version
-            line.gsub!("include::#{ifile}", "include::#{add_ref(file)}")
-          end
-          output.puts line
-  			elsif line.strip == "[bibliography]"
-	  			cites_used.sort_by do |ref|
-		  			unless biblio[ref].nil?
-              # extract the reference
-			  			author_chicago(biblio[ref].author)
-				  	else 
-  						[ref]
-	  				end
-		  		end.each do |ref|
-			  		output.puts get_reference(biblio, ref).gsub("{","").gsub("}","")
-  					output.puts
-	  			end
-		  	else
-					md = CITATION_FULL.match(line)
-					while md
-						cite_refs, cite_pages = extract_refs_pages md[4]
-						# replace text on line
-						line.gsub!(md[0],
-											 get_citation(biblio, md[1], md[3], cite_refs, cite_pages)
-											)
-						# look for next citation on line
-						md = CITATION_FULL.match(md.post_match)
-					end
+        begin # catch any errors, and ensure the lines of text are written
+          if line.include?("include::")
+            line.split("include::").drop(1).each do |filetxt|
+              ifile = filetxt.partition(/\s|\[/).first
+              file = File.expand_path(ifile)
+              files_to_process << file unless files_done.include?(file)
+              # make sure included file points to the -ref version
+              line.gsub!("include::#{ifile}", "include::#{add_ref(file)}")
+            end
+            output.puts line
+  	  		elsif line.strip == "[bibliography]"
+	  	  		cites_used.sort_by do |ref|
+		  	  		unless biblio[ref].nil?
+                # extract the reference
+			  		  	author_chicago(biblio[ref].author)
+  				  	else 
+    						[ref]
+	    				end
+		    		end.each do |ref|
+			    		output.puts get_reference(biblio, ref).gsub("{","").gsub("}","")
+  				  	output.puts
+  	  			end
+	  	  	else
+		  			md = CITATION_FULL.match(line)
+			  		while md
+				  		cite_refs, cite_pages = extract_refs_pages md[4]
+					  	# replace text on line
+						  line.gsub!(md[0],
+							  				 get_citation(biblio, md[1], md[3], cite_refs, cite_pages)
+								  			)
+  						# look for next citation on line
+	  					md = CITATION_FULL.match(md.post_match)
+		  			end
 
-	  			output.puts line
-		  	end
+	  	  		output.puts line
+		  	  end
+         rescue # Any errors, just output the line
+          output.puts line
+         end
   		end
 
   		output.close
