@@ -13,7 +13,7 @@ Chicago Manual of Style'
 and pretext)
 - multiple references within a single citation
 
-## Install (to come)
+## Install
 
  > gem install asciidoc-bib
 
