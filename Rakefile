@@ -17,8 +17,11 @@ task :samples do
   end
 end
 
-desc 'build gem'
-task :build_gem do
+directory 'release'
+
+desc 'build gem: keeps generated gems in release/'
+task :build_gem => 'release' do
   sh "gem build asciidoc-bib.gemspec"
+  sh "mv *.gem release"
 end
 
