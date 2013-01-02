@@ -18,7 +18,7 @@ style after that in 'The Chicago Manual of Style'.
 END
   s.files = Dir["lib/**/*"] + Dir["samples/*"] + [
     "LICENSE.txt",
-    "README.md",
+    "README.rdoc",
     "bin/asciidoc-bib"
   ]
   s.require_path = "lib"
