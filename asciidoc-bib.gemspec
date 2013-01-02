@@ -3,7 +3,7 @@ Gem::Specification.new do |s|
   s.name = "asciidoc-bib"
   s.platform = Gem::Platform::RUBY
   s.author = "Peter Lane"
-  s.version = "1.1.1"
+  s.version = "1.1.2"
   s.email = "peter@peterlane.info"
   s.homepage = "https://github.com/petercrlane/asciidoc-bib"
   s.summary = "asciidoc-bib adds references from a bibtex file to an asciidoc file."
@@ -23,7 +23,7 @@ END
   ]
   s.require_path = "lib"
   s.has_rdoc = true
-  s.extra_rdoc_files << "README.md"
+  s.extra_rdoc_files << "README.rdoc"
   s.executables << "asciidoc-bib"
   s.add_dependency("bibtex-ruby", ">=2.2.0")
 end
