@@ -25,3 +25,7 @@ task :build_gem => 'release' do
   sh "mv *.gem release"
 end
 
+desc 'build documentation'
+task :doc do
+  sh "rdoc -t asciidoc-bib README.rdoc lib/"
+end

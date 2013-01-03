@@ -66,8 +66,9 @@ module AsciidocBib
 
 		sorted_cites = cites_used.sort_by do |ref|
 			unless biblio[ref].nil?
-				# extract the reference
-				author_chicago(biblio[ref].author)
+				# extract the reference, and uppercase. 
+        # Remove { } from grouped names for sorting.
+				author_chicago(biblio[ref].author).collect {|s| s.upcase.gsub("{","").gsub("}","")}
 			else 
 				ref
 			end
@@ -91,14 +92,14 @@ module AsciidocBib
               # make sure included file points to the -ref version
               line.gsub!("include::#{ifile}", "include::#{add_ref(file)}")
             end
-            output.puts line
+            output.puts line.delatex
   	  		elsif line.strip == "[bibliography]"
 	  	  		sorted_cites.each do |ref|
 							case style
 							when "authoryear" then
-				    		output.puts get_reference_authoryear(biblio, ref).gsub("{","").gsub("}","")
+				    		output.puts get_reference_authoryear(biblio, ref).delatex
 							when "numeric" then
-								output.puts ". #{get_reference_numeric(biblio, ref).gsub("{","").gsub("}","")}"
+								output.puts ". #{get_reference_numeric(biblio, ref).delatex}"
 							end
   				  	output.puts
   	  			end
@@ -116,10 +117,10 @@ module AsciidocBib
 	  					md = CITATION_FULL.match(md.post_match)
 		  			end
 
-	  	  		output.puts line
+	  	  		output.puts line.delatex
 		  	  end
          rescue # Any errors, just output the line
-          output.puts line
+          output.puts line.delatex
          end
   		end
 

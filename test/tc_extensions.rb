@@ -43,3 +43,9 @@ class TestAuthorSplit < Test::Unit::TestCase
     assert_equal("Smith", names[3])
   end
 end
+
+class TestStringExtension < Test::Unit::TestCase
+  def test_1
+    assert_equal("two names", "{two names}".delatex)
+  end
+end

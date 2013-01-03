@@ -36,6 +36,23 @@ class Array
   include AsciidocBibArrayExtensions
 end
 
+# Provide a method on String to remove latex formatting, 
+# so asciidoc/a2x do not fail on simple formatting issues.
+# 
+# Removes:
+# - {
+# - }
+module StringDelatex
+  def delatex
+    self.gsub("{","").gsub("}","")
+  end
+end
+
+# monkey patch the extension method into String
+class String
+  include StringDelatex
+end
+
 module AsciidocBib
 
 	# matches a single ref with optional pages
@@ -115,12 +132,18 @@ module AsciidocBib
   # Based on type of bibitem, format the reference in chicago style
   def get_reference_authoryear(biblio, ref)
 		result = ""
+    editor_done = false
     item = biblio[ref]
 
     return ref if item.nil? # escape if no entry for reference in biblio
 
-    # add information for author and year
-  	unless item.author.nil?
+    # add information for author/editor and year
+  	if item.author.nil?
+      unless item.editor.nil?
+        result << "#{author_chicago(item.editor).comma_and_join} (ed.) "
+        editor_done = true
+      end
+    else
 			result << "#{author_chicago(item.author).comma_and_join} "
 		end
 		unless item.year.nil?
@@ -157,7 +180,7 @@ module AsciidocBib
 			unless item.booktitle.nil?
 				result << "In _#{item.booktitle}_, "
 			end
-			unless item.editor.nil?
+			unless item.editor.nil? or editor_done
 				result << "ed. #{author_chicago(item.editor).comma_and_join}, "
 			end
 			unless item.pages.nil?
@@ -197,12 +220,18 @@ module AsciidocBib
 	# Based on type of bibitem, format the reference in numeric style
   def get_reference_numeric(biblio, ref)
 		result = ""
+    editor_done = false
     item = biblio[ref]
 
     return ref if item.nil? # escape if no entry for reference in biblio
 
-    # add information for author and year
-  	unless item.author.nil?
+    # add information for author/editor and year
+   	if item.author.nil?
+      unless item.editor.nil?
+        result << "#{author_numeric(item.editor).comma_and_join} (ed.) "
+        editor_done = true
+      end
+    else
 			result << "#{author_numeric(item.author).comma_and_join} "
 		end
 	
@@ -234,9 +263,9 @@ module AsciidocBib
 				result << "\"#{item.title},\" "
 			end 
 			unless item.booktitle.nil?
-				result << "In _#{item.booktitle}_, "
+				result << "in _#{item.booktitle}_, "
 			end
-			unless item.editor.nil?
+			unless item.editor.nil? or editor_done
 				result << "ed. #{author_numeric(item.editor).comma_and_join}, "
 			end
 			unless item.pages.nil?

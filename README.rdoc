@@ -7,7 +7,7 @@ Features:
 - simple syntax for adding a citation within text and placing bibliography
 - transformation of source text to include references and full reference list
 - formatting of references and reference list in choice of:
-  - author-date style after 'The Chicago Manual of Style'
+  - author-date style, after 'The Chicago Manual of Style'
   - numeric style
 - follows included files
 - supports some styling of citation text (page numbers, bracket placement, and pretext)
@@ -87,6 +87,8 @@ STYLE can take values:
 == Limitations
 
 - latex formatting from bibtex file will be included in reference list
+- no grouping of references, e.g. [1,2,3] -> [1-3]
+- no automatic use of _et_ _al_
 
 == License
 
