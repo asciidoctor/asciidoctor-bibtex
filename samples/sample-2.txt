@@ -1,6 +1,6 @@
 == Sample file 2: multiple authors ==
 
-References can use different styles such as: [cite:Lane12b] or
+Author-year references can use different styles such as: [cite:Lane12b] or
 [citenp:Lane12b].
 
 Page numbers can be added: [cite:Lane12b,89] or [citenp:Lane12b,89-93].

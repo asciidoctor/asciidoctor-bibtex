@@ -3,7 +3,7 @@
 The bibliography is searched in the folder of the document, and then 
 in ~/Documents.
 
-References can use different styles such as: [cite:Lane12a] or
+Author-year references can use different styles such as: [cite:Lane12a] or
 [citenp:Lane12a].
 
 Page numbers can be added: [cite:Lane12a,89] or [citenp:Lane12a,89-93].

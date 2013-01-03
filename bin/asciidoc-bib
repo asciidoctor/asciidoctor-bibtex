@@ -6,7 +6,7 @@
 # to asciidoc files, generating revised files for processing by 
 # asciidoc.
 #
-# Copyright (c) Peter Lane, 2012.
+# Copyright (c) Peter Lane, 2012-13.
 # Released under Open Works License, 0.9.2
 
 require 'asciidoc-bib'
@@ -15,6 +15,7 @@ require 'optparse'
 include AsciidocBib
 
 bibfile = ""
+style = Styles.first
 
 options = OptionParser.new do |opts|
   opts.banner = "Usage: asciidoc-bib filename"
@@ -25,6 +26,9 @@ options = OptionParser.new do |opts|
   opts.on("-b", "--bibfile FILE", "location of bib file") do |v|
     bibfile = v
   end
+	opts.on("-s", "--style STYLE", "reference style") do |v|
+		style = v
+	end
 end
 
 begin
@@ -44,12 +48,22 @@ if bibfile.empty?
   puts "Error: could not find a bibliography file"
   exit
 end
+unless Styles.include?(style)
+	puts "Error: style must be one of #{Styles.join(", ")}"
+	exit
+end
+unless ARGV.length == 1
+	puts "Error: a single file to convert must be given"
+	exit
+end
+
 puts "Reading biblio: #{bibfile}"
+puts "Reference style: #{style}"
 
 biblio = read_bibliography bibfile
 
 cites_used = read_citations ARGV[0]
 puts "Cites: #{cites_used.join(",")}"
 
-add_citations(ARGV[0], cites_used, biblio)
+add_citations(ARGV[0], cites_used, biblio, style)
 

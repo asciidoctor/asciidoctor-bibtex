@@ -1,6 +1,6 @@
 # Some extension and other helper methods. 
 #
-# Copyright (c) Peter Lane, 2012.
+# Copyright (c) Peter Lane, 2012-13.
 # Released under Open Works License, 0.9.2
 
 module AsciidocBibArrayExtensions
@@ -88,6 +88,7 @@ module AsciidocBib
 
   # Arrange given author string into Chicago format
   def author_chicago(authors)
+		return [] if authors.nil?
 		authors.split(/\band\b/).collect do |name|
       if name.include?(", ")
   			parts = name.strip.rpartition(", ")
@@ -98,8 +99,21 @@ module AsciidocBib
 		end
 	end
 
+	# Arrange given author string into Springer LNCS numeric format
+  def author_numeric(authors)
+		return [] if authors.nil?
+		authors.split(/\band\b/).collect do |name|
+      if name.include?(", ")
+  			parts = name.strip.rpartition(", ")
+	  		"#{parts.third} #{parts.first}"
+      else
+        name
+      end
+		end
+	end
+
   # Based on type of bibitem, format the reference in chicago style
-  def get_reference(biblio, ref)
+  def get_reference_authoryear(biblio, ref)
 		result = ""
     item = biblio[ref]
 
@@ -125,7 +139,7 @@ module AsciidocBib
 				result << "#{item.volume}:"
 			end
 			unless (not item.respond_to?(:pages)) or item.pages.nil?
-				result << "#{item.pages}"
+				result << "#{item.pages.gsub("--","-")}"
 			end
 			result << "."
     elsif item.book?
@@ -147,7 +161,7 @@ module AsciidocBib
 				result << "ed. #{author_chicago(item.editor).comma_and_join}, "
 			end
 			unless item.pages.nil?
-				result << "#{item.pages}."
+				result << "#{item.pages.gsub("--","-")}."
 			end
 			unless item.publisher.nil?
 				result << "#{item.publisher}."
@@ -180,26 +194,120 @@ module AsciidocBib
   	return result
   end
 
+	# Based on type of bibitem, format the reference in numeric style
+  def get_reference_numeric(biblio, ref)
+		result = ""
+    item = biblio[ref]
+
+    return ref if item.nil? # escape if no entry for reference in biblio
+
+    # add information for author and year
+  	unless item.author.nil?
+			result << "#{author_numeric(item.author).comma_and_join} "
+		end
+	
+    # add information which varies on document type
+    if item.article?
+			unless item.title.nil?
+				result << "\"#{item.title},\" "
+			end 
+			unless item.journal.nil?
+				result << "_#{item.journal}_, "
+			end
+			unless (not item.respond_to?(:volume)) or item.volume.nil?
+				result << "#{item.volume}:"
+			end
+			unless (not item.respond_to?(:pages)) or item.pages.nil?
+				result << "#{item.pages.gsub("--","-")}"
+			end
+			result << ", "
+    elsif item.book?
+			unless item.title.nil?
+				result << "_#{item.title}_, "
+			end 
+			unless item.publisher.nil?
+				result << "#{item.publisher}"
+			end
+			result << ", "
+    elsif item.collection? or (not item.title.nil? and not item.booktitle.nil?)
+  		unless item.title.nil?
+				result << "\"#{item.title},\" "
+			end 
+			unless item.booktitle.nil?
+				result << "In _#{item.booktitle}_, "
+			end
+			unless item.editor.nil?
+				result << "ed. #{author_numeric(item.editor).comma_and_join}, "
+			end
+			unless item.pages.nil?
+				result << "#{item.pages.gsub("--","-")}."
+			end
+			unless item.publisher.nil?
+				result << "#{item.publisher}, "
+			end
+    else
+  		unless item.title.nil?
+				result << "\"#{item.title},\" "
+			end
+      school = if item.respond_to?(:school) then item.school else "" end
+      howpublished = if item.respond_to?(:howpublished) then item.howpublished else "" end
+      note = if item.respond_to?(:note) then item.note else "" end
+      unless school.nil? and howpublished.nil? and note.nil?
+        result << "("
+        space = ""
+    		unless school.nil? or school.empty?
+  				result << "#{school}"
+          space = "; "
+			  end 
+  	  	unless howpublished.nil? or howpublished.empty?
+	  			result << "#{space}#{howpublished}"
+          space = "; "
+  			end 
+  		  unless note.nil? or note.empty?
+		  		result << "#{space}#{note}"
+	  		end 
+        result << "), "
+      end
+	  end
+		unless item.year.nil?
+			result << "#{item.year}. "
+		end
+
+  	return result
+  end
+
 	# retrieve citation text
-	def get_citation(biblio, type="cite", pre="", refs=[], pages=[])
+	def get_citation(biblio, type="cite", 
+									 pre="", refs=[], pages=[], 
+									 style, sorted_cites)
 		result = ""
 
-		result << "(" if type == "cite" 
+		result << "(" if type == "cite" and style == "authoryear"
 		result << "#{pre} " unless pre.nil? or pre.empty?
+		result << "[" if style == "numeric"
 
 		(refs.zip(pages)).each_with_index do |ref_page_pair, index|
 			ref = ref_page_pair[0]
-			page = ref_page_pair[1]
+			page = ref_page_pair[1].gsub("--","-")
 
 			result << "; " unless index.zero?
 			unless biblio[ref].nil?
-				result << citation(biblio[ref].author, biblio[ref].year, type, page)
+				case style
+				when "authoryear" then
+					result << citation(biblio[ref].author, biblio[ref].year, type, page)
+				when "numeric" then
+					result << "#{sorted_cites.index(ref)+1}"
+					result << ",#{page}" unless page.nil? or page.empty?
+				end
 			else
 				puts "Unknown reference: #{ref}"
-				result << "#{ref} (unknown)"
+				result << "#{ref}"
+				result << " (unknown)" if style == "authoryear"
 			end
 		end
-		result << ")" if type == "cite"
+
+		result << "]" if style == "numeric"
+		result << ")" if type == "cite" and style == "authoryear"
 
     return result
 	end

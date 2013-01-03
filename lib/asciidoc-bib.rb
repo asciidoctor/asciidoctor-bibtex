@@ -1,12 +1,15 @@
 # asciidoc-bib.rb
 #
-# Copyright (c) Peter Lane, 2012.
+# Copyright (c) Peter Lane, 2012-13.
 # Released under Open Works License, 0.9.2
 
 require 'asciidoc-bib/extensions'
 require 'bibtex'
 
 module AsciidocBib
+
+	# Valid reference styles, first item is default
+	Styles = ["authoryear", "numeric"]
 
   # Locate a bibliography file to read in given dir
   def find_bibliography dir
@@ -56,9 +59,19 @@ module AsciidocBib
 	end
 
 	# Read given text to add cites and biblio to a new file
-	def add_citations(filename, cites_used, biblio)
+	# Order is always decided by author surname first
+	def add_citations(filename, cites_used, biblio, style)
     files_to_process = [filename]
     files_done = []
+
+		sorted_cites = cites_used.sort_by do |ref|
+			unless biblio[ref].nil?
+				# extract the reference
+				author_chicago(biblio[ref].author)
+			else 
+				ref
+			end
+		end
 
     begin
       curr_file = files_to_process.shift
@@ -80,15 +93,13 @@ module AsciidocBib
             end
             output.puts line
   	  		elsif line.strip == "[bibliography]"
-	  	  		cites_used.sort_by do |ref|
-		  	  		unless biblio[ref].nil?
-                # extract the reference
-			  		  	author_chicago(biblio[ref].author)
-  				  	else 
-    						[ref]
-	    				end
-		    		end.each do |ref|
-			    		output.puts get_reference(biblio, ref).gsub("{","").gsub("}","")
+	  	  		sorted_cites.each do |ref|
+							case style
+							when "authoryear" then
+				    		output.puts get_reference_authoryear(biblio, ref).gsub("{","").gsub("}","")
+							when "numeric" then
+								output.puts ". #{get_reference_numeric(biblio, ref).gsub("{","").gsub("}","")}"
+							end
   				  	output.puts
   	  			end
 	  	  	else
@@ -97,7 +108,9 @@ module AsciidocBib
 				  		cite_refs, cite_pages = extract_refs_pages md[4]
 					  	# replace text on line
 						  line.gsub!(md[0],
-							  				 get_citation(biblio, md[1], md[3], cite_refs, cite_pages)
+							  				 get_citation(biblio, md[1], md[3], 
+																			cite_refs, cite_pages, 
+																			style, sorted_cites)
 								  			)
   						# look for next citation on line
 	  					md = CITATION_FULL.match(md.post_match)
