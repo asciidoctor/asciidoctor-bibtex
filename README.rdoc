@@ -7,10 +7,8 @@ Features:
 - simple syntax for adding a citation within text and placing bibliography
 - transformation of source text to include references and full reference list
 - formatting of references and reference list in choice of:
-
-	. author-date style after 'The Chicago Manual of Style'
-	. numeric style after Springer LNCS
-
+  - author-date style after 'The Chicago Manual of Style'
+  - numeric style
 - follows included files
 - supports some styling of citation text (page numbers, bracket placement, and pretext)
 - multiple references within a single citation
@@ -40,7 +38,7 @@ where 'pretext' and 'pages' are optional.  The ref and optional pages may
 be repeated multiple times, separated by ';'.  A citation _must_ be 
 complete on a single line of text.
 
-Examples:
+Examples of author-year style:
 
 [[cite:Lane12]] becomes "(Lane 2012)"
 
@@ -51,6 +49,12 @@ Examples:
 [[cite:See:Lane12,59]] becomes "(See Lane 2012, 59)"
 
 [[cite:See:Lane12,59;Lane11]] becomes "(See Lane 2012, 59; Lane 2011)"
+
+For numeric style:
+
+[[cite:Lane12;Lane11]] becomes "[1, 2]"
+
+[[cite:See:Lane12,59;Lane11]] becomes "See [1 p.59, 2]"
 
 === Place bibliography in text
 
@@ -77,8 +81,8 @@ Command-line options:
 
 STYLE can take values:
 
-authoryear:: Chicage style author-year, the default.
-numeric:: Springer LNCS style numeric.
+- _authoryear_ Chicage style author-year, the default.
+- _numeric_ generic numeric format.
 
 == Limitations
 

@@ -99,7 +99,7 @@ module AsciidocBib
 		end
 	end
 
-	# Arrange given author string into Springer LNCS numeric format
+	# Arrange given author string into generic numeric format
   def author_numeric(authors)
 		return [] if authors.nil?
 		authors.split(/\band\b/).collect do |name|
@@ -288,16 +288,24 @@ module AsciidocBib
 
 		(refs.zip(pages)).each_with_index do |ref_page_pair, index|
 			ref = ref_page_pair[0]
-			page = ref_page_pair[1].gsub("--","-")
+			page = ref_page_pair[1]
+      page.gsub!("--","-") unless page.nil?
 
-			result << "; " unless index.zero?
+      # before all items apart from the first, insert appropriate separator
+      unless index.zero?
+        case style
+        when "authoryear" then result << "; " 
+        when "numeric" then result << ", "
+        end
+      end
+      # insert reference information, if found
 			unless biblio[ref].nil?
 				case style
 				when "authoryear" then
 					result << citation(biblio[ref].author, biblio[ref].year, type, page)
 				when "numeric" then
 					result << "#{sorted_cites.index(ref)+1}"
-					result << ",#{page}" unless page.nil? or page.empty?
+					result << " p.#{page}" unless page.nil? or page.empty?
 				end
 			else
 				puts "Unknown reference: #{ref}"
