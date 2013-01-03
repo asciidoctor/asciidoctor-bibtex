@@ -7,8 +7,10 @@ Features:
 - simple syntax for adding a citation within text and placing bibliography
 - transformation of source text to include references and full reference list
 - formatting of references and reference list in choice of:
+
 	- author-date style after 'The Chicago Manual of Style'
 	- numeric style after Springer LNCS
+
 - follows included files
 - supports some styling of citation text (page numbers, bracket placement, and pretext)
 - multiple references within a single citation
