@@ -83,7 +83,7 @@ STYLE can take values:
 
 - _authoryear_ Chicage style author-year, the default.
 - _authoryear_:_chicago_ Chicage style author-year.
-- _authoryear_:_harvard_ Chicage style author-year, the default.
+- _authoryear_:_harvard_ Harvard style author-year (in progress).
 - _numeric_ generic numeric format.
 
 == Limitations
