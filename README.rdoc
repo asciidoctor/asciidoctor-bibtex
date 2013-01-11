@@ -82,8 +82,8 @@ Command-line options:
 STYLE can take values:
 
 - _authoryear_ Chicage style author-year, the default.
-- _authoryear:chicago_ Chicage style author-year.
-- _authoryear:harvard_ Chicage style author-year, the default.
+- _authoryear_:_chicago_ Chicage style author-year.
+- _authoryear_:_harvard_ Chicage style author-year, the default.
 - _numeric_ generic numeric format.
 
 == Limitations
