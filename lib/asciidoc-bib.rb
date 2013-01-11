@@ -9,7 +9,7 @@ require 'bibtex'
 module AsciidocBib
 
 	# Valid reference styles, first item is default
-	Styles = ["authoryear", "numeric"]
+	Styles = ["authoryear", "numeric", "authoryear:chicago", "authoryear:harvard"]
 
   # Locate a bibliography file to read in given dir
   def find_bibliography dir

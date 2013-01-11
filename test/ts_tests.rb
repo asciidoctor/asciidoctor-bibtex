@@ -5,3 +5,4 @@
 
 require 'tc_citations'
 require 'tc_extensions'
+require 'tc_formats'

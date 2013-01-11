@@ -3,7 +3,7 @@ Gem::Specification.new do |s|
   s.name = "asciidoc-bib"
   s.platform = Gem::Platform::RUBY
   s.author = "Peter Lane"
-  s.version = "1.2.1"
+  s.version = "1.3.0"
   s.email = "peter@peterlane.info"
   s.homepage = "https://github.com/petercrlane/asciidoc-bib"
   s.summary = "asciidoc-bib adds references from a bibtex file to an asciidoc file."
@@ -14,8 +14,8 @@ file, using a bibtex file as a source of citation information.  The syntax for
 an in-text reference is simply [cite:bibref], and a line containing
 [bibliography] inserts a complete reference list.  See the README for more
 examples and further options.  Currently, the reference format supports 
-author-year, in a style after that in 'The Chicago Manual of Style', and 
-a numeric style.
+author-year, in styles after that in 'The Chicago Manual of Style' or 
+following the 'Harvard' system, and a numeric style.
 END
   s.files = Dir["lib/**/*"] + Dir["samples/*"] + [
     "LICENSE.txt",

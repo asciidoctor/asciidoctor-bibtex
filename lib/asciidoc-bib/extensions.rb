@@ -309,11 +309,21 @@ module AsciidocBib
 	def get_citation(biblio, type="cite", 
 									 pre="", refs=[], pages=[], 
 									 style, sorted_cites)
+    case style
+    when "authoryear", "authoryear:chicago" then
+      get_chicago_citation(biblio, type, pre, refs, pages, sorted_cites)
+    when "numeric" then
+      get_numeric_citation(biblio, type, pre, refs, pages, sorted_cites)
+    when "authoryear:harvard" then
+      get_harvard_citation(biblio, type, pre, refs, pages, sorted_cites)
+    end
+  end
+
+  def get_chicago_citation(biblio, type, pre, refs, pages, sorted_cites)
 		result = ""
 
-		result << "(" if type == "cite" and style == "authoryear"
+		result << "(" if type == "cite" 
 		result << "#{pre} " unless pre.nil? or pre.empty?
-		result << "[" if style == "numeric"
 
 		(refs.zip(pages)).each_with_index do |ref_page_pair, index|
 			ref = ref_page_pair[0]
@@ -322,29 +332,79 @@ module AsciidocBib
 
       # before all items apart from the first, insert appropriate separator
       unless index.zero?
-        case style
-        when "authoryear" then result << "; " 
-        when "numeric" then result << ", "
-        end
+        result << "; " 
       end
       # insert reference information, if found
 			unless biblio[ref].nil?
-				case style
-				when "authoryear" then
-					result << citation(biblio[ref].author, biblio[ref].year, type, page)
-				when "numeric" then
-					result << "#{sorted_cites.index(ref)+1}"
-					result << " p.#{page}" unless page.nil? or page.empty?
-				end
+			  result << citation(biblio[ref].author, biblio[ref].year, type, page)
 			else
 				puts "Unknown reference: #{ref}"
 				result << "#{ref}"
-				result << " (unknown)" if style == "authoryear"
+				result << " (unknown)"
 			end
 		end
 
-		result << "]" if style == "numeric"
-		result << ")" if type == "cite" and style == "authoryear"
+		result << ")" if type == "cite"
+
+    return result
+	end
+  
+  def get_harvard_citation(biblio, type, pre, refs, pages, sorted_cites)
+		result = ""
+
+		result << "(" if type == "cite" 
+		result << "#{pre} " unless pre.nil? or pre.empty?
+
+		(refs.zip(pages)).each_with_index do |ref_page_pair, index|
+			ref = ref_page_pair[0]
+			page = ref_page_pair[1]
+      page.gsub!("--","-") unless page.nil?
+
+      # before all items apart from the first, insert appropriate separator
+      unless index.zero?
+        result << "; " 
+      end
+      # insert reference information, if found
+			unless biblio[ref].nil?
+			  result << citation_harvard(biblio[ref].author, biblio[ref].year, type, page)
+			else
+				puts "Unknown reference: #{ref}"
+				result << "#{ref}"
+				result << " (unknown)"
+			end
+		end
+
+		result << ")" if type == "cite"
+
+    return result
+	end
+
+  def get_numeric_citation(biblio, type, pre, refs, pages, sorted_cites)
+		result = ""
+
+		result << "#{pre} " unless pre.nil? or pre.empty?
+		result << "[" 
+
+		(refs.zip(pages)).each_with_index do |ref_page_pair, index|
+			ref = ref_page_pair[0]
+			page = ref_page_pair[1]
+      page.gsub!("--","-") unless page.nil?
+
+      # before all items apart from the first, insert appropriate separator
+      unless index.zero?
+        result << ", "
+      end
+      # insert reference information, if found
+			unless biblio[ref].nil?
+			  result << "#{sorted_cites.index(ref)+1}"
+				result << " p.#{page}" unless page.nil? or page.empty?
+			else
+				puts "Unknown reference: #{ref}"
+				result << "#{ref}"
+			end
+		end
+
+		result << "]" 
 
     return result
 	end
@@ -356,6 +416,7 @@ module AsciidocBib
 		end
   end
 
+  # Chicago-style citations
   def citation(author, year, type, pages)
 		result = ""
 
@@ -364,6 +425,19 @@ module AsciidocBib
 		result << "(" if type == "citenp"
 		result << year
 		result << ", #{pages}" unless pages.nil? or pages.empty?
+		result << ")" if type == "citenp"
+
+		return result
+  end
+  
+  def citation_harvard(author, year, type, pages)
+		result = ""
+
+		result << author_surnames(author).comma_and_join
+		result << ", " if type == "cite"
+		result << " (" if type == "citenp"
+		result << year
+		result << ", p.#{pages}" unless pages.nil? or pages.empty?
 		result << ")" if type == "citenp"
 
 		return result
