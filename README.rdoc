@@ -50,7 +50,7 @@ Examples of +authoryear+ (Chicago) style:
 
 [[cite:See:Lane12,59;Lane11]] becomes "(See Lane 2012, 59; Lane 2011)"
 
-For +authoryear:harvard+ style:
+For +authoryear+:+harvard+ style:
 
 [[cite:Lane12]] becomes "(Lane, 2012)"
 
