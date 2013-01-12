@@ -70,7 +70,7 @@ module AsciidocBib
         # Remove { } from grouped names for sorting.
 				author_chicago(biblio[ref].author).collect {|s| s.upcase.gsub("{","").gsub("}","")}
 			else 
-				ref
+				[ref]
 			end
 		end
 
@@ -95,12 +95,15 @@ module AsciidocBib
             output.puts line.delatex
   	  		elsif line.strip == "[bibliography]"
 	  	  		sorted_cites.each do |ref|
-							case style
-							when "authoryear" then
-				    		output.puts get_reference_authoryear(biblio, ref).delatex
-							when "numeric" then
-								output.puts ". #{get_reference_numeric(biblio, ref).delatex}"
-							end
+							reftext = case style
+        	  						when "authoryear", "authoryear:chicago" then
+				              		get_reference_authoryear(biblio, ref)
+          							when "numeric" then
+					          			". #{get_reference_numeric(biblio, ref)}"
+          							when "authoryear:harvard" then
+				              		get_reference_authoryear_harvard(biblio, ref)
+          							end
+              output.puts reftext.delatex
   				  	output.puts
   	  			end
 	  	  	else

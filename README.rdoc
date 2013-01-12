@@ -7,7 +7,7 @@ Features:
 - simple syntax for adding a citation within text and placing bibliography
 - transformation of source text to include references and full reference list
 - formatting of references and reference list in choice of:
-  - author-date style, after 'The Chicago Manual of Style' or 'Harvard'
+  - author-year style, after 'The Chicago Manual of Style' or 'Harvard'
   - numeric style
 - follows included files
 - supports some styling of citation text (page numbers, bracket placement, and pretext)
@@ -38,7 +38,7 @@ where 'pretext' and 'pages' are optional.  The ref and optional pages may
 be repeated multiple times, separated by ';'.  A citation _must_ be 
 complete on a single line of text.
 
-Examples of author-year (Chicago) style:
+Examples of +authoryear+ (Chicago) style:
 
 [[cite:Lane12]] becomes "(Lane 2012)"
 
@@ -50,7 +50,15 @@ Examples of author-year (Chicago) style:
 
 [[cite:See:Lane12,59;Lane11]] becomes "(See Lane 2012, 59; Lane 2011)"
 
-For numeric style:
+For +authoryear:harvard+ style:
+
+[[cite:Lane12]] becomes "(Lane, 2012)"
+
+[[citenp:Lane12]] becomes "Lane (2012)"
+
+[[cite:Lane12,59]] becomes "(Lane, 2012, p.59)"
+
+For +numeric+ style:
 
 [[cite:Lane12;Lane11]] becomes "[1, 2]"
 
@@ -77,13 +85,14 @@ Command-line options:
     Usage: asciidoc-bib filename
         -h, --help                       help message
         -b, --bibfile FILE               location of bib file
-        -s, --style STYLE                style for references
+        -s, --style STYLE                reference style
+        -v, --version                    show version
 
 STYLE can take values:
 
 - _authoryear_ Chicage style author-year, the default.
 - _authoryear_:_chicago_ Chicage style author-year.
-- _authoryear_:_harvard_ Harvard style author-year (in progress).
+- _authoryear_:_harvard_ Harvard style author-year.
 - _numeric_ generic numeric format.
 
 == Limitations

@@ -14,6 +14,8 @@ require 'optparse'
 
 include AsciidocBib
 
+VERSION = 1.3
+
 bibfile = ""
 style = Styles.first
 
@@ -28,6 +30,10 @@ options = OptionParser.new do |opts|
   end
 	opts.on("-s", "--style STYLE", "reference style") do |v|
 		style = v
+	end
+	opts.on("-v", "--version", "show version") do |v|
+		puts "asciidoc-bib version #{VERSION}"
+    exit!
 	end
 end
 
