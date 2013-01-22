@@ -136,7 +136,7 @@ module AsciidocBib
     item = biblio[ref]
 
 		result << "[[#{ref}]]" if links
-    return ref if item.nil? # escape if no entry for reference in biblio
+    return result+ref if item.nil? # escape if no entry for reference in biblio
 
     # add information for author/editor and year
   	if item.author.nil?
@@ -225,7 +225,7 @@ module AsciidocBib
     item = biblio[ref]
 
 		result << "[[#{ref}]]" if links
-    return ref if item.nil? # escape if no entry for reference in biblio
+    return result+ref if item.nil? # escape if no entry for reference in biblio
 
     # add information for author/editor and year
   	if item.author.nil?
@@ -314,7 +314,7 @@ module AsciidocBib
     item = biblio[ref]
 
 		result << "[[#{ref}]]" if links
-    return ref if item.nil? # escape if no entry for reference in biblio
+    return result+ref if item.nil? # escape if no entry for reference in biblio
 
     # add information for author/editor and year
    	if item.author.nil?
@@ -397,8 +397,8 @@ module AsciidocBib
   end
 
 	# retrieve citation text
-	def get_citation(biblio, type="cite", 
-									 pre="", refs=[], pages=[], 
+	def get_citation(biblio, type, 
+									 pre, refs, pages, 
 									 links, style, sorted_cites)
 		case style
     when "authoryear", "authoryear:chicago" then
@@ -428,7 +428,7 @@ module AsciidocBib
       # insert reference information, if found
 			result << "<<#{ref}," if links
 			unless biblio[ref].nil?
-			  result << citation(biblio[ref].author, biblio[ref].year, type, page, links)
+			  result << citation(biblio[ref].author, biblio[ref].year, type, page)
 			else
 				puts "Unknown reference: #{ref}"
 				result << "#{ref}"
