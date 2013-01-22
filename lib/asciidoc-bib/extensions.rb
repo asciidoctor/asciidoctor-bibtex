@@ -130,11 +130,12 @@ module AsciidocBib
 	end
 
   # Based on type of bibitem, format the reference in chicago style
-  def get_reference_authoryear(biblio, ref)
+  def get_reference_authoryear(biblio, ref, links)
 		result = ""
     editor_done = false
     item = biblio[ref]
 
+		result << "[[#{ref}]]" if links
     return ref if item.nil? # escape if no entry for reference in biblio
 
     # add information for author/editor and year
@@ -218,11 +219,12 @@ module AsciidocBib
   end
 
   # Based on type of bibitem, format the reference in harvard style
-  def get_reference_authoryear_harvard(biblio, ref)
+  def get_reference_authoryear_harvard(biblio, ref, links)
 		result = ""
     editor_done = false
     item = biblio[ref]
 
+		result << "[[#{ref}]]" if links
     return ref if item.nil? # escape if no entry for reference in biblio
 
     # add information for author/editor and year
@@ -306,11 +308,12 @@ module AsciidocBib
   end
 
 # Based on type of bibitem, format the reference in numeric style
-  def get_reference_numeric(biblio, ref)
+  def get_reference_numeric(biblio, ref, links)
 		result = ""
     editor_done = false
     item = biblio[ref]
 
+		result << "[[#{ref}]]" if links
     return ref if item.nil? # escape if no entry for reference in biblio
 
     # add information for author/editor and year
@@ -396,18 +399,18 @@ module AsciidocBib
 	# retrieve citation text
 	def get_citation(biblio, type="cite", 
 									 pre="", refs=[], pages=[], 
-									 style, sorted_cites)
-    case style
+									 links, style, sorted_cites)
+		case style
     when "authoryear", "authoryear:chicago" then
-      get_chicago_citation(biblio, type, pre, refs, pages, sorted_cites)
+      get_chicago_citation(biblio, type, pre, refs, pages, links, sorted_cites)
     when "numeric" then
-      get_numeric_citation(biblio, type, pre, refs, pages, sorted_cites)
+      get_numeric_citation(biblio, type, pre, refs, pages, links, sorted_cites)
     when "authoryear:harvard" then
-      get_harvard_citation(biblio, type, pre, refs, pages, sorted_cites)
+      get_harvard_citation(biblio, type, pre, refs, pages, links, sorted_cites)
     end
   end
 
-  def get_chicago_citation(biblio, type, pre, refs, pages, sorted_cites)
+  def get_chicago_citation(biblio, type, pre, refs, pages, links, sorted_cites)
 		result = ""
 
 		result << "(" if type == "cite" 
@@ -423,13 +426,15 @@ module AsciidocBib
         result << "; " 
       end
       # insert reference information, if found
+			result << "<<#{ref}," if links
 			unless biblio[ref].nil?
-			  result << citation(biblio[ref].author, biblio[ref].year, type, page)
+			  result << citation(biblio[ref].author, biblio[ref].year, type, page, links)
 			else
 				puts "Unknown reference: #{ref}"
 				result << "#{ref}"
 				result << " (unknown)"
 			end
+			result << ">>" if links
 		end
 
 		result << ")" if type == "cite"
@@ -437,7 +442,7 @@ module AsciidocBib
     return result
 	end
   
-  def get_harvard_citation(biblio, type, pre, refs, pages, sorted_cites)
+  def get_harvard_citation(biblio, type, pre, refs, pages, links, sorted_cites)
 		result = ""
 
 		result << "(" if type == "cite" 
@@ -454,7 +459,7 @@ module AsciidocBib
       end
       # insert reference information, if found
 			unless biblio[ref].nil?
-			  result << citation_harvard(biblio[ref].author, biblio[ref].year, type, page)
+			  result << citation_harvard(biblio[ref].author, biblio[ref].year, type, page, links)
 			else
 				puts "Unknown reference: #{ref}"
 				result << "#{ref}"
@@ -467,7 +472,7 @@ module AsciidocBib
     return result
 	end
 
-  def get_numeric_citation(biblio, type, pre, refs, pages, sorted_cites)
+  def get_numeric_citation(biblio, type, pre, refs, pages, links, sorted_cites)
 		result = ""
 
 		result << "#{pre} " unless pre.nil? or pre.empty?
@@ -483,6 +488,7 @@ module AsciidocBib
         result << ", "
       end
       # insert reference information, if found
+			result << "<<#{ref}," if links
 			unless biblio[ref].nil?
 			  result << "#{sorted_cites.index(ref)+1}"
 				result << " p.#{page}" unless page.nil? or page.empty?
@@ -490,6 +496,7 @@ module AsciidocBib
 				puts "Unknown reference: #{ref}"
 				result << "#{ref}"
 			end
+			result << ">>" if links
 		end
 
 		result << "]" 

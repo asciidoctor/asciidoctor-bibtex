@@ -60,7 +60,8 @@ module AsciidocBib
 
 	# Read given text to add cites and biblio to a new file
 	# Order is always decided by author surname first
-	def add_citations(filename, cites_used, biblio, style)
+	# Links indicates if internal links to be added
+	def add_citations(filename, cites_used, biblio, links, style)
     files_to_process = [filename]
     files_done = []
 
@@ -97,11 +98,11 @@ module AsciidocBib
 	  	  		sorted_cites.each do |ref|
 							reftext = case style
         	  						when "authoryear", "authoryear:chicago" then
-				              		get_reference_authoryear(biblio, ref)
+				              		get_reference_authoryear(biblio, ref, links)
           							when "numeric" then
-					          			". #{get_reference_numeric(biblio, ref)}"
+					          			". #{get_reference_numeric(biblio, ref, links)}"
           							when "authoryear:harvard" then
-				              		get_reference_authoryear_harvard(biblio, ref)
+				              		get_reference_authoryear_harvard(biblio, ref, links)
           							end
               output.puts reftext.delatex
   				  	output.puts
@@ -114,7 +115,7 @@ module AsciidocBib
 						  line.gsub!(md[0],
 							  				 get_citation(biblio, md[1], md[3], 
 																			cite_refs, cite_pages, 
-																			style, sorted_cites)
+																			links, style, sorted_cites)
 								  			)
   						# look for next citation on line
 	  					md = CITATION_FULL.match(md.post_match)

@@ -85,6 +85,7 @@ Command-line options:
     Usage: asciidoc-bib filename
         -h, --help                       help message
         -b, --bibfile FILE               location of bib file
+				-n, --no-links                   do not add internal links
         -s, --style STYLE                reference style
         -v, --version                    show version
 

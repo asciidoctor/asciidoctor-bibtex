@@ -14,9 +14,10 @@ require 'optparse'
 
 include AsciidocBib
 
-VERSION = 1.3
+VERSION = 1.4
 
 bibfile = ""
+links = true
 style = Styles.first
 
 options = OptionParser.new do |opts|
@@ -28,6 +29,9 @@ options = OptionParser.new do |opts|
   opts.on("-b", "--bibfile FILE", "location of bib file") do |v|
     bibfile = v
   end
+	opts.on("-n", "--no-links", "do not add internal links") do |v|
+		links = false
+	end
 	opts.on("-s", "--style STYLE", "reference style") do |v|
 		style = v
 	end
@@ -71,5 +75,5 @@ biblio = read_bibliography bibfile
 cites_used = read_citations ARGV[0]
 puts "Cites: #{cites_used.join(",")}"
 
-add_citations(ARGV[0], cites_used, biblio, style)
+add_citations(ARGV[0], cites_used, biblio, links, style)
 
