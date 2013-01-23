@@ -458,13 +458,15 @@ module AsciidocBib
         result << "; " 
       end
       # insert reference information, if found
+			result << "<<#{ref}," if links
 			unless biblio[ref].nil?
-			  result << citation_harvard(biblio[ref].author, biblio[ref].year, type, page, links)
+			  result << citation_harvard(biblio[ref].author, biblio[ref].year, type, page)
 			else
 				puts "Unknown reference: #{ref}"
 				result << "#{ref}"
 				result << " (unknown)"
 			end
+			result << ">>" if links
 		end
 
 		result << ")" if type == "cite"
