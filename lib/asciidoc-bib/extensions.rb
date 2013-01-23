@@ -427,13 +427,16 @@ module AsciidocBib
       end
       # insert reference information, if found
 			result << "<<#{ref}," if links
+      cite_text = ""
 			unless biblio[ref].nil?
-			  result << citation(biblio[ref].author, biblio[ref].year, type, page)
+			  cite_text = citation(biblio[ref].author, biblio[ref].year, type, page)
 			else
 				puts "Unknown reference: #{ref}"
-				result << "#{ref}"
-				result << " (unknown)"
+				cite_text = "#{ref}"
+				cite_text << " (unknown)"
 			end
+      cite_text.gsub!(",", "&#44;") if links # replace comma
+      result << cite_text
 			result << ">>" if links
 		end
 
@@ -459,13 +462,16 @@ module AsciidocBib
       end
       # insert reference information, if found
 			result << "<<#{ref}," if links
+      cite_text = ""
 			unless biblio[ref].nil?
-			  result << citation_harvard(biblio[ref].author, biblio[ref].year, type, page)
+			  cite_text = citation_harvard(biblio[ref].author, biblio[ref].year, type, page)
 			else
 				puts "Unknown reference: #{ref}"
-				result << "#{ref}"
-				result << " (unknown)"
+				cite_text = "#{ref}"
+				cite_text << " (unknown)"
 			end
+      cite_text.gsub!(",", "&#44;") if links # replace comma
+      result << cite_text
 			result << ">>" if links
 		end
 
@@ -491,13 +497,16 @@ module AsciidocBib
       end
       # insert reference information, if found
 			result << "<<#{ref}," if links
+      cite_text = ""
 			unless biblio[ref].nil?
-			  result << "#{sorted_cites.index(ref)+1}"
-				result << " p.#{page}" unless page.nil? or page.empty?
+			  cite_text = "#{sorted_cites.index(ref)+1}"
+				cite_text << " p.#{page}" unless page.nil? or page.empty?
 			else
 				puts "Unknown reference: #{ref}"
-				result << "#{ref}"
+				cite_text = "#{ref}"
 			end
+      cite_text.gsub!(",", "&#44;") if links # replace comma
+      result << cite_text
 			result << ">>" if links
 		end
 

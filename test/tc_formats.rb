@@ -61,7 +61,7 @@ class TestReferenceFormat < Test::Unit::TestCase
     # -- with links
     cite = AsciidocBib.get_citation(biblio, "cite", "see", ["jones11", "smith10"], ["11", nil], 
       true, "authoryear", ["jones11", "smith10"])
-    assert_equal("(see <<jones11,Jones 2011, 11>>; <<smith10,Smith 2010>>)", cite)
+    assert_equal("(see <<jones11,Jones 2011&#44; 11>>; <<smith10,Smith 2010>>)", cite)
   end
   # -- with 'citenp' and multiple authors
   def test_4
@@ -193,13 +193,13 @@ class TestReferenceFormat < Test::Unit::TestCase
     cite = AsciidocBib.get_citation(biblio, "cite", "", ["jones11", "smith10"], [nil, "11"], 
       false, "authoryear:harvard", ["jones11", "smith10"])
     assert_equal("(Jones, 2011; Smith, 2010, p.11)", cite)
-    # -- with links
     cite = AsciidocBib.get_citation(biblio, "cite", "see", ["jones11", "smith10"], ["11", nil], 
       false, "authoryear:harvard", ["jones11", "smith10"])
     assert_equal("(see Jones, 2011, p.11; Smith, 2010)", cite)
+    # -- with links
     cite = AsciidocBib.get_citation(biblio, "cite", "see", ["jones11", "smith10"], ["11", nil], 
       true, "authoryear:harvard", ["jones11", "smith10"])
-    assert_equal("(see <<jones11,Jones, 2011, p.11>>; <<smith10,Smith, 2010>>)", cite)
+    assert_equal("(see <<jones11,Jones&#44; 2011&#44; p.11>>; <<smith10,Smith&#44; 2010>>)", cite)
   end
   # -- with 'citenp' and multiple authors
   def test_12
