@@ -102,35 +102,36 @@ module AsciidocBib
     file_ext = File.extname(filename)
     return "#{file_dir}#{File::SEPARATOR}#{file_base}-ref#{file_ext}"
   end
-
-  # Arrange given author string into Chicago format
-  def author_chicago(authors)
+	
+	# arrange author string, flag for order of surname/initials
+	def arrange_authors(authors, surname_first)
 		return [] if authors.nil?
 		authors.split(/\band\b/).collect do |name|
       if name.include?(", ")
   			parts = name.strip.rpartition(", ")
-	  		"#{parts.first}, #{parts.third}"
+				if surname_first
+	  			"#{parts.first}, #{parts.third}"
+				else
+	 				"#{parts.third} #{parts.first}"
+				end
       else
         name
       end
 		end
+	end
+
+  # Arrange given author string into Chicago format
+  def author_chicago(authors)
+		arrange_authors(authors, true)
 	end
 
 	# Arrange given author string into generic numeric format
   def author_numeric(authors)
-		return [] if authors.nil?
-		authors.split(/\band\b/).collect do |name|
-      if name.include?(", ")
-  			parts = name.strip.rpartition(", ")
-	  		"#{parts.third} #{parts.first}"
-      else
-        name
-      end
-		end
+		arrange_authors(authors, false)
 	end
 
-  # Based on type of bibitem, format the reference in chicago style
-  def get_reference_authoryear(biblio, ref, links)
+  # Based on type of bibitem, format the reference in specified format
+	def get_formatted_reference(biblio, ref, links, harvard=false, numeric=false)
 		result = ""
     editor_done = false
     item = biblio[ref]
@@ -141,103 +142,27 @@ module AsciidocBib
     # add information for author/editor and year
   	if item.author.nil?
       unless item.editor.nil?
-        result << "#{author_chicago(item.editor).comma_and_join} (ed.) "
+				author_str = if numeric
+											 author_numeric(item.editor).comma_and_join
+										 else
+											 author_chicago(item.editor).comma_and_join
+										 end
+        result << "#{author_str} (ed.) "
         editor_done = true
       end
     else
-			result << "#{author_chicago(item.author).comma_and_join} "
+				author_str = if numeric
+											 author_numeric(item.author).comma_and_join
+										 else
+											 author_chicago(item.author).comma_and_join
+										 end
+			result << "#{author_str} "
 		end
-		unless item.year.nil?
-			result << "#{item.year}. "
-		end
-	
-    # add information which varies on document type
-    if item.article?
-			unless item.title.nil?
-				result << "\"#{item.title},\" "
-			end 
-			unless item.journal.nil?
-				result << "_#{item.journal}_, "
-			end
-			unless (not item.respond_to?(:volume)) or item.volume.nil?
-				result << "#{item.volume}:"
-			end
-			unless (not item.respond_to?(:pages)) or item.pages.nil?
-				result << "#{item.pages.gsub("--","-")}"
-			end
-			result << "."
-    elsif item.book?
-			unless item.title.nil?
-				result << "_#{item.title}_, "
-			end 
-			unless item.publisher.nil?
-				result << "#{item.publisher}"
-			end
-			result << "."
-    elsif item.collection? or (not item.title.nil? and not item.booktitle.nil?)
-  		unless item.title.nil?
-				result << "\"#{item.title},\" "
-			end 
-			unless item.booktitle.nil?
-				result << "In _#{item.booktitle}_, "
-			end
-			unless item.editor.nil? or editor_done
-				result << "ed. #{author_chicago(item.editor).comma_and_join}, "
-			end
-			unless item.pages.nil?
-				result << "#{item.pages.gsub("--","-")}."
-			end
-			unless item.publisher.nil?
-				result << "#{item.publisher}."
-			end
-    else
-  		unless item.title.nil?
-				result << "\"#{item.title},\" "
-			end
-      school = if item.respond_to?(:school) then item.school else "" end
-      howpublished = if item.respond_to?(:howpublished) then item.howpublished else "" end
-      note = if item.respond_to?(:note) then item.note else "" end
-      unless school.nil? and howpublished.nil? and note.nil?
-        result << "("
-        space = ""
-    		unless school.nil? or school.empty?
-  				result << "#{school}"
-          space = "; "
-			  end 
-  	  	unless howpublished.nil? or howpublished.empty?
-	  			result << "#{space}#{howpublished}"
-          space = "; "
-  			end 
-  		  unless note.nil? or note.empty?
-		  		result << "#{space}#{note}"
-	  		end 
-        result << ")."
-      end
-	  end
-
-  	return result
-  end
-
-  # Based on type of bibitem, format the reference in harvard style
-  def get_reference_authoryear_harvard(biblio, ref, links)
-		result = ""
-    editor_done = false
-    item = biblio[ref]
-
-		result << "[[#{ref}]]" if links
-    return result+ref if item.nil? # escape if no entry for reference in biblio
-
-    # add information for author/editor and year
-  	if item.author.nil?
-      unless item.editor.nil?
-        result << "#{author_chicago(item.editor).comma_and_join} (ed.) "
-        editor_done = true
-      end
-    else
-			result << "#{author_chicago(item.author).comma_and_join} "
-		end
-		unless item.year.nil?
-			result << "(#{item.year}). "
+		unless item.year.nil? or numeric
+			result << "(" if harvard
+			result << "#{item.year}"
+			result << ")" if harvard
+			result << ". "
 		end
 	
     # add information which varies on document type
@@ -250,9 +175,11 @@ module AsciidocBib
 			end
 			unless (not item.respond_to?(:volume)) or item.volume.nil?
 				result << "#{item.volume}"
+				result << ":" unless harvard
 			end
 			unless (not item.respond_to?(:pages)) or item.pages.nil?
-				result << ", #{item.pages.gsub("--","-")}"
+				result << ", " if harvard
+				result << "#{item.pages.gsub("--","-")}"
 			end
 			result << "."
     elsif item.book?
@@ -262,13 +189,22 @@ module AsciidocBib
 			unless item.publisher.nil?
 				result << "#{item.publisher}"
 			end
-			result << "."
+			if numeric
+				result << ", "
+			else
+				result << "."
+			end
     elsif item.collection? or (not item.title.nil? and not item.booktitle.nil?)
   		unless item.title.nil?
 				result << "\"#{item.title},\" "
 			end 
 			unless item.booktitle.nil?
-				result << "In _#{item.booktitle}_, "
+				if numeric
+					result << "in "
+				else
+					result << "In "
+				end
+				result << "_#{item.booktitle}_, "
 			end
 			unless item.editor.nil? or editor_done
 				result << "ed. #{author_chicago(item.editor).comma_and_join}, "
@@ -277,7 +213,12 @@ module AsciidocBib
 				result << "#{item.pages.gsub("--","-")}."
 			end
 			unless item.publisher.nil?
-				result << "#{item.publisher}."
+				result << "#{item.publisher}"
+				if numeric
+					result << ", "
+				else 
+					result << "."
+				end
 			end
     else
   		unless item.title.nil?
@@ -300,101 +241,38 @@ module AsciidocBib
   		  unless note.nil? or note.empty?
 		  		result << "#{space}#{note}"
 	  		end 
-        result << ")."
+        result << ")"
+				if numeric 
+					result << ", "
+				else
+					result << "."
+				end
       end
 	  end
+		if numeric
+			unless item.year.nil?
+				result << "#{item.year}. "
+			end
+		end
 
   	return result
   end
+
+  # Based on type of bibitem, format the reference in authoryear
+	# format, in a chicago style.
+  def get_reference_authoryear(biblio, ref, links)
+		get_formatted_reference(biblio, ref, links, false)
+	end
+
+  # Based on type of bibitem, format the reference in harvard style
+  def get_reference_authoryear_harvard(biblio, ref, links)
+		get_reference_authoryear(biblio, ref, links, true)
+	end
 
 # Based on type of bibitem, format the reference in numeric style
   def get_reference_numeric(biblio, ref, links)
-		result = ""
-    editor_done = false
-    item = biblio[ref]
-
-		result << "[[#{ref}]]" if links
-    return result+ref if item.nil? # escape if no entry for reference in biblio
-
-    # add information for author/editor and year
-   	if item.author.nil?
-      unless item.editor.nil?
-        result << "#{author_numeric(item.editor).comma_and_join} (ed.) "
-        editor_done = true
-      end
-    else
-			result << "#{author_numeric(item.author).comma_and_join} "
-		end
-	
-    # add information which varies on document type
-    if item.article?
-			unless item.title.nil?
-				result << "\"#{item.title},\" "
-			end 
-			unless item.journal.nil?
-				result << "_#{item.journal}_, "
-			end
-			unless (not item.respond_to?(:volume)) or item.volume.nil?
-				result << "#{item.volume}:"
-			end
-			unless (not item.respond_to?(:pages)) or item.pages.nil?
-				result << "#{item.pages.gsub("--","-")}"
-			end
-			result << ", "
-    elsif item.book?
-			unless item.title.nil?
-				result << "_#{item.title}_, "
-			end 
-			unless item.publisher.nil?
-				result << "#{item.publisher}"
-			end
-			result << ", "
-    elsif item.collection? or (not item.title.nil? and not item.booktitle.nil?)
-  		unless item.title.nil?
-				result << "\"#{item.title},\" "
-			end 
-			unless item.booktitle.nil?
-				result << "in _#{item.booktitle}_, "
-			end
-			unless item.editor.nil? or editor_done
-				result << "ed. #{author_numeric(item.editor).comma_and_join}, "
-			end
-			unless item.pages.nil?
-				result << "#{item.pages.gsub("--","-")}."
-			end
-			unless item.publisher.nil?
-				result << "#{item.publisher}, "
-			end
-    else
-  		unless item.title.nil?
-				result << "\"#{item.title},\" "
-			end
-      school = if item.respond_to?(:school) then item.school else "" end
-      howpublished = if item.respond_to?(:howpublished) then item.howpublished else "" end
-      note = if item.respond_to?(:note) then item.note else "" end
-      unless school.nil? and howpublished.nil? and note.nil?
-        result << "("
-        space = ""
-    		unless school.nil? or school.empty?
-  				result << "#{school}"
-          space = "; "
-			  end 
-  	  	unless howpublished.nil? or howpublished.empty?
-	  			result << "#{space}#{howpublished}"
-          space = "; "
-  			end 
-  		  unless note.nil? or note.empty?
-		  		result << "#{space}#{note}"
-	  		end 
-        result << "), "
-      end
-	  end
-		unless item.year.nil?
-			result << "#{item.year}. "
-		end
-
-  	return result
-  end
+		get_formatted_reference(biblio, ref, links, false, false)
+	end
 
 	# retrieve citation text
 	def get_citation(biblio, type, 
