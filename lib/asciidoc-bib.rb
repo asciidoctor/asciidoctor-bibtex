@@ -9,7 +9,32 @@ require 'bibtex'
 module AsciidocBib
 
 	# Valid reference styles, first item is default
-	Styles = ["authoryear", "numeric", "authoryear:chicago", "authoryear:harvard"]
+	Styles = ["authoryear", "numeric", "authoryear:chicago", "authoryear:harvard",
+	  "apa",
+	  "bibtex",
+	  "chicago-annotated-bibliography",
+	  "chicago-author-date-basque",
+	  "chicago-author-date-de",
+	  "chicago-author-date",
+	  "chicago-dated-note-biblio-no-ibid",
+	  "chicago-fullnote-bibliography-bb",
+	  "chicago-fullnote-bibliography-delimiter-fixes",
+	  "chicago-fullnote-bibliography-no-ibid-delimiter-fixes",
+	  "chicago-fullnote-bibliography-no-ibid",
+	  "chicago-fullnote-bibliography",
+	  "chicago-library-list",
+	  "chicago-note-biblio-no-ibid",
+	  "chicago-note-bibliography",
+	  "chicago-quick-copy",
+	  "ieee",
+	  "mla-notes",
+	  "mla-underline",
+	  "mla-url",
+	  "mla",
+	  "vancouver-brackets",
+	  "vancouver-superscript-bracket-only-year",
+	  "vancouver-superscript",
+	  "vancouver"]
 
   # Locate a bibliography file to read in given dir
   def find_bibliography dir
@@ -103,6 +128,8 @@ module AsciidocBib
 					          			". #{get_reference_numeric(biblio, ref, links)}"
           							when "authoryear:harvard" then
 				              		get_reference_authoryear_harvard(biblio, ref, links)
+                        else
+				              	  get_reference_citeproc(biblio, ref, links, style)
           							end
               output.puts reftext.delatex
   				  	output.puts
