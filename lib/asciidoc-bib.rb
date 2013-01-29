@@ -9,7 +9,11 @@ require 'bibtex'
 module AsciidocBib
 
 	# Valid reference styles, first item is default
-	Styles = ["authoryear", "numeric", "authoryear:chicago", "authoryear:harvard",
+	Styles = [
+    "authoryear", 
+    "numeric", 
+    "authoryear:chicago", 
+    "authoryear:harvard",
 	  "apa",
 	  "bibtex",
 	  "chicago-annotated-bibliography",
@@ -34,7 +38,13 @@ module AsciidocBib
 	  "vancouver-brackets",
 	  "vancouver-superscript-bracket-only-year",
 	  "vancouver-superscript",
-	  "vancouver"]
+	  "vancouver"
+  ]
+
+  # Test here for any numeric styles for citeproc
+  def is_numeric? style
+    style == "vancouver"
+  end
 
   # Locate a bibliography file to read in given dir
   def find_bibliography dir

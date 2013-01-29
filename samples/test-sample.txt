@@ -1,0 +1,5 @@
+= Test Document =
+
+Try [cite:ACTR:Anderson98] [cite:Anderson04]
+
+[bibliography]

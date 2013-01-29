@@ -71,7 +71,7 @@ module AsciidocBib
 	# matches a single ref with optional pages
 	CITATION = /(\w+)(,([\w\.\- ]+))?/
 	# matches complete citation with multiple references
-	CITATION_FULL = /\[(cite|citenp):(([\w- ]+):)?(#{CITATION}(;#{CITATION})*)\]/
+	CITATION_FULL = /\[(cite|citenp):(([\w\- ]+):)?(#{CITATION}(;#{CITATION})*)\]/
 
 	# -- utility functions
 	
@@ -145,6 +145,8 @@ module AsciidocBib
 
   def get_reference_citeproc(biblio, ref, links, style)
     result = ""
+    result << ". " if is_numeric?(style)
+
     item = biblio[ref]
     
     result << "[[#{ref}]]" if links
@@ -297,7 +299,7 @@ module AsciidocBib
 
 # Based on type of bibitem, format the reference in numeric style
   def get_reference_numeric(biblio, ref, links)
-		get_formatted_reference(biblio, ref, links, false, false)
+		get_formatted_reference(biblio, ref, links, false, true)
 	end
 
 	# retrieve citation text
