@@ -58,7 +58,7 @@ module AsciidocBib
 	# matches a single ref with optional pages
 	CITATION = /(\w+)(,([\w\.\- ]+))?/
 	# matches complete citation with multiple references
-	CITATION_FULL = /\[(cite|citenp):(([\w ]+):)?(#{CITATION}(;#{CITATION})*)\]/
+	CITATION_FULL = /\[(cite|citenp):(([\w- ]+):)?(#{CITATION}(;#{CITATION})*)\]/
 
 	# -- utility functions
 	
