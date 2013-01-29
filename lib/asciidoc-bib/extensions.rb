@@ -5,6 +5,8 @@
 
 module AsciidocBibArrayExtensions
 
+require 'citeproc'
+
 # Retrieve the third item of an array
   # Note: no checks for validity
 	def third
@@ -48,9 +50,20 @@ module StringDelatex
   end
 end
 
-# monkey patch the extension method into String
+# Converts html output produced by citeproc to asciidoc markup
+module StringHtmlToAsciiDoc
+  def html_to_asciidoc
+    r = self.gsub(/<\/?i>/, '_')
+    r = r.gsub(/<\/?b>/, '*')
+    r = r.gsub(/<\/?span.*?>/, '')
+    r
+  end
+end
+
+# monkey patch the extension methods into String
 class String
   include StringDelatex
+  include StringHtmlToAsciiDoc
 end
 
 module AsciidocBib
@@ -129,6 +142,19 @@ module AsciidocBib
   def author_numeric(authors)
 		arrange_authors(authors, false)
 	end
+
+  def get_reference_citeproc(biblio, ref, links, style)
+    result = ""
+    item = biblio[ref]
+    
+    result << "[[#{ref}]]" if links
+    return result+ref if item.nil?
+    
+    cptext = CiteProc.process item.to_citeproc, :style => style, :format => :html
+    result << cptext unless cptext.nil?
+    
+    result.html_to_asciidoc
+  end
 
   # Based on type of bibitem, format the reference in specified format
 	def get_formatted_reference(biblio, ref, links, harvard=false, numeric=false)
@@ -285,6 +311,8 @@ module AsciidocBib
       get_numeric_citation(biblio, type, pre, refs, pages, links, sorted_cites)
     when "authoryear:harvard" then
       get_harvard_citation(biblio, type, pre, refs, pages, links, sorted_cites)
+    else
+      get_citeproc_citation(biblio, type, pre, refs, pages, links, sorted_cites, style)
     end
   end
 
@@ -392,6 +420,67 @@ module AsciidocBib
 
     return result
 	end
+
+  def get_citeproc_citation(biblio, type, pre, refs, pages, links, sorted_cites, style)
+    result = ""
+    
+    add_parens = 1
+
+    (refs.zip(pages)).each_with_index do |ref_page_pair, index|
+      ref = ref_page_pair[0]
+      page = ref_page_pair[1]
+      page.gsub!("--","-") unless page.nil?
+      
+      # before all items apart from the first, insert appropriate separator
+      unless index.zero?
+        result << ", "
+      end
+      
+      # insert reference information, if found
+      result << "<<#{ref}," if links
+      
+      unless biblio[ref].nil?
+        item = biblio[ref].clone
+        item['citation-number'] = sorted_cites.index(ref) + 1
+        cite_text = CiteProc.process item.to_citeproc, :style => style, :format => :html, :mode => 'citation'
+        cite_text = cite_text[0]
+      
+        fc = cite_text[0,1]
+        lc = cite_text[-1,1]
+        if fc == '(' and lc == ')'
+          cite_text = cite_text[1..-2]
+        elsif fc == '[' and lc == ']'
+          add_parens = 2
+          cite_text = cite_text[1..-2]
+        end
+      
+        unless page.nil? or page.empty?
+          if page.include? '-'
+            pp = "pp"
+          else
+            pp = "p"
+          end
+          cite_text << ", #{pp}. #{page}"
+        end
+      else
+        puts "Unknown reference: #{ref}"
+        cite_text = "#{ref}"
+      end
+      
+      cite_text.gsub!(",", "&#44;") if links # replace comma
+      result << cite_text.html_to_asciidoc
+      result << ">>" if links
+    end
+    
+    if add_parens == 1
+      result = "(#{result})"
+    else
+      result = "[#{result}]"
+    end
+    
+    result = "#{pre} #{result}" unless pre.nil? or pre.empty?
+    result
+  end
 
   # return an array of the author surnames extracted from author_string
   def author_surnames(author_string)

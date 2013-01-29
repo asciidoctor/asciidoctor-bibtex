@@ -91,10 +91,35 @@ Command-line options:
 
 STYLE can take values:
 
-- _authoryear_ Chicage style author-year, the default.
-- _authoryear_:_chicago_ Chicage style author-year.
-- _authoryear_:_harvard_ Harvard style author-year.
-- _numeric_ generic numeric format.
+- authoryear _(default)_
+- authoryear
+- authoryear
+- numeric
+- apa
+- bibtex 
+- chicago-annotated-bibliography 
+- chicago-author-date-basque 
+- chicago-author-date-de 
+- chicago-author-date 
+- chicago-dated-note-biblio-no-ibid 
+- chicago-fullnote-bibliography-bb 
+- chicago-fullnote-bibliography-delimiter-fixes 
+- chicago-fullnote-bibliography-no-ibid-delimiter-fixes 
+- chicago-fullnote-bibliography-no-ibid 
+- chicago-fullnote-bibliography 
+- chicago-library-list 
+- chicago-note-biblio-no-ibid 
+- chicago-note-bibliography 
+- chicago-quick-copy 
+- ieee 
+- mla-notes 
+- mla-underline 
+- mla-url 
+- mla 
+- vancouver-brackets 
+- vancouver-superscript-bracket-only-year 
+- vancouver-superscript 
+- vancouver
 
 == Limitations
 
