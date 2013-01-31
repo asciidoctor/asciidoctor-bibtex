@@ -1,5 +1,5 @@
 = Test Document =
 
-Try [cite:ACTR:Anderson98] [cite:Anderson04]
+Try [cite:ACTR:Anderson98,32-98] [cite:Anderson04,32]
 
 [bibliography]
