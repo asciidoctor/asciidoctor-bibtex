@@ -176,7 +176,9 @@ module AsciidocBib
                      else
                        author_chicago(item.editor).comma_and_join
                      end
-        result << "#{author_str} (ed.) "
+        result << "#{author_str} (ed.)"
+        result << "," if numeric
+        result << " "
         editor_done = true
       end
     else
@@ -185,7 +187,9 @@ module AsciidocBib
                    else
                      author_chicago(item.author).comma_and_join
                    end
-      result << "#{author_str} "
+      result << "#{author_str}"
+      result << "," if numeric
+      result << " "
     end
     unless item.year.nil? or numeric
       result << "(" if harvard
@@ -280,7 +284,7 @@ module AsciidocBib
     end
     if numeric
       unless item.year.nil?
-        result << "#{item.year}. "
+        result << "#{item.year}."
       end
     end
 

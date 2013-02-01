@@ -95,6 +95,9 @@ class TestReferenceFormat < Test::Unit::TestCase
     cite = AsciidocBib.get_citation(biblio, "cite", "see", ["smith10"], ["11"], 
       false, "numeric", ["smith10"])
     assert_equal("see [1 p.11]", cite)
+    cite = AsciidocBib.get_citation(biblio, "cite", "see", ["smith10"], ["11-13"], 
+      false, "numeric", ["smith10"])
+    assert_equal("see [1 pp.11-13]", cite)
   end
   # -- with 'citenp'
   def test_6
@@ -164,6 +167,9 @@ class TestReferenceFormat < Test::Unit::TestCase
     cite = AsciidocBib.get_citation(biblio, "cite", "see", ["smith10"], ["11"], 
       false, "authoryear:harvard", ["smith10"])
     assert_equal("(see Smith, 2010, p.11)", cite)
+    cite = AsciidocBib.get_citation(biblio, "cite", "see", ["smith10"], ["11-13"], 
+      false, "authoryear:harvard", ["smith10"])
+    assert_equal("(see Smith, 2010, pp.11-13)", cite)
   end
   # -- with 'citenp'
   def test_10
@@ -216,6 +222,13 @@ class TestReferenceFormat < Test::Unit::TestCase
     cite = AsciidocBib.get_citation(biblio, "citenp", "see", ["jones11", "smith10"], ["11", nil], 
       false, "authoryear:harvard", ["jones11", "smith10"])
     assert_equal("see Jones (2011, p.11); Smith (2010)", cite)
+  end
+  # -- with no author but editor in biblio entry
+  def test_13
+    biblio = BibTeX.open("test.bib")
+    cite = AsciidocBib.get_citation(biblio, "cite", "", ["brown09"], [nil],
+                                    false, "authoryear", ["brown09"])
+    assert_equal("(Brown 2009)", cite)
   end
 end
 
