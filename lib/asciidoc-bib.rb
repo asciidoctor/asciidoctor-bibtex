@@ -8,12 +8,14 @@ require 'bibtex'
 
 module AsciidocBib
 
-	# Valid reference styles, first item is default
-	Styles = [
+	# Valid reference styles, first item of Styles is default
+	BuiltinStyles = [
     "authoryear", 
     "numeric", 
     "authoryear:chicago", 
-    "authoryear:harvard",
+    "authoryear:harvard"
+  ]
+  CiteProcStyles = [
 	  "apa",
 	  "bibtex",
 	  "chicago-annotated-bibliography",
@@ -40,6 +42,7 @@ module AsciidocBib
 	  "vancouver-superscript",
 	  "vancouver"
   ]
+  Styles = BuiltinStyles + CiteProcStyles
 
   # Test here for any numeric styles for citeproc
   def is_numeric? style
@@ -131,13 +134,8 @@ module AsciidocBib
             output.puts line.delatex
   	  		elsif line.strip == "[bibliography]"
 	  	  		sorted_cites.each do |ref|
-							reftext = case style
-        	  						when "authoryear", "authoryear:chicago" then
-				              		get_reference_authoryear(biblio, ref, links)
-          							when "numeric" then
-					          			". #{get_reference_numeric(biblio, ref, links)}"
-          							when "authoryear:harvard" then
-				              		get_reference_authoryear_harvard(biblio, ref, links)
+							reftext = if BuiltinStyles.include?(style)
+                          get_reference(biblio, ref, links, style)
                         else
 				              	  get_reference_citeproc(biblio, ref, links, style)
           							end

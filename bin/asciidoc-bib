@@ -23,7 +23,17 @@ style = Styles.first
 options = OptionParser.new do |opts|
   opts.banner = "Usage: asciidoc-bib filename"
   opts.on("-h", "--help", "help message") do |v|
+    puts "asciidoc-bib #{VERSION}"
+    puts
     puts options
+    puts
+    puts "Supported styles:"
+    puts "-- builtin"
+    print "   "
+    puts BuiltinStyles.join("\n   ")
+    puts "-- citeproc"
+    print "   "
+    puts CiteProcStyles.join("\n   ")
     exit!
   end
   opts.on("-b", "--bibfile FILE", "location of bib file") do |v|

@@ -160,10 +160,12 @@ module AsciidocBib
   end
 
   # Based on type of bibitem, format the reference in specified format
-  def get_formatted_reference(biblio, ref, links, harvard=false, numeric=false)
+  def get_reference(biblio, ref, links, style)
     result = ""
     editor_done = false
     item = biblio[ref]
+
+    result << ". " if style == "numeric"
 
     result << "[[#{ref}]]" if links
     return result+ref if item.nil? # escape if no entry for reference in biblio
@@ -171,30 +173,30 @@ module AsciidocBib
     # add information for author/editor and year
     if item.author.nil?
       unless item.editor.nil?
-        author_str = if numeric
+        author_str = if style == "numeric"
                        author_numeric(item.editor).comma_and_join
                      else
                        author_chicago(item.editor).comma_and_join
                      end
         result << "#{author_str} (ed.)"
-        result << "," if numeric
+        result << "," if style == "numeric"
         result << " "
         editor_done = true
       end
     else
-      author_str = if numeric
+      author_str = if style == "numeric"
                      author_numeric(item.author).comma_and_join
                    else
                      author_chicago(item.author).comma_and_join
                    end
       result << "#{author_str}"
-      result << "," if numeric
+      result << "," if style == "numeric"
       result << " "
     end
-    unless item.year.nil? or numeric
-      result << "(" if harvard
+    unless item.year.nil? or style == "numeric"
+      result << "(" if style == "authoryear:harvard"
       result << "#{item.year}"
-      result << ")" if harvard
+      result << ")" if style == "authoryear:harvard"
       result << ". "
     end
 
@@ -208,10 +210,10 @@ module AsciidocBib
       end
       unless (not item.respond_to?(:volume)) or item.volume.nil?
         result << "#{item.volume}"
-        result << ":" unless harvard
+        result << ":" unless style == "authoryear:harvard"
       end
       unless (not item.respond_to?(:pages)) or item.pages.nil?
-        result << ", " if harvard
+        result << ", " if style == "authoryear:harvard"
         result << "#{item.pages.gsub("--","-")}"
       end
       result << "."
@@ -222,7 +224,7 @@ module AsciidocBib
       unless item.publisher.nil?
         result << "#{item.publisher}"
       end
-      if numeric
+      if style == "numeric"
         result << ", "
       else
         result << "."
@@ -232,7 +234,7 @@ module AsciidocBib
         result << "\"#{item.title},\" "
       end 
       unless item.booktitle.nil?
-        if numeric
+        if style == "numeric"
           result << "in "
         else
           result << "In "
@@ -247,7 +249,7 @@ module AsciidocBib
       end
       unless item.publisher.nil?
         result << "#{item.publisher}"
-        if numeric
+        if style == "numeric"
           result << ", "
         else 
           result << "."
@@ -275,36 +277,20 @@ module AsciidocBib
           result << "#{space}#{note}"
         end 
         result << ")"
-        if numeric 
+        if style == "numeric"
           result << ", "
         else
           result << "."
         end
       end
     end
-    if numeric
+    if style == "numeric"
       unless item.year.nil?
         result << "#{item.year}."
       end
     end
 
     return result
-  end
-
-  # Based on type of bibitem, format the reference in authoryear
-  # format, in a chicago style.
-  def get_reference_authoryear(biblio, ref, links)
-    get_formatted_reference(biblio, ref, links, false)
-  end
-
-  # Based on type of bibitem, format the reference in harvard style
-  def get_reference_authoryear_harvard(biblio, ref, links)
-    get_formatted_reference(biblio, ref, links, true)
-  end
-
-  # Based on type of bibitem, format the reference in numeric style
-  def get_reference_numeric(biblio, ref, links)
-    get_formatted_reference(biblio, ref, links, false, true)
   end
 
   # retrieve citation text
