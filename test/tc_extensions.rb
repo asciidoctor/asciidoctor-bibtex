@@ -48,4 +48,10 @@ class TestStringExtension < Test::Unit::TestCase
   def test_1
     assert_equal("two names", "{two names}".delatex)
   end
+  
+  def test_2
+    e1 = ["00c9".to_i(16)].pack("U*")
+    e2 = ["00e9".to_i(16)].pack("U*")
+    assert_equal("Champs-#{e1}lys#{e2}e", 'Champs-\\\'{E}lys\\\'{e}e'.delatex)
+  end
 end
