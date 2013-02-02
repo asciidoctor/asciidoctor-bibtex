@@ -173,23 +173,13 @@ module AsciidocBib
     # add information for author/editor and year
     if item.author.nil?
       unless item.editor.nil?
-        author_str = if style == "numeric"
-                       author_numeric(item.editor).comma_and_join
-                     else
-                       author_chicago(item.editor).comma_and_join
-                     end
-        result << "#{author_str} (ed.)"
+        result << "#{with_author(item.editor, style)} (ed.)"
         result << "," if style == "numeric"
         result << " "
         editor_done = true
       end
     else
-      author_str = if style == "numeric"
-                     author_numeric(item.author).comma_and_join
-                   else
-                     author_chicago(item.author).comma_and_join
-                   end
-      result << "#{author_str}"
+      result << "#{with_author(item.author, style)}"
       result << "," if style == "numeric"
       result << " "
     end
@@ -289,6 +279,29 @@ module AsciidocBib
     end
 
     return result
+  end
+
+  # Retrieve string for given authors, using style
+  def with_author(authors, style)
+    case style
+    when "numeric" then
+      author_numeric(authors).comma_and_join
+    else
+      author_chicago(authors).comma_and_join
+    end
+  end
+
+  def with_pp pages
+    if pages.nil? or pages.empty?
+      ""
+    else
+      pages.gsub!("--", "-")
+      if pages.include? '-'
+        " pp.#{pages}"
+      else
+        " p.#{pages}"
+      end
+    end
   end
 
   # Retrieve string for publisher with optional address
@@ -412,7 +425,6 @@ module AsciidocBib
     (refs.zip(pages)).each_with_index do |ref_page_pair, index|
       ref = ref_page_pair[0]
       page = ref_page_pair[1]
-      page.gsub!("--","-") unless page.nil?
 
       # before all items apart from the first, insert appropriate separator
       unless index.zero?
@@ -423,14 +435,7 @@ module AsciidocBib
       cite_text = ""
       unless biblio[ref].nil?
         cite_text = "#{sorted_cites.index(ref)+1}"
-        unless page.nil? or page.empty?
-          if page.include? '-'
-            pp = "pp"
-          else
-            pp = "p"
-          end
-          cite_text << " #{pp}.#{page}" 
-        end
+        cite_text << with_pp(page) 
       else
         puts "Unknown reference: #{ref}"
         cite_text = "#{ref}"
