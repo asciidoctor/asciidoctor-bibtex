@@ -131,17 +131,12 @@ the Open Works License: http://owl.apotheon.org
 There is a sample document and bibliography in the folder 'samples'; build
 "sample-1.txt", which includes "sample-2.txt".
 
-It is advisable to preview the -ref files before further processing, to remove
-any Latex commands, and check the formatting; in particular, all curly braces
-are removed when outputting the reference list, to avoid skipping of lines by
-asciidoc.
-
 If you make a Bibliography/Reference heading, a2x interprets this specially,
 and will fail to make a pdf. To prevent a2x treating a heading specially, place
 a section template name, [sect1], before it. 
 
 == Contributors
 
-[Michel Krämer](http://github.com/michel-kraemer) provided the code linking to
+{Michel Krämer}[http://github.com/michel-kraemer] provided the code linking to
 citeproc.
 
