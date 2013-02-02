@@ -27,13 +27,9 @@ options = OptionParser.new do |opts|
     puts
     puts options
     puts
-    puts "Supported styles:"
-    puts "-- builtin"
+    puts "Supported styles (first is default):"
     print "   "
-    puts BuiltinStyles.join("\n   ")
-    puts "-- citeproc"
-    print "   "
-    puts CiteProcStyles.join("\n   ")
+    puts Styles.join("\n   ")
     exit!
   end
   opts.on("-b", "--bibfile FILE", "location of bib file") do |v|

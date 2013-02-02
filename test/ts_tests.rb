@@ -4,6 +4,5 @@
 # Released under Open Works License, 0.9.2
 
 require 'tc_citations'
-require 'tc_extensions'
 require 'tc_formats'
 require 'tc_references'

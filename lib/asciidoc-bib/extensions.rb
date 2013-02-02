@@ -6,7 +6,6 @@
 module AsciidocBibArrayExtensions
 
   require 'citeproc'
-  require 'latex/decode'
 
   # Retrieve the third item of an array
   # Note: no checks for validity
@@ -39,19 +38,6 @@ class Array
   include AsciidocBibArrayExtensions
 end
 
-# Provide a method on String to remove latex formatting, 
-# so asciidoc/a2x do not fail on simple formatting issues.
-# 
-# Removes:
-# - {
-# - }
-# - \. (escaped Latex characters)
-module StringDelatex
-  def delatex
-    LaTeX.decode self
-  end
-end
-
 # Converts html output produced by citeproc to asciidoc markup
 module StringHtmlToAsciiDoc
   def html_to_asciidoc
@@ -64,7 +50,6 @@ end
 
 # monkey patch the extension methods into String
 class String
-  include StringDelatex
   include StringHtmlToAsciiDoc
 end
 
@@ -140,16 +125,17 @@ module AsciidocBib
     arrange_authors(authors, true)
   end
 
-  # Arrange given author string into generic numeric format
-  def author_numeric(authors)
-    arrange_authors(authors, false)
-  end
-
-  def get_reference_citeproc(biblio, ref, links, style)
+  # Retrieve text for reference in given style
+  # - biblio is current bibliography
+  # - ref is reference for item to give reference for
+  # - links is true/false for adding a link reference
+  # - style holds the current reference style
+  def get_reference(biblio, ref, links, style)
     result = ""
     result << ". " if is_numeric?(style)
 
     item = biblio[ref]
+    item = item.convert_latex unless item.nil?
 
     result << "[[#{ref}]]" if links
     return result+ref if item.nil?
@@ -160,298 +146,16 @@ module AsciidocBib
     result.html_to_asciidoc
   end
 
-  # Based on type of bibitem, format the reference in specified format
-  def get_reference(biblio, ref, links, style)
-    result = ""
-    editor_done = false
-    item = biblio[ref]
-
-    result << ". " if style == "numeric"
-
-    result << "[[#{ref}]]" if links
-    return result+ref if item.nil? # escape if no entry for reference in biblio
-
-    # add information for author/editor and year
-    if item.author.nil?
-      unless item.editor.nil?
-        result << "#{with_author(item.editor, style)} (ed.)"
-        result << "," if style == "numeric"
-        result << " "
-        editor_done = true
-      end
-    else
-      result << "#{with_author(item.author, style)}"
-      result << "," if style == "numeric"
-      result << " "
-    end
-    unless item.year.nil? or style == "numeric"
-      result << "(" if style == "authoryear:harvard"
-      result << "#{item.year}"
-      result << ")" if style == "authoryear:harvard"
-      result << ". "
-    end
-
-    # add information which varies on document type
-    if item.article?
-      unless item.title.nil?
-        result << "\"#{item.title},\" "
-      end 
-      unless item.journal.nil?
-        result << "_#{item.journal}_, "
-      end
-      unless (not item.respond_to?(:volume)) or item.volume.nil?
-        result << "#{item.volume}"
-        result << ":" unless style == "authoryear:harvard"
-      end
-      unless (not item.respond_to?(:pages)) or item.pages.nil?
-        result << ", " if style == "authoryear:harvard"
-        result << "#{item.pages.gsub("--","-")}"
-      end
-      result << "."
-    elsif item.book?
-      unless item.title.nil?
-        result << "_#{item.title}_, "
-      end 
-      result << with_publisher(item)
-      if style == "numeric"
-        result << ", "
-      else
-        result << "."
-      end
-    elsif item.collection? or (not item.title.nil? and not item.booktitle.nil?)
-      unless item.title.nil?
-        result << "\"#{item.title},\" "
-      end 
-      unless item.booktitle.nil?
-        if style == "numeric"
-          result << "in "
-        else
-          result << "In "
-        end
-        result << "_#{item.booktitle}_, "
-      end
-      unless item.editor.nil? or editor_done
-        result << "ed. #{author_chicago(item.editor).comma_and_join}, "
-      end
-      unless item.pages.nil?
-        result << "#{item.pages.gsub("--","-")}."
-      end
-      result << with_publisher(item)
-      unless item.publisher.nil? # if we added something
-        if style == "numeric"
-          result << ", "
-        else 
-          result << "."
-        end
-      end
-    else
-      unless item.title.nil?
-        result << "\"#{item.title},\" "
-      end
-      school = if item.respond_to?(:school) then item.school else "" end
-      howpublished = if item.respond_to?(:howpublished) then item.howpublished else "" end
-      note = if item.respond_to?(:note) then item.note else "" end
-      unless school.nil? and howpublished.nil? and note.nil?
-        result << "("
-        space = ""
-        unless school.nil? or school.empty?
-          result << "#{school}"
-          space = "; "
-        end 
-        unless howpublished.nil? or howpublished.empty?
-          result << "#{space}#{howpublished}"
-          space = "; "
-        end 
-        unless note.nil? or note.empty?
-          result << "#{space}#{note}"
-        end 
-        result << ")"
-        if style == "numeric"
-          result << ", "
-        else
-          result << "."
-        end
-      end
-    end
-    if style == "numeric"
-      unless item.year.nil?
-        result << "#{item.year}."
-      end
-    end
-
-    return result
-  end
-
-  # Retrieve string for given authors, using style
-  def with_author(authors, style)
-    case style
-    when "numeric" then
-      author_numeric(authors).comma_and_join
-    else
-      author_chicago(authors).comma_and_join
-    end
-  end
-
-  def with_pp pages
-    if pages.nil? or pages.empty?
-      ""
-    else
-      pages.gsub!("--", "-")
-      if pages.include? '-'
-        " pp.#{pages}"
-      else
-        " p.#{pages}"
-      end
-    end
-  end
-
-  # Retrieve string for publisher with optional address
-  def with_publisher item
-    result = ""
-    if item.respond_to? :address
-      unless item.address.nil?
-        result << "#{item.address}"
-        result << ":" unless item.publisher.nil?
-        result << " "
-      end
-    end
-    unless item.publisher.nil?
-      result << "#{item.publisher}"
-    end
-    return result
-  end
-
   # retrieve citation text
-  def get_citation(biblio, type, 
-                   pre, refs, pages, 
-                   links, style, sorted_cites)
-    case style
-    when "authoryear", "authoryear:chicago" then
-      get_chicago_citation(biblio, type, pre, refs, pages, links, sorted_cites)
-    when "numeric" then
-      get_numeric_citation(biblio, type, pre, refs, pages, links, sorted_cites)
-    when "authoryear:harvard" then
-      get_harvard_citation(biblio, type, pre, refs, pages, links, sorted_cites)
-    else
-      get_citeproc_citation(biblio, type, pre, refs, pages, links, sorted_cites, style)
-    end
-  end
-
-  def get_chicago_citation(biblio, type, pre, refs, pages, links, sorted_cites)
-    result = ""
-
-    result << "(" if type == "cite" 
-    result << "#{pre} " unless pre.nil? or pre.empty?
-
-    (refs.zip(pages)).each_with_index do |ref_page_pair, index|
-      ref = ref_page_pair[0]
-      page = ref_page_pair[1]
-      page.gsub!("--","-") unless page.nil?
-
-      # before all items apart from the first, insert appropriate separator
-      unless index.zero?
-        result << "; " 
-      end
-      # insert reference information, if found
-      result << "<<#{ref}," if links
-      cite_text = ""
-      unless biblio[ref].nil?
-        author = if biblio[ref].author.nil?
-                   biblio[ref].editor
-                 else
-                   biblio[ref].author
-                 end
-        cite_text = citation(author, biblio[ref].year, type, page)
-      else
-        puts "Unknown reference: #{ref}"
-        cite_text = "#{ref}"
-        cite_text << " (unknown)"
-      end
-      cite_text.gsub!(",", "&#44;") if links # replace comma
-        result << cite_text
-      result << ">>" if links
-    end
-
-    result << ")" if type == "cite"
-
-    return result.delatex
-  end
-
-  def get_harvard_citation(biblio, type, pre, refs, pages, links, sorted_cites)
-    result = ""
-
-    result << "(" if type == "cite" 
-    result << "#{pre} " unless pre.nil? or pre.empty?
-
-    (refs.zip(pages)).each_with_index do |ref_page_pair, index|
-      ref = ref_page_pair[0]
-      page = ref_page_pair[1]
-      page.gsub!("--","-") unless page.nil?
-
-      # before all items apart from the first, insert appropriate separator
-      unless index.zero?
-        result << "; " 
-      end
-      # insert reference information, if found
-      result << "<<#{ref}," if links
-      cite_text = ""
-      unless biblio[ref].nil?
-        author = if biblio[ref].author.nil?
-                   biblio[ref].editor
-                 else
-                   biblio[ref].author
-                 end
-        cite_text = citation_harvard(author, biblio[ref].year, type, page)
-      else
-        puts "Unknown reference: #{ref}"
-        cite_text = "#{ref}"
-        cite_text << " (unknown)"
-      end
-      cite_text.gsub!(",", "&#44;") if links # replace comma
-        result << cite_text
-      result << ">>" if links
-    end
-
-    result << ")" if type == "cite"
-
-    return result.delatex
-  end
-
-  def get_numeric_citation(biblio, type, pre, refs, pages, links, sorted_cites)
-    result = ""
-
-    result << "#{pre} " unless pre.nil? or pre.empty?
-    result << "[" 
-
-    (refs.zip(pages)).each_with_index do |ref_page_pair, index|
-      ref = ref_page_pair[0]
-      page = ref_page_pair[1]
-
-      # before all items apart from the first, insert appropriate separator
-      unless index.zero?
-        result << ", "
-      end
-      # insert reference information, if found
-      result << "<<#{ref}," if links
-      cite_text = ""
-      unless biblio[ref].nil?
-        cite_text = "#{sorted_cites.index(ref)+1}"
-        cite_text << with_pp(page) 
-      else
-        puts "Unknown reference: #{ref}"
-        cite_text = "#{ref}"
-      end
-      cite_text.gsub!(",", "&#44;") if links # replace comma
-        result << cite_text
-      result << ">>" if links
-    end
-
-    result << "]" 
-
-    return result.delatex
-  end
-
-  def get_citeproc_citation(biblio, type, pre, refs, pages, links, sorted_cites, style)
+  # - biblio is current bibliography
+  # - type holds type of citation: cite, citenp
+  # - pre is text to place before the citation
+  # - refs is list of references for items to cite
+  # - pages is list of page numbers for each ref, nil if no page given
+  # - links is true/false for placing a link to reference
+  # - sorted_cites is complete list of citations in document, sorted
+  # - style holds the current reference style
+  def get_citation(biblio, type, pre, refs, pages, links, sorted_cites, style)
     result = ""
 
     add_parens = 1
@@ -463,7 +167,11 @@ module AsciidocBib
 
       # before all items apart from the first, insert appropriate separator
       unless index.zero?
-        result << ", "
+        if is_numeric?(style)
+          result << ", "
+        else
+          result << "; "
+        end
       end
 
       # insert reference information, if found
@@ -484,14 +192,21 @@ module AsciidocBib
           cite_text = cite_text[1..-2]
         end
 
-        if type == "citenp"
-          cite_text.gsub!(item.year, "#{fc}#{item.year}#{lc}")
-          cite_text.gsub!(", #{fc}", " #{fc}")
+        page_str = ""
+        unless page.nil? or page.empty?
+          page_str << "," unless is_numeric? style
+          page_str << " #{with_pp(page, style)}"
         end
 
-        unless page.nil? or page.empty?
-          cite_text << ", #{with_pp(page)}"
+        if is_numeric? style
+          cite_text << page_str
+        elsif type == "citenp"
+          cite_text.gsub!(item.year, "#{fc}#{item.year}#{page_str}#{lc}")
+          cite_text.gsub!(", #{fc}", " #{fc}")
+        else 
+          cite_text << page_str
         end
+
       else
         puts "Unknown reference: #{ref}"
         cite_text = "#{ref}"
@@ -502,58 +217,39 @@ module AsciidocBib
       result << ">>" if links
     end
 
-    result = "#{pre} #{result}" unless pre.nil? or pre.empty?
-    if type == "cite"
-      case add_parens
-      when 1 then
-        result = "(#{result})"
-      when 2 then
-        result = "[#{result}]"
-      end
+    pretext = "#{pre} " unless pre.nil? or pre.empty?
+    if add_parens == 1
+      ob = "("
+      cb = ")"
+    else
+      ob = "["
+      cb = "]"
+    end
+    if is_numeric?(style)
+      result = "#{pretext}#{ob}#{result}#{cb}"
+    elsif type == "cite" 
+      result = "#{ob}#{pretext}#{result}#{cb}"
+    else 
+      result = "#{pretext}#{result}"
     end
 
-    result.delatex 
+    result
   end
 
-  # return an array of the author surnames extracted from author_string
-  def author_surnames(author_string)
-    author_string.split(/\band\b/).collect do |name|
-      name.split(", ").first.strip
-    end
-  end
-
-  # Chicago-style citations
-  def citation(author, year, type, pages)
-    result = ""
-
-    result << author_surnames(author).comma_and_join
-    result << " "
-    result << "(" if type == "citenp"
-    result << year
-    result << ", #{pages}" unless pages.nil? or pages.empty?
-    result << ")" if type == "citenp"
-
-    return result
-  end
-
-  def citation_harvard(author, year, type, pages)
-    result = ""
-
-    result << author_surnames(author).comma_and_join
-    result << ", " if type == "cite"
-    result << " (" if type == "citenp"
-    result << year
-    unless pages.nil? or pages.empty?
-      if pages.include? '-'
-        pp = "pp"
+  # Format pages with pp/p as appropriate
+  def with_pp(pages, style)
+    if pages.nil? or pages.empty?
+      ""
+    else
+      pages.gsub!("--", "-")
+      if style.include? "chicago"
+        pages
+      elsif pages.include? '-'
+        "pp.#{pages}"
       else
-        pp = "p"
+        "p.#{pages}"
       end
-      result << ", #{pp}.#{pages}"
     end
-    result << ")" if type == "citenp"
-
-    return result
   end
 end
 

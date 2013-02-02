@@ -9,13 +9,7 @@ require 'bibtex'
 module AsciidocBib
 
 	# Valid reference styles, first item of Styles is default
-	BuiltinStyles = [
-    "authoryear", 
-    "numeric", 
-    "authoryear:chicago", 
-    "authoryear:harvard"
-  ]
-  CiteProcStyles = [
+  Styles = [
 	  "apa",
 	  "bibtex",
 	  "chicago-annotated-bibliography",
@@ -42,7 +36,6 @@ module AsciidocBib
 	  "vancouver-superscript",
 	  "vancouver"
   ]
-  Styles = BuiltinStyles + CiteProcStyles
 
   # Test here for any numeric styles for citeproc
   def is_numeric? style
@@ -137,15 +130,11 @@ module AsciidocBib
               # make sure included file points to the -ref version
               line.gsub!("include::#{ifile}", "include::#{add_ref(file)}")
             end
-            output.puts line.delatex
+            output.puts line
   	  		elsif line.strip == "[bibliography]"
 	  	  		sorted_cites.each do |ref|
-							reftext = if BuiltinStyles.include?(style)
-                          get_reference(biblio, ref, links, style)
-                        else
-				              	  get_reference_citeproc(biblio, ref, links, style)
-          							end
-              output.puts reftext.delatex
+							reftext = get_reference(biblio, ref, links, style)
+              output.puts reftext
   				  	output.puts
   	  			end
 	  	  	else
@@ -156,16 +145,16 @@ module AsciidocBib
 						  line.gsub!(md[0],
 							  				 get_citation(biblio, md[1], md[3], 
 																			cite_refs, cite_pages, 
-																			links, style, sorted_cites)
+																			links, sorted_cites, style)
 								  			)
   						# look for next citation on line
 	  					md = CITATION_FULL.match(md.post_match)
 		  			end
 
-	  	  		output.puts line.delatex
+	  	  		output.puts line
 		  	  end
          rescue # Any errors, just output the line
-          output.puts line.delatex
+          output.puts line
          end
   		end
 
