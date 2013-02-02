@@ -46,7 +46,13 @@ module AsciidocBib
 
   # Test here for any numeric styles for citeproc
   def is_numeric? style
-    style == "vancouver"
+    [
+      "ieee",
+      "vancouver-brackets",
+      "vancouver-superscript-bracket-only-year",
+      "vancouver-superscript",
+      "vancouver"
+    ].include? style
   end
 
   # Locate a bibliography file to read in given dir
