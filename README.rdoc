@@ -6,7 +6,7 @@ Features:
 
 - simple syntax for adding a citation within text and placing bibliography
 - transformation of source text to include references and full reference list
-- formatting of references and reference list according to range of styles supported by [citeproc-ruby](http://github.com/inukshuk/citeproc-ruby)
+- formatting of references and reference list according to range of styles supported by citeproc-ruby
 - supports some styling of citation text (page numbers, bracket placement, and pretext)
 - multiple references within a single citation
 
@@ -142,6 +142,6 @@ a section template name, [sect1], before it.
 
 == Contributors
 
-[Michel Krämer](https://github.com/michel-kraemer) provided the code linking to
+[Michel Krämer](http://github.com/michel-kraemer) provided the code linking to
 citeproc.
 
