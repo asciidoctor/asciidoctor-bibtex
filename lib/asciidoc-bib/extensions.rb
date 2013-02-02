@@ -6,6 +6,7 @@
 module AsciidocBibArrayExtensions
 
   require 'citeproc'
+  require 'latex/decode'
 
   # Retrieve the third item of an array
   # Note: no checks for validity
@@ -47,7 +48,7 @@ end
 # - \. (escaped Latex characters)
 module StringDelatex
   def delatex
-    self.gsub("{","").gsub("}","").gsub(/\\./, "")
+    LaTeX.decode self
   end
 end
 

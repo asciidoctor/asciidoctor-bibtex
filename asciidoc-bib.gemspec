@@ -28,5 +28,6 @@ END
   s.executables << "asciidoc-bib"
   s.add_dependency("bibtex-ruby", ">=2.2.0")
   s.add_dependency("citeproc-ruby", "0.0.6")
+  s.add_dependency("latex-decode", "0.0.12")
 end
 
