@@ -230,5 +230,18 @@ class TestReferenceFormat < Test::Unit::TestCase
                                     false, "authoryear", ["brown09"])
     assert_equal("(Brown 2009)", cite)
   end
+  # -- with citeproc styles
+  def test_14
+    biblio = BibTeX.open("test.bib")
+    cite = AsciidocBib.get_citation(biblio, "cite", "", ["brown09"], [nil],
+                                    false, "apa", ["brown09"])
+    assert_equal("(Brown, 2009)", cite)
+    cite = AsciidocBib.get_citation(biblio, "cite", "See", ["brown09"], [nil],
+                                    false, "apa", ["brown09"])
+    assert_equal("(See Brown, 2009)", cite)
+    cite = AsciidocBib.get_citation(biblio, "citenp", "", ["brown09"], [nil],
+                                    false, "apa", ["brown09"])
+    assert_equal("Brown (2009)", cite)
+  end
 end
 

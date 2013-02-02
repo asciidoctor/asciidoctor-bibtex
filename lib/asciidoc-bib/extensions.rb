@@ -484,13 +484,13 @@ module AsciidocBib
           cite_text = cite_text[1..-2]
         end
 
+        if type == "citenp"
+          cite_text.gsub!(item.year, "#{fc}#{item.year}#{lc}")
+          cite_text.gsub!(", #{fc}", " #{fc}")
+        end
+
         unless page.nil? or page.empty?
-          if page.include? '-'
-            pp = "pp"
-          else
-            pp = "p"
-          end
-          cite_text << ", #{pp}. #{page}"
+          cite_text << ", #{with_pp(page)}"
         end
       else
         puts "Unknown reference: #{ref}"
@@ -498,17 +498,20 @@ module AsciidocBib
       end
 
       cite_text.gsub!(",", "&#44;") if links # replace comma
-        result << cite_text.html_to_asciidoc
+      result << cite_text.html_to_asciidoc
       result << ">>" if links
     end
 
-    if add_parens == 1
-      result = "(#{result})"
-    else
-      result = "[#{result}]"
+    result = "#{pre} #{result}" unless pre.nil? or pre.empty?
+    if type == "cite"
+      case add_parens
+      when 1 then
+        result = "(#{result})"
+      when 2 then
+        result = "[#{result}]"
+      end
     end
 
-    result = "#{pre} #{result}" unless pre.nil? or pre.empty?
     result.delatex 
   end
 
