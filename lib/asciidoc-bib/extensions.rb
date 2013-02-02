@@ -221,9 +221,7 @@ module AsciidocBib
       unless item.title.nil?
         result << "_#{item.title}_, "
       end 
-      unless item.publisher.nil?
-        result << "#{item.publisher}"
-      end
+      result << with_publisher(item)
       if style == "numeric"
         result << ", "
       else
@@ -247,8 +245,8 @@ module AsciidocBib
       unless item.pages.nil?
         result << "#{item.pages.gsub("--","-")}."
       end
-      unless item.publisher.nil?
-        result << "#{item.publisher}"
+      result << with_publisher(item)
+      unless item.publisher.nil? # if we added something
         if style == "numeric"
           result << ", "
         else 
@@ -290,6 +288,22 @@ module AsciidocBib
       end
     end
 
+    return result
+  end
+
+  # Retrieve string for publisher with optional address
+  def with_publisher item
+    result = ""
+    if item.respond_to? :address
+      unless item.address.nil?
+        result << "#{item.address}"
+        result << ":" unless item.publisher.nil?
+        result << " "
+      end
+    end
+    unless item.publisher.nil?
+      result << "#{item.publisher}"
+    end
     return result
   end
 
