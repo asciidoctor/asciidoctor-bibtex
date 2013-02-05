@@ -58,7 +58,7 @@ module AsciidocBib
   # matches a single ref with optional pages
   CITATION = /(\w+)(,([\w\.\- ]+))?/
   # matches complete citation with multiple references
-  CITATION_FULL = /\[(cite|citenp):(([\w\- ]+):)?(#{CITATION}(;#{CITATION})*)\]/
+  CITATION_FULL = /\[(cite|citenp):(([\w\-\;\!\? ]+):)?(#{CITATION}(;#{CITATION})*)\]/
 
   # -- utility functions
 
@@ -245,9 +245,9 @@ module AsciidocBib
       if style.include? "chicago"
         pages
       elsif pages.include? '-'
-        "pp.#{pages}"
+        "pp.&#160;#{pages}"
       else
-        "p.#{pages}"
+        "p.&#160;#{pages}"
       end
     end
   end
