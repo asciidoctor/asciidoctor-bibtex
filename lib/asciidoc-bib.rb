@@ -96,7 +96,8 @@ module AsciidocBib
 	end
 
 	# Read given text to add cites and biblio to a new file
-	# Order is always decided by author surname first
+	# Order is always decided by author surname first with year.
+  # If no author present, then use editor field.
 	# Links indicates if internal links to be added
 	def add_citations(filename, cites_used, biblio, links, style)
     files_to_process = [filename]
@@ -106,7 +107,11 @@ module AsciidocBib
 			unless biblio[ref].nil?
 				# extract the reference, and uppercase. 
         # Remove { } from grouped names for sorting.
-				author_chicago(biblio[ref].author).collect {|s| s.upcase.gsub("{","").gsub("}","")}
+        author = biblio[ref].author
+        if author.nil?
+          author = biblio[ref].editor
+        end
+				author_chicago(author).collect {|s| s.upcase.gsub("{","").gsub("}","")} + [biblio[ref].year]
 			else 
 				[ref]
 			end
