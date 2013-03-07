@@ -18,7 +18,8 @@ Installs the executable program 'asciidoc-bib'.
 
 asciidoc-bib depends on bibtex-ruby[http://github.com/inukshuk/bibtex-ruby] and
 citeproc-ruby[http://github.com/inukshuk/citeproc-ruby].
-(Ensure 'ruby-dev' is installed, so the dependencies will compile.)
+(Ensure 'ruby-dev' and 'libxslt1-dev' are installed, so the dependencies will 
+compile.)
 
 
 == Use 
