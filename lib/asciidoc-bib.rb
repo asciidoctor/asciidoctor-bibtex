@@ -1,4 +1,4 @@
-# asciidoc-bib.rb
+#  asciidoc-bib.rb
 #
 # Copyright (c) Peter Lane, 2012-13.
 # Released under Open Works License, 0.9.2

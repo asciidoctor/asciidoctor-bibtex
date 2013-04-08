@@ -243,5 +243,11 @@ class TestReferenceFormat < Test::Unit::TestCase
                                     false, ["brown09"], "apa")
     assert_equal("Brown (2009)", cite)
   end
+  # -- combine numeric references, e.g. [1, 2, 3] -> [1-3]
+  def test_15
+    biblio = BibTeX.open("test.bib")
+    cite = AsciidocBib.get_citation(biblio, "cite", "", ["brown09", "jones11", "smith10"], [nil, nil], false, ["brown09", "jones11", "smith10"], "ieee")
+    assert_equal("[1-3]", cite)
+  end
 end
 

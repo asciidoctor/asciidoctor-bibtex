@@ -6,3 +6,4 @@
 require 'tc_citations'
 require 'tc_formats'
 require 'tc_references'
+require 'tc_extensions'
