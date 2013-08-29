@@ -232,5 +232,10 @@ describe AsciidocBib do
     cite = AsciidocBib.get_citation biblio, "cite", "", ["brown09", "jones11", "smith10"], [nil, nil], false, ["brown09", "jones11", "smith10"], "ieee"
     cite.must_equal "[1-3]"
   end
+
+  it "provides method to combine consecutive numbers" do
+    combine_consecutive_numbers("1,2,3").must_equal "1-3"
+    combine_consecutive_numbers("1,2,3,5,7,8,9,12").must_equal "1-3, 5, 7-9, 12"
+  end
 end
 
