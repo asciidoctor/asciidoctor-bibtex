@@ -1,13 +1,14 @@
 # Rakefile for managing asciidoc-bib project
 #
-# Copyright (c) Peter Lane, 2012.
+# Copyright (c) Peter Lane, 2012-13.
 # Released under Open Works License, 0.9.2
 
-desc 'run tests'
-task :test do
-  Dir.chdir("test") do
-    sh "ruby -I.:../lib ts_tests.rb"
-  end
+require 'rake/testtask'
+
+Rake::TestTask.new do |t|
+  t.libs.push "lib"
+  t.test_files = FileList['test/*_test.rb']
+  t.verbose = true
 end
 
 desc 'run lib code on sample'
