@@ -9,6 +9,7 @@ Features:
 - formatting of references and reference list according to range of styles supported by citeproc-ruby
 - supports some styling of citation text (page numbers, bracket placement, and pretext)
 - multiple references within a single citation
+- groups consecutive numeric references, e.g. [1,2,3] -> [1-3]
 
 == Install
 
@@ -81,7 +82,7 @@ Check the new file, and process in the usual way with asciidoc.
 Command-line options:
 
  > asciidoc-bib -h
- asciidoc-bib 1.5.0
+ asciidoc-bib 1.6.0
 
  Usage: asciidoc-bib filename
      -h, --help                       help message
@@ -119,7 +120,6 @@ Command-line options:
 
 == Limitations
 
-- no grouping of references, e.g. [1,2,3] -> [1-3]
 - no automatic use of _et_ _al_
 
 == License

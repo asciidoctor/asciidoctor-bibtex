@@ -239,7 +239,7 @@ module AsciidocBib
     unless links
       # combine numeric ranges
       if is_numeric?(style)
-        result = combine_consecutive_numbers(result)
+        result = combine_consecutive_numbers result
       end
     end
 
