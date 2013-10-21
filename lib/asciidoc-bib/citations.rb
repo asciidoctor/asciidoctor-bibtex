@@ -20,13 +20,21 @@ module AsciidocBib
         cite_text = md[4]
         cm = CITATION.match(cite_text)
         while cm
-          @cites_used.add cm[1]
+          @cites_used.add Citation.new(cm[1], cm[3])
           # look for next ref within citation
           cm = CITATION.match(cm.post_match)
         end
         # look for next citation on line
         md = CITATION_FULL.match(md.post_match)
       end
+    end
+
+    def to_a
+      @cites_used.to_a
+    end
+
+    def size
+      @cites_used.size
     end
 
     private

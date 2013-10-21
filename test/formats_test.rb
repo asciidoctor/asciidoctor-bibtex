@@ -8,6 +8,7 @@ require 'bibtex'
 require 'minitest/autorun'
 
 include AsciidocBib
+exit 
 
 describe AsciidocBib do
 

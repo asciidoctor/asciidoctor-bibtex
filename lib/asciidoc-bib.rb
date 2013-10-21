@@ -5,6 +5,7 @@
 
 require 'bibtex'
 require 'set'
+require 'asciidoc-bib/citation'
 require 'asciidoc-bib/citations'
 require 'asciidoc-bib/extensions'
 require 'asciidoc-bib/processor'
