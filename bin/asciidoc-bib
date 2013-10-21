@@ -35,16 +35,16 @@ options = OptionParser.new do |opts|
   opts.on("-b", "--bibfile FILE", "location of bib file") do |v|
     bibfile = v
   end
-	opts.on("-n", "--no-links", "do not add internal links") do |v|
-		links = false
-	end
-	opts.on("-s", "--style STYLE", "reference style") do |v|
-		style = v
-	end
-	opts.on("-v", "--version", "show version") do |v|
-		puts "asciidoc-bib version #{VERSION}"
+  opts.on("-n", "--no-links", "do not add internal links") do |v|
+    links = false
+  end
+  opts.on("-s", "--style STYLE", "reference style") do |v|
+    style = v
+  end
+  opts.on("-v", "--version", "show version") do |v|
+    puts "asciidoc-bib version #{VERSION}"
     exit!
-	end
+  end
 end
 
 begin

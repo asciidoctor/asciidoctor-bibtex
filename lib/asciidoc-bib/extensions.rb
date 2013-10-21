@@ -72,6 +72,7 @@ module AsciidocBib
 
   # -- utility functions
 
+  # TODO: Try to remove this method
   def extract_cites line
     cites_used = []
     md = CITATION_FULL.match(line)

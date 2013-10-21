@@ -1,5 +1,13 @@
 = Test Document =
 
-Try [cite:ACTR:Anderson98,32-98] [cite:Anderson04,32]
+Some text
+
+[cite:Lane12b;Lane12a]
+
+Try [cite:Anderson04,32]
+[cite:Anderson98,52-100]
+
+== Bibliography
 
 [bibliography]
+

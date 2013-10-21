@@ -5,17 +5,22 @@ Add references from a bibtex file to an asciidoc file.
 Features:
 
 - simple syntax for adding a citation within text and placing bibliography
-- transformation of source text to include references and full reference list
 - formatting of references and reference list according to range of styles supported by citeproc-ruby
 - supports some styling of citation text (page numbers, bracket placement, and pretext)
 - multiple references within a single citation
 - groups consecutive numeric references, e.g. [1,2,3] -> [1-3]
+- use in one of two ways:
+    - by transforming source text to include references and full reference list
+    - asciidoctor extension provided for single-pass compilation of document with references
 
 == Install
 
  > gem install asciidoc-bib
 
-Installs the executable program 'asciidoc-bib'.
+Installs two executable programs:
+
+- 'asciidoc-bib' for transforming source text
+- 'asciidoctor-bib' uses asciidoctor extension
 
 asciidoc-bib depends on bibtex-ruby[http://github.com/inukshuk/bibtex-ruby] and
 citeproc-ruby[http://github.com/inukshuk/citeproc-ruby].
@@ -25,11 +30,18 @@ compile.)
 
 == Use 
 
+There are two ways of using asciidoc-bib.
+
+The first is required if using asciidoc (the original implementation).
 asciidoc-bib works by transforming an asciidoc document containing syntax 
 to include citations and a bibliography. The transformed document will 
 contain a complete reference and bibliography list where indicated, and 
 can then be processed further by asciidoc's toolchain to produce a completed 
 document.
+
+The second is for asciidoctor only, and uses its extension mechanism to 
+provide a single pass compilation of your documentation, including references.
+asciidoctor-bib works as a replacement for asciidoctor.
 
 === Include a citation
 
@@ -68,7 +80,7 @@ For +ieee+, a numeric style:
 
 [[bibliography]] on a line by itself.
 
-=== Processing text
+=== Processing text: Asciidoc
 
  > asciidoc-bib filename.txt
 
@@ -117,6 +129,11 @@ Command-line options:
     vancouver-superscript-bracket-only-year
     vancouver-superscript
     vancouver
+
+=== Processing Text: Asciidoctor
+
+  > asciidoctor-bib filename
+
 
 == Limitations
 
