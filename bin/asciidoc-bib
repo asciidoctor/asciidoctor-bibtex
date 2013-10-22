@@ -14,8 +14,6 @@ require 'optparse'
 
 include AsciidocBib
 
-VERSION = "1.6.0"
-
 bibfile = ""
 links = true
 style = Styles.first
@@ -23,7 +21,7 @@ style = Styles.first
 options = OptionParser.new do |opts|
   opts.banner = "Usage: asciidoc-bib filename"
   opts.on("-h", "--help", "help message") do |v|
-    puts "asciidoc-bib #{VERSION}"
+    puts "asciidoc-bib #{AsciidocBib::VERSION}"
     puts
     puts options
     puts
@@ -42,7 +40,7 @@ options = OptionParser.new do |opts|
     style = v
   end
   opts.on("-v", "--version", "show version") do |v|
-    puts "asciidoc-bib version #{VERSION}"
+    puts "asciidoc-bib version #{AsciidocBib::VERSION}"
     exit!
   end
 end
@@ -65,21 +63,16 @@ if bibfile.empty?
   exit
 end
 unless Styles.include?(style)
-	puts "Error: style must be one of #{Styles.join(", ")}"
-	exit
+  puts "Error: style must be one of #{Styles.join(", ")}"
+  exit
 end
 unless ARGV.length == 1
-	puts "Error: a single file to convert must be given"
-	exit
+  puts "Error: a single file to convert must be given"
+  exit
 end
 
 puts "Reading biblio: #{bibfile}"
 puts "Reference style: #{style}"
 
-biblio = read_bibliography bibfile
-
-cites_used = read_citations ARGV[0]
-puts "Cites: #{cites_used.join(",")}"
-
-add_citations(ARGV[0], cites_used, biblio, links, style)
+Processor.run ARGV[0], bibfile, links, style
 
