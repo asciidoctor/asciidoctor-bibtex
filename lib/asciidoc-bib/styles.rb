@@ -39,7 +39,7 @@ module AsciidocBib
     end
 
     # Test here for any numeric styles for citeproc
-    def is_numeric? style
+    def Styles.is_numeric? style
       [
         "ieee",
         "vancouver-brackets",
