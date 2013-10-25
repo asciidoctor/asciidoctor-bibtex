@@ -6,6 +6,7 @@ module AsciidocBib
       @ref = ref
       @pages = pages
       # clean up pages
+      @pages = '' unless @pages
       @pages.gsub!("--","-") unless @pages.nil?
     end
 

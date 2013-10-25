@@ -49,7 +49,7 @@ describe AsciidocBib do
     cites.add_from_line "[citenp:author12;another11,15-30;third10,14]"
     cites.cites_used.size.must_equal 3
     cites.cites_used[0].ref.must_equal "author12"
-    cites.cites_used[0].pages.must_be_nil
+    cites.cites_used[0].pages.must_equal ''
     cites.cites_used[1].ref.must_equal "another11"
     cites.cites_used[1].pages.must_equal "15-30"
     cites.cites_used[2].ref.must_equal "third10"

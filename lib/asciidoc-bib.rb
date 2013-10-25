@@ -8,10 +8,10 @@ require 'citeproc'
 require 'set'
 
 require 'asciidoc-bib/citation'
-require 'asciidoc-bib/citationmanager'
 require 'asciidoc-bib/citations'
 require 'asciidoc-bib/extensions'
 require 'asciidoc-bib/fileutils'
+require 'asciidoc-bib/processor'
 require 'asciidoc-bib/styles'
 require 'asciidoc-bib/version'
 
