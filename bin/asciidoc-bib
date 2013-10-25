@@ -12,11 +12,9 @@
 require 'asciidoc-bib'
 require 'optparse'
 
-include AsciidocBib
-
 bibfile = ""
 links = true
-style = Styles.first
+style = AsciidocBib::Styles.default_style
 
 options = OptionParser.new do |opts|
   opts.banner = "Usage: asciidoc-bib filename"
@@ -27,7 +25,7 @@ options = OptionParser.new do |opts|
     puts
     puts "Supported styles (first is default):"
     print "   "
-    puts Styles.join("\n   ")
+    puts AsciidocBib::Styles.available.join("\n   ")
     exit!
   end
   opts.on("-b", "--bibfile FILE", "location of bib file") do |v|
@@ -53,17 +51,17 @@ rescue
 end
 
 if bibfile.empty?
-  bibfile = find_bibliography "."
+  bibfile = AsciidocBib::FileUtils.find_bibliography "."
   if bibfile.empty?
-    bibfile = find_bibliography "#{ENV['HOME']}/Documents"
+    bibfile = AsciidocBib::FileUtils.find_bibliography "#{ENV['HOME']}/Documents"
   end
 end
 if bibfile.empty?
   puts "Error: could not find a bibliography file"
   exit
 end
-unless Styles.include?(style)
-  puts "Error: style must be one of #{Styles.join(", ")}"
+unless AsciidocBib::Styles.valid? style
+  puts "Error: style must be one of #{AsciidocBib::Styles.available.join(", ")}"
   exit
 end
 unless ARGV.length == 1
@@ -74,5 +72,5 @@ end
 puts "Reading biblio: #{bibfile}"
 puts "Reference style: #{style}"
 
-Processor.run ARGV[0], bibfile, links, style
+AsciidocBib::Processor.run ARGV[0], bibfile, links, style
 

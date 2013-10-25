@@ -1,6 +1,6 @@
 # Test cases for formatting references
 #
-# Copyright (c) Peter Lane, 2012.
+# Copyright (c) Peter Lane, 2012-13.
 # Released under Open Works License, 0.9.2
 
 require 'asciidoc-bib'

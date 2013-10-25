@@ -7,7 +7,7 @@ module AsciidocBib
 
   module Styles
 
-    # Valid reference styles, first item of Styles is default
+    # Valid reference styles
     def Styles.available
       [
         "apa",
@@ -36,6 +36,16 @@ module AsciidocBib
         "vancouver-superscript",
         "vancouver"
       ]
+    end
+
+    # Make the default style the first one in the list
+    def Styles.default_style
+      Styles.available.first
+    end
+
+    # Check if given style is a valid style
+    def Styles.valid? style
+      Styles.available.include? style
     end
 
     # Test here for any numeric styles for citeproc
