@@ -8,10 +8,11 @@
 # Copyright (c) Peter Lane, 2013.
 # Released under Open Works License, 0.9.2
 
-require 'asciidoc-bib'
 require 'asciidoctor'
 require 'asciidoctor/extensions'
 require 'optparse'
+
+require 'asciidoc-bib'
 
 include AsciidocBib
 
@@ -22,45 +23,16 @@ def AsciidocBibExtension filename
     def process reader, lines
       return reader if lines.empty?
 
-      biblio = read_bibliography @@filename
-      cites_used = []
-
-      # -- extract cites
-
+      processor = Processor.new BibTeX.open(@@filename), true, 'apa'
       lines.each do |line|
-        cites_used += extract_cites(line)
-      end
-
-      # -- sort cites
-
-      cites_used = cites_used.sort_by do |ref|
-        unless biblio[ref].nil?
-          # extract the reference, and uppercase. 
-          # Remove { } from grouped names for sorting.
-          author = biblio[ref].author
-          if author.nil?
-            author = biblio[ref].editor
-          end
-          author_chicago(author).collect {|s| s.upcase.gsub("{","").gsub("}","")} + [biblio[ref].year]
-        else 
-          [ref]
-        end
+        processor.citations.add_from_line line
       end
 
       # -- replace cites with correct text
 
       lines.each do |line|
-        md = CITATION_FULL.match(line)
-        while md
-          cite_refs, cite_pages = extract_refs_pages md[4]
-
-          # replace text on line
-          line.gsub!(md[0],
-                     get_citation(biblio, md[1], md[3], 
-                                  cite_refs, cite_pages, 
-                                  false, cites_used, 'apa'))
-          # look for next citation on line
-          md = CITATION_FULL.match(md.post_match)
+        processor.citations.retrieve_citations(line).each do |citation|
+          line.gsub!(citation.original, processor.complete_citation(citation))
         end
       end
 
@@ -68,9 +40,9 @@ def AsciidocBibExtension filename
 
       biblio_index = lines.index "[bibliography]\n"
       lines.delete_at biblio_index
-      cites_used.reverse.each do |ref|
+      processor.citations.cites_used.reverse.each do |ref|
         lines.insert biblio_index, "\n"
-        lines.insert biblio_index, "[[#{ref}]]" + get_reference(biblio, ref, false, 'apa') + "\n"
+        lines.insert biblio_index, "[[#{ref}]]" + processor.get_reference(ref) + "\n"
       end
 
       return Asciidoctor::Reader.new lines

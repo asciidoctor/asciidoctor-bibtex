@@ -11,7 +11,7 @@ Features:
 - groups consecutive numeric references, e.g. [1,2,3] -> [1-3]
 - use either:
   * by transforming source text to include references and full reference list
-  * with asciidoctor extension for single-pass compilation of document with references
+  * (in progress) with asciidoctor extension for single-pass compilation of document with references
 
 == Install
 
