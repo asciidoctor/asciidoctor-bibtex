@@ -18,12 +18,14 @@ include AsciidocBib
 
 def AsciidocBibExtension filename
   Class.new(Asciidoctor::Extensions::Preprocessor) do
-    @@filename = filename  # TODO: Replace this with something without warnings
+    @@filename = filename  # TODO: Replace this with something better
 
     def process reader, lines
       return reader if lines.empty?
 
-      processor = Processor.new BibTeX.open(@@filename), true, 'apa'
+      biblio = BibTeX.open @@filename
+
+      processor = Processor.new biblio, true, 'apa'
       lines.each do |line|
         processor.citations.add_from_line line
       end
@@ -39,10 +41,12 @@ def AsciidocBibExtension filename
       # -- add in bibliography
 
       biblio_index = lines.index "[bibliography]\n"
-      lines.delete_at biblio_index
-      processor.citations.cites_used.reverse.each do |ref|
-        lines.insert biblio_index, "\n"
-        lines.insert biblio_index, "[[#{ref}]]" + processor.get_reference(ref) + "\n"
+      unless biblio_index.nil?
+        lines.delete_at biblio_index
+        processor.citations.sorted_cites(biblio).reverse.each do |ref|
+          lines.insert biblio_index, "\n"
+          lines.insert biblio_index, "[[#{ref}]]" + processor.get_reference(ref) + "\n"
+        end
       end
 
       return Asciidoctor::Reader.new lines

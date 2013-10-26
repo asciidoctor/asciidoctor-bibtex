@@ -7,6 +7,8 @@
 module AsciidocBib
   # Class to store list of citations used in document
   class Citations
+    include CitationUtils
+
     attr_reader :cites_used
 
     def initialize
@@ -21,56 +23,23 @@ module AsciidocBib
       @cites_used.uniq! # only keep each reference once
     end
 
-    # Given a line, return a list of CitationData instances
-    # containing information on each set of citation information
-    def retrieve_citations line
-      result = []
-      md = CITATION_FULL.match line
-      while md
-        data = CitationData.new md[0], md[1], md[3], []
-        cm = CITATION.match md[4]
-        while cm
-          data.cites << Citation.new(cm[1], cm[3])
-          # look for next ref within citation
-          cm = CITATION.match cm.post_match 
-        end
-        result << data
-        # look for next citation on line
-        md = CITATION_FULL.match md.post_match 
-      end
+    # Return a list of citation references in document, sorted into order
+    def sorted_cites biblio
+      @cites_used.sort_by do |ref|
+        bibitem = biblio[ref]
 
-      return result
-    end
-
-    private
-
-    # matches a single ref with optional pages
-    CITATION = /(\w+)(,([\w\.\- ]+))?/
-    # matches complete citation with multiple references
-    CITATION_FULL = /\[(cite|citenp):(([\w\-\;\!\? ]+):)?(#{CITATION}(;#{CITATION})*)\]/
-
-    # -- utility functions
-
-    # arrange author string, flag for order of surname/initials
-    def arrange_authors(authors, surname_first)
-      return [] if authors.nil?
-      authors.split(/\band\b/).collect do |name|
-        if name.include?(", ")
-          parts = name.strip.rpartition(", ")
-          if surname_first
-            "#{parts.first}, #{parts.third}"
-          else
-            "#{parts.third} #{parts.first}"
+        unless bibitem.nil?
+          # extract the reference, and uppercase.
+          # Remove { } from grouped names for sorting.
+          author = bibitem.author
+          if author.nil?
+            author = bibitem.editor
           end
+          author_chicago(author).collect {|s| s.upcase.gsub("{","").gsub("}","")} + [bibitem.year]
         else
-          name
+          [ref]
         end
       end
-    end
-
-    # Arrange given author string into Chicago format
-    def author_chicago authors 
-      arrange_authors authors, true 
     end
   end
 end

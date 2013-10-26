@@ -88,9 +88,10 @@ module AsciidocBib
       end 
     end
 
+    # Output bibliography to given output
     def output_bibliography output
-      @citations.cites_used.each do |cite|
-        output.puts get_reference(cite)
+      @citations.sorted_cites(@biblio).each do |ref|
+        output.puts get_reference(ref)
         output.puts
       end
     end
@@ -116,9 +117,8 @@ module AsciidocBib
 
     # Return the complete citation text for given cite_data
     def complete_citation cite_data
-      result = ""
-
-      add_parens = 1
+      result = ''
+      ob, cb = '(', ')'
 
       cite_data.cites.each_with_index do |cite, index|
         # before all items apart from the first, insert appropriate separator
@@ -131,52 +131,15 @@ module AsciidocBib
         unless biblio[cite.ref].nil?
           item = biblio[cite.ref].clone
           item['citation-number'] = @citations.cites_used.index(cite.ref) + 1
-          cite_text = CiteProc.process item.to_citeproc, :style => @style, :format => :html, :mode => 'citation'
-          cite_text = cite_text[0]
-
-          fc = cite_text[0,1]
-          lc = cite_text[-1,1]
-          if fc == '(' and lc == ')'
-            cite_text = cite_text[1..-2]
-          elsif fc == '[' and lc == ']'
-            add_parens = 2
-            cite_text = cite_text[1..-2]
-          end
-
-          page_str = ""
-          unless cite.pages.empty?
-            page_str << "," unless Styles.is_numeric? @style
-            page_str << " #{with_pp(cite.pages)}"
-          end
-
-          if Styles.is_numeric? @style
-            cite_text << page_str
-          elsif cite_data.type == "citenp"
-            cite_text.gsub!(item.year, "#{fc}#{item.year}#{page_str}#{lc}")
-            cite_text.gsub!(", #{fc}", " #{fc}")
-          else 
-            cite_text << page_str
-          end
-
+          cite_text, ob, cb = make_citation item, cite_data, cite
         else
           puts "Unknown reference: #{cite.ref}"
           cite_text = "#{cite.ref}"
         end
 
-        cite_text.gsub!(",", "&#44;") if @links # replace comma
-
         result << cite_text.html_to_asciidoc
         # @links requires finish hyperlink
         result << ">>" if @links
-      end
-
-      pretext = "#{cite_data.pretext} " unless cite_data.pretext.nil? or cite_data.pretext.empty?
-      if add_parens == 1
-        ob = "("
-        cb = ")"
-      else
-        ob = "["
-        cb = "]"
       end
 
       unless @links
@@ -186,15 +149,7 @@ module AsciidocBib
         end
       end
 
-      if Styles.is_numeric? @style
-        result = "#{pretext}#{ob}#{result}#{cb}"
-      elsif cite_data.type == "cite" 
-        result = "#{ob}#{pretext}#{result}#{cb}"
-      else 
-        result = "#{pretext}#{result}"
-      end
-
-      return result
+      include_pretext result, cite_data, ob, cb
     end
 
     # Retrieve text for reference in given style
@@ -236,6 +191,51 @@ module AsciidocBib
       end
     end
 
+    # Return page string for given cite
+    def page_str cite
+      result = ''
+      unless cite.pages.empty?
+        result << "," unless Styles.is_numeric? @style
+        result << " #{with_pp(cite.pages)}"
+      end
+
+      return result
+    end
+
+    def include_pretext result, cite_data, ob, cb
+      pretext = cite_data.pretext
+      pretext += ' ' unless pretext.empty? # add space after any content
+
+      if Styles.is_numeric? @style
+        "#{pretext}#{ob}#{result}#{cb}"
+      elsif cite_data.type == "cite" 
+        "#{ob}#{pretext}#{result}#{cb}"
+      else 
+        "#{pretext}#{result}"
+      end
+    end
+
+    def make_citation item, cite_data, cite
+      cite_text = CiteProc.process item.to_citeproc, :style => @style, :format => :html, :mode => 'citation'
+      cite_text = cite_text[0]
+
+      fc = cite_text[0,1]
+      lc = cite_text[-1,1]
+      cite_text = cite_text[1..-2]
+
+      if Styles.is_numeric? @style
+        cite_text << page_str(cite)
+      elsif cite_data.type == "citenp"
+        cite_text.gsub!(item.year, "#{fc}#{item.year}#{page_str(cite)}#{lc}")
+        cite_text.gsub!(", #{fc}", " #{fc}")
+      else 
+        cite_text << page_str(cite)
+      end
+
+      cite_text.gsub!(",", "&#44;") if @links # replace comma
+
+      return cite_text, fc, lc
+    end
   end
 end
 
