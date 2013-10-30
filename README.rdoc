@@ -135,9 +135,11 @@ Command-line options:
   > asciidoctor-bib filename
 
 
-== Limitations
+== Limitations/TODO
 
 - no automatic use of _et_ _al_
+- use header to define style/biblio etc
+- use csl-styles and csl-ruby to access all CSL styles
 
 == License
 

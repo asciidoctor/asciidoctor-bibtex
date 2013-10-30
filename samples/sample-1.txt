@@ -8,6 +8,8 @@ Author-year references can use different styles such as: [cite:Lane12a] or
 
 Page numbers can be added: [cite:Lane12a,89] or [citenp:Lane12a,89-93].
 
+image::timings.png[]
+
 A bit of pretext can be included too: [cite:See:Lane12a,89]
 
 We can include other files, which are also processed:

@@ -90,7 +90,7 @@ module AsciidocBib
 
     # Output bibliography to given output
     def output_bibliography output
-      @citations.sorted_cites(@biblio).each do |ref|
+      sorted_cites.each do |ref|
         output.puts get_reference(ref)
         output.puts
       end
@@ -235,6 +235,10 @@ module AsciidocBib
       cite_text.gsub!(",", "&#44;") if @links # replace comma
 
       return cite_text, fc, lc
+    end
+
+    def sorted_cites
+      @citations.sorted_cites @biblio
     end
   end
 end

@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# Executable for asciidoctor-bib
+# Executable asciidoctor-bib
 #
 # Uses asciidoctor preprocessor extension to include citations and bibliography
 # in a single pass.
@@ -23,6 +23,13 @@ def AsciidocBibExtension filename
     def process reader, lines
       return reader if lines.empty?
 
+      # -- read in all lines from reader, processing the lines
+
+      lines = []
+      while reader.has_more_lines?
+        lines << reader.read_line
+      end
+
       biblio = BibTeX.open @@filename
 
       processor = Processor.new biblio, true, 'apa'
@@ -43,7 +50,7 @@ def AsciidocBibExtension filename
       biblio_index = lines.index "[bibliography]\n"
       unless biblio_index.nil?
         lines.delete_at biblio_index
-        processor.citations.sorted_cites(biblio).reverse.each do |ref|
+        processor.sorted_cites.reverse.each do |ref|
           lines.insert biblio_index, "\n"
           lines.insert biblio_index, "[[#{ref}]]" + processor.get_reference(ref) + "\n"
         end
