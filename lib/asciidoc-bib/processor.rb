@@ -12,9 +12,9 @@ module AsciidocBib
     include ProcessorUtils
 
     # Top-level method to include citations in given asciidoc file
-    def Processor.run filename, bibfile, links, style
-      processor = Processor.new BibTeX.open(bibfile), links, style
-      processor.read_filenames filename
+    def Processor.run options
+      processor = Processor.new BibTeX.open(options.bibfile), options.links, options.style
+      processor.read_filenames options.filename
       processor.read_citations 
       processor.add_citations
     end

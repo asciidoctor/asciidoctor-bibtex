@@ -8,63 +8,8 @@
 # Copyright (c) Peter Lane, 2013.
 # Released under Open Works License, 0.9.2
 
-require 'asciidoctor'
-require 'asciidoctor/extensions'
-require 'optparse'
-
 require 'asciidoc-bib'
 
-include AsciidocBib
-
-def AsciidocBibExtension filename
-  Class.new(Asciidoctor::Extensions::Preprocessor) do
-    @@filename = filename  # TODO: Replace this with something better
-
-    def process reader, lines
-      return reader if lines.empty?
-
-      # -- read in all lines from reader, processing the lines
-
-      lines = []
-      while reader.has_more_lines?
-        lines << reader.read_line
-      end
-
-      biblio = BibTeX.open @@filename
-
-      processor = Processor.new biblio, true, 'apa'
-      lines.each do |line|
-        processor.citations.add_from_line line
-      end
-
-      # -- replace cites with correct text
-
-      lines.each do |line|
-        processor.citations.retrieve_citations(line).each do |citation|
-          line.gsub!(citation.original, processor.complete_citation(citation))
-        end
-      end
-
-      # -- add in bibliography
-
-      biblio_index = lines.index "[bibliography]\n"
-      unless biblio_index.nil?
-        lines.delete_at biblio_index
-        processor.sorted_cites.reverse.each do |ref|
-          lines.insert biblio_index, "\n"
-          lines.insert biblio_index, "[[#{ref}]]" + processor.get_reference(ref) + "\n"
-        end
-      end
-
-      return Asciidoctor::Reader.new lines
-    end
-  end
-end
-
-Asciidoctor::Extensions.register do |document|
-  preprocessor AsciidocBibExtension('biblio.bib')
-end
-
-# TODO: Manage other asciidoctor options?
-Asciidoctor.render_file ARGV[0], :safe => :safe, :in_place => true
+options = AsciidocBib::Options.new
+AsciidocBib::Asciidoctor.run options
 
