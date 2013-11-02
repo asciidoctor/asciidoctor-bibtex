@@ -1,3 +1,9 @@
+# Uses Asciidoctor extension mechanism to insert asciidoc-bib processing
+# as a preprocessor step.  This provides single-pass compilation of 
+# documents, including citations and references.
+#
+# Copyright (c) Peter Lane, 2013.
+# Released under Open Works License, 0.9.2
 
 require 'asciidoctor'
 require 'asciidoctor/extensions'

@@ -1,3 +1,8 @@
+# Class to read in asciidoc-bib options from command-line, and 
+# store results in an accessible form.
+#
+# Copyright (c) Peter Lane, 2013.
+# Released under Open Works License, 0.9.2
 
 require 'optparse'
 
@@ -65,8 +70,8 @@ module AsciidocBib
         exit
       end
 
-      puts "Reading biblio: #{options.bibfile}"
-      puts "Reference style: #{options.style}"
+      puts "Reading biblio: #{@bibfile}"
+      puts "Reference style: #{@style}"
     end
   end
 end
