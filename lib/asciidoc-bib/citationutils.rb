@@ -29,7 +29,7 @@ module AsciidocBib
     end
 
     # arrange author string, flag for order of surname/initials
-    def arrange_authors(authors, surname_first)
+    def arrange_authors authors, surname_first 
       return [] if authors.nil?
       authors.split(/\band\b/).collect do |name|
         if name.include?(", ")

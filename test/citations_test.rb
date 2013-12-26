@@ -57,4 +57,10 @@ describe AsciidocBib do
     citationdata.first.cites[2].ref.must_equal "third10"
     citationdata.first.cites[2].pages.must_equal "14"
   end
+
+  it "should keep each citation once only" do
+    cites = Citations.new
+    cites.add_from_line "[citenp:author12;another11;author12]"
+    cites.cites_used.size.must_equal 2
+  end
 end

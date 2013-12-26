@@ -20,7 +20,7 @@ module AsciidocBib
       retrieve_citations(line).each do |citation|
         @cites_used += citation.cites.collect {|cite| cite.ref}
       end
-      @cites_used.uniq! # only keep each reference once
+      @cites_used.uniq! {|item| item.to_s} # only keep each reference once
     end
 
     # Return a list of citation references in document, sorted into order

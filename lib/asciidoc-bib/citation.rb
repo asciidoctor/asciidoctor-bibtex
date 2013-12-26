@@ -17,8 +17,8 @@ module AsciidocBib
       @pages.gsub!("--","-") unless @pages.nil?
     end
 
-    def == other
-      @ref == other.ref && @pages == other.pages
+    def to_s
+      "#{@ref}:#{@pages}"
     end
   end
 end
