@@ -154,6 +154,8 @@ module AsciidocBib
 
     # Retrieve text for reference in given style
     # - ref is reference for item to give reference for
+    # TODO: CiteProc.process seems to ignore some 
+    # latex format entries, e.g. institution in 'techreport'
     def get_reference ref
       result = ""
       result << ". " if Styles.is_numeric? @style

@@ -15,21 +15,20 @@ module AsciidocBib
                nums[end_range].is_i? and
                nums[end_range+1].is_i? and
                nums[end_range+1].to_i == nums[end_range].to_i + 1) do
-                 end_range += 1
-               end
-               if end_range - start_range >= 2
-                 res += "#{nums[start_range]}-#{nums[end_range]}, "
-               else
-                 start_range.upto(end_range) do |i|
-                   res += "#{nums[i]}, "
-                 end
-               end
-               start_range = end_range + 1
+          end_range += 1
         end
-        # finish by removing last comma
-        res.gsub(/, $/, '')
+        if end_range - start_range >= 2
+          res += "#{nums[start_range]}-#{nums[end_range]}, "
+        else
+          start_range.upto(end_range) do |i|
+            res += "#{nums[i]}, "
+          end
+        end
+        start_range = end_range + 1
       end
+      # finish by removing last comma
+      res.gsub(/, $/, '')
     end
   end
-#end # TODO: why not needed?
+end
 
