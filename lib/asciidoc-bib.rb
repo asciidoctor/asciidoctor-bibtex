@@ -5,6 +5,7 @@
 
 require 'bibtex'
 require 'citeproc'
+require 'csl/styles'
 require 'set'
 
 require 'asciidoc-bib/asciidoctor'

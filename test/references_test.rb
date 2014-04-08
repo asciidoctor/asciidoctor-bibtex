@@ -17,8 +17,8 @@ describe AsciidocBib do
 
   it "must return numeric style (IEEE) references" do
     p = Processor.new BibTeX.open('test/data/test.bib'), false, 'ieee'
-    p.get_reference('smith10').must_equal ".  D. Smith, _Book title_. Mahwah, NJ: Lawrence Erlbaum, 2010."
-    p.get_reference('brown09').must_equal ".  J. Brown, Ed., _Book title_. OUP, 2009."
+    p.get_reference('smith10').must_equal ". D. Smith, _Book title_. Mahwah, NJ: Lawrence Erlbaum, 2010."
+    p.get_reference('brown09').must_equal ". J. Brown, Ed., _Book title_. OUP, 2009."
   end
 
   it "must return harvard style (APA) references" do

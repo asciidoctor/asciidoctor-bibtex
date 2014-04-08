@@ -115,7 +115,7 @@ describe AsciidocBib do
   end
 
   it "provides method to combine consecutive numbers" do
-    p = Processor.new nil, nil, nil
+    p = Processor.new BibTeX.open('test/data/test.bib'), nil, :apa
     p.combine_consecutive_numbers("1,2,3").must_equal "1-3"
     p.combine_consecutive_numbers("1,2,3,5,7,8,9,12").must_equal "1-3, 5, 7-9, 12"
   end

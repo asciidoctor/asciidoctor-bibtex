@@ -27,6 +27,9 @@ module AsciidocBib
       @style = style
       @citations = Citations.new
       @filenames = Set.new
+
+      @citeproc = CiteProc::Processor.new style: @style, format: :html
+      @citeproc.import @biblio.to_citeproc
     end
 
     # Given an asciidoc filename, reads in all dependent files based on 'include::' statements
@@ -130,8 +133,7 @@ module AsciidocBib
         # if found, insert reference information
         unless biblio[cite.ref].nil?
           item = biblio[cite.ref].clone
-          item['citation-number'] = @citations.cites_used.index(cite.ref) + 1
-          cite_text, ob, cb = make_citation item, cite_data, cite
+          cite_text, ob, cb = make_citation item, cite.ref, cite_data, cite
         else
           puts "Unknown reference: #{cite.ref}"
           cite_text = "#{cite.ref}"
@@ -154,20 +156,18 @@ module AsciidocBib
 
     # Retrieve text for reference in given style
     # - ref is reference for item to give reference for
-    # TODO: CiteProc.process seems to ignore some 
-    # latex format entries, e.g. institution in 'techreport'
     def get_reference ref
       result = ""
       result << ". " if Styles.is_numeric? @style
 
-      item = @biblio[ref]
-      item = item.convert_latex unless item.nil?
-
+      cptext = @citeproc.render :bibliography, id: ref
+      cptext = cptext.first
       result << "[[#{ref}]]" if @links
-      return result+ref if item.nil?
-
-      cptext = CiteProc.process item.to_citeproc, :style => @style, :format => :html
-      result << cptext unless cptext.nil?
+      if cptext.nil?
+        return result+ref
+      else
+        result << cptext
+      end
 
       return result.html_to_asciidoc
     end
@@ -217,16 +217,24 @@ module AsciidocBib
       end
     end
 
-    def make_citation item, cite_data, cite
-      cite_text = CiteProc.process item.to_citeproc, :style => @style, :format => :html, :mode => 'citation'
-      cite_text = cite_text[0]
+    # Numeric citations are handled by computing the position of the reference 
+    # in the list of used citations.
+    # Other citations are formatted by citeproc.
+    def make_citation item, ref, cite_data, cite
+      if Styles.is_numeric? @style
+        cite_text = "#{@citations.cites_used.index(cite.ref) + 1}"
+        fc = '['
+        lc = ']'
+      else
+        cite_text = @citeproc.process id: ref, mode: :citation
 
-      fc = cite_text[0,1]
-      lc = cite_text[-1,1]
-      cite_text = cite_text[1..-2]
+        fc = cite_text[0,1]
+        lc = cite_text[-1,1]
+        cite_text = cite_text[1..-2]
+      end
 
       if Styles.is_numeric? @style
-        cite_text << page_str(cite)
+        cite_text << "#{page_str(cite)}"
       elsif cite_data.type == "citenp"
         cite_text.gsub!(item.year, "#{fc}#{item.year}#{page_str(cite)}#{lc}")
         cite_text.gsub!(", #{fc}", " #{fc}")
@@ -236,7 +244,7 @@ module AsciidocBib
 
       cite_text.gsub!(",", "&#44;") if @links # replace comma
 
-      return cite_text, fc, lc
+        return cite_text, fc, lc
     end
 
     def sorted_cites

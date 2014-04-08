@@ -28,6 +28,7 @@ END
   s.executables << 'asciidoc-bib'
   s.executables << 'asciidoctor-bib'
   s.add_dependency('bibtex-ruby', '>=2.2.0')
-  s.add_dependency('citeproc-ruby', '>=0.0.6')
+  s.add_dependency('citeproc-ruby', '=1.0.0')
+  s.add_dependency('csl-styles', '=1.0.1.4')
 end
 
