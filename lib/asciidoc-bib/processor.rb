@@ -160,13 +160,16 @@ module AsciidocBib
       result = ""
       result << ". " if Styles.is_numeric? @style
 
-      cptext = @citeproc.render :bibliography, id: ref
-      cptext = cptext.first
+      begin
+        cptext = @citeproc.render :bibliography, id: ref
+      rescue Exception => e
+        puts e
+      end
       result << "[[#{ref}]]" if @links
       if cptext.nil?
         return result+ref
       else
-        result << cptext
+        result << cptext.first
       end
 
       return result.html_to_asciidoc

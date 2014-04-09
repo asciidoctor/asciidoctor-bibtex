@@ -60,7 +60,7 @@ module AsciidocBib
         exit
       end
       unless AsciidocBib::Styles.valid? @style
-        puts "Error: style must be one of #{AsciidocBib::Styles.available.join(", ")}"
+        puts "Error: style #{@style} was not one of the available styles"
         exit
       end
       if ARGV.length == 1

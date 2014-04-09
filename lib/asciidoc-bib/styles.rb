@@ -9,12 +9,12 @@ module AsciidocBib
 
     # Valid reference styles
     def Styles.available
-      CSL::Styles.ls
+      CSL::Style.ls
     end
 
     # Make the default style simple APA
     def Styles.default_style
-      :apa
+      'apa'
     end
 
     # Check if given style is a valid style
