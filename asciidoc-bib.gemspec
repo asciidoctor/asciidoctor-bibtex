@@ -1,3 +1,7 @@
+lib = File.expand_path('lib/', __FILE__)
+$:.unshift lib unless $:.include?(lib)
+
+require 'asciidoc-bib/version'
 
 Gem::Specification.new do |s|
   s.name = 'asciidoc-bib'
@@ -13,8 +17,8 @@ asciidoc-bib generates in-text references and a reference list from an asciidoc
 file, using a bibtex file as a source of citation information.  The syntax for
 an in-text reference is simply [cite:bibref], and a line containing
 [bibliography] inserts a complete reference list.  See the README for more
-examples and further options.  The reference format supports styles provided 
-by citeproc-ruby; see the README file for a complete list.
+examples and further options.  The references are formatted using styles provided 
+by CSL.
 END
   s.files = Dir['lib/**/*'] + Dir['samples/*'] + [
     'LICENSE.txt',
@@ -27,8 +31,8 @@ END
   s.extra_rdoc_files << 'README.rdoc'
   s.executables << 'asciidoc-bib'
   s.executables << 'asciidoctor-bib'
-  s.add_dependency('bibtex-ruby', '>=2.2.0')
-  s.add_dependency('citeproc-ruby', '=1.0.0')
-  s.add_dependency('csl-styles', '=1.0.1.4')
+  s.add_runtime_dependency('bibtex-ruby', '~>2.2')
+  s.add_runtime_dependency('citeproc-ruby', '~>1.0', '>=1.0.1')
+  s.add_runtime_dependency('csl-styles', '~>1.0', '>=1.0.1.4')
 end
 

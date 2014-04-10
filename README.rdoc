@@ -43,6 +43,8 @@ The second is for _asciidoctor_ only, and uses its extension mechanism to
 provide a single pass compilation of your documentation, including references.
 'asciidoctor-bib' works as a replacement for asciidoctor.
 
+Styles must be one of those supported by CSL: https://github.com/citation-style-language/styles
+
 === Include a citation
 
 Syntax for inserting a citation is [cite|citenp:(pretext:)ref(,pages)] 
