@@ -14,7 +14,7 @@ module AsciidocBib
       @pages = pages
       # clean up pages
       @pages = '' unless @pages
-      @pages.gsub!("--","-") unless @pages.nil?
+      @pages.gsub!("--","-")
     end
 
     def to_s

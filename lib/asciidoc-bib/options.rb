@@ -22,9 +22,8 @@ module AsciidocBib
           puts
           puts options
           puts
-          puts "Supported styles (first is default):"
-          print "   "
-          puts AsciidocBib::Styles.available.join("\n   ")
+          puts "All styles available through CSL are supported."
+          puts "The default style is 'apa'."
           exit!
         end
         opts.on("-b", "--bibfile FILE", "location of bib file") do |v|
@@ -49,6 +48,7 @@ module AsciidocBib
         exit!
       end
 
+      # unless specified by caller, try to find the bibliography
       if @bibfile.empty?
         @bibfile = AsciidocBib::FileUtils.find_bibliography "."
         if @bibfile.empty?

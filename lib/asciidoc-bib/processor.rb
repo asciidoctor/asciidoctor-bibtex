@@ -1,5 +1,5 @@
 #
-# Manage the current set of citations, the document settings, and 
+# Manage the current set of citations, the document settings, 
 # and main operations.
 #
 
@@ -163,7 +163,7 @@ module AsciidocBib
       begin
         cptext = @citeproc.render :bibliography, id: ref
       rescue Exception => e
-        puts e
+        puts "Failed to render #{id}: #{e}"
       end
       result << "[[#{ref}]]" if @links
       if cptext.nil?

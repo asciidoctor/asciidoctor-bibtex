@@ -42,6 +42,7 @@ module StringHtmlToAsciiDoc
     r = self.gsub(/<\/?i>/, '_')
     r = r.gsub(/<\/?b>/, '*')
     r = r.gsub(/<\/?span.*?>/, '')
+    r = r.gsub(/\{|\}/, '')
     r
   end
 end

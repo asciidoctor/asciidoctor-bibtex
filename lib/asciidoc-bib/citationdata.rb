@@ -5,7 +5,7 @@
 
 module AsciidocBib
   # Class to hold information about a citation in text:
-  # the text forming the citation, its type, pretext, and constituent cites
+  # the text forming the citation, its type, pretext, and enclosed cites
   class CitationData 
     attr_reader :original, :type, :pretext, :cites 
 

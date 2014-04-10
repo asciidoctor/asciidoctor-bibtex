@@ -103,32 +103,6 @@ Command-line options:
      -s, --style STYLE                reference style
      -v, --version                    show version
  
- Supported styles:
-    apa
-    bibtex
-    chicago-annotated-bibliography
-    chicago-author-date-basque
-    chicago-author-date-de
-    chicago-author-date
-    chicago-dated-note-biblio-no-ibid
-    chicago-fullnote-bibliography-bb
-    chicago-fullnote-bibliography-delimiter-fixes
-    chicago-fullnote-bibliography-no-ibid-delimiter-fixes
-    chicago-fullnote-bibliography-no-ibid
-    chicago-fullnote-bibliography
-    chicago-library-list
-    chicago-note-biblio-no-ibid
-    chicago-note-bibliography
-    chicago-quick-copy
-    ieee
-    mla-notes
-    mla-underline
-    mla-url
-    mla
-    vancouver-brackets
-    vancouver-superscript-bracket-only-year
-    vancouver-superscript
-    vancouver
 
 === Processing Text: Asciidoctor
 
@@ -139,7 +113,6 @@ Command-line options:
 
 - no automatic use of _et_ _al_
 - use header to define style/biblio etc
-- use csl-styles and csl-ruby to access all CSL styles
 
 == License
 
