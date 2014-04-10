@@ -40,14 +40,13 @@ module AsciidocBib
           end
 
           # -- add in bibliography
-          # TODO: need to process the inserted lines, e.g. to number numeric references
 
           biblio_index = lines.index "[bibliography]\n"
           unless biblio_index.nil?
             lines.delete_at biblio_index
             processor.sorted_cites.reverse.each do |ref|
               lines.insert biblio_index, "\n"
-              lines.insert biblio_index, "[[#{ref}]]" + processor.get_reference(ref) + "\n"
+              lines.insert biblio_index, processor.get_reference(ref) + "\n"
             end
           end
 

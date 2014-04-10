@@ -10,15 +10,15 @@ module AsciidocBib
   class Options
     attr_reader :bibfile, :filename, :links, :style
 
-    def initialize
+    def initialize(program_name = 'asciidoc-bib')
       @bibfile = ''
       @links = true
       @style = AsciidocBib::Styles.default_style
 
       options = OptionParser.new do |opts|
-        opts.banner = "Usage: asciidoc-bib filename"
+        opts.banner = "Usage: #{program_name} filename"
         opts.on("-h", "--help", "help message") do |v|
-          puts "asciidoc-bib #{AsciidocBib::VERSION}"
+          puts "#{program_name} #{AsciidocBib::VERSION}"
           puts
           puts options
           puts
@@ -36,7 +36,7 @@ module AsciidocBib
           @style = v
         end
         opts.on("-v", "--version", "show version") do |v|
-          puts "asciidoc-bib version #{AsciidocBib::VERSION}"
+          puts "#{program_name} version #{AsciidocBib::VERSION}"
           exit!
         end
       end

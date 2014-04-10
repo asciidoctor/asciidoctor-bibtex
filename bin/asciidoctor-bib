@@ -10,6 +10,6 @@
 
 require 'asciidoc-bib'
 
-options = AsciidocBib::Options.new
+options = AsciidocBib::Options.new('asciidoctor-bib')
 AsciidocBib::Asciidoctor.run options
 

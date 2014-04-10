@@ -11,7 +11,7 @@ Features:
 - groups consecutive numeric references, e.g. [1,2,3] -> [1-3]
 - use either:
   * by transforming source text to include references and full reference list
-  * (in progress) with asciidoctor extension for single-pass compilation of document with references
+  * with asciidoctor extension for single-pass compilation of document with references
 
 == Install
 
@@ -19,8 +19,8 @@ Features:
 
 Installs two executable programs:
 
-- 'asciidoc-bib' for transforming source text
-- 'asciidoctor-bib' uses asciidoctor extension
+- 'asciidoc-bib' for transforming source text into asciidoc 
+- 'asciidoctor-bib' uses asciidoctor extension for single-pass output
 
 asciidoc-bib depends on bibtex-ruby[http://github.com/inukshuk/bibtex-ruby] and
 citeproc-ruby[http://github.com/inukshuk/citeproc-ruby].
@@ -41,7 +41,8 @@ document.
 
 The second is for _asciidoctor_ only, and uses its extension mechanism to
 provide a single pass compilation of your documentation, including references.
-'asciidoctor-bib' works as a replacement for asciidoctor.
+'asciidoctor-bib' works as a replacement for asciidoctor.  (Currently, asciidoctor 
+options not supported.)
 
 Styles must be one of those supported by CSL: https://github.com/citation-style-language/styles
 
@@ -95,26 +96,48 @@ Check the new file, and process in the usual way with asciidoc.
 
 Command-line options:
 
- > asciidoc-bib -h
- asciidoc-bib 2.0.0
+  > asciidoc-bib -h
+  asciidoc-bib 2.1.0
 
- Usage: asciidoc-bib filename
-     -h, --help                       help message
-     -b, --bibfile FILE               location of bib file
-     -n, --no-links                   do not add internal links
-     -s, --style STYLE                reference style
-     -v, --version                    show version
+  Usage: asciidoc-bib filename
+      -h, --help                       help message
+      -b, --bibfile FILE               location of bib file
+      -n, --no-links                   do not add internal links
+      -s, --style STYLE                reference style
+      -v, --version                    show version
  
+  All styles available through CSL are supported.
+  The default style is 'apa'.
 
 === Processing Text: Asciidoctor
 
   > asciidoctor-bib filename
+
+Looks for a bib file in current folder and in ~/Documents.
+
+Outputs an html file, including all citations and references.
+
+Command-line options: 
+
+  > asciidoctor-bib -h
+  asciidoc-bib 2.1.0
+
+  Usage: asciidoc-bib filename
+      -h, --help                       help message
+      -b, --bibfile FILE               location of bib file
+      -n, --no-links                   do not add internal links
+      -s, --style STYLE                reference style
+      -v, --version                    show version
+
+  All styles available through CSL are supported.
+  The default style is 'apa'.
 
 
 == Limitations/TODO
 
 - no automatic use of _et_ _al_
 - use header to define style/biblio etc
+- no asciidoctor options in asciidoctor-bib
 
 == License
 

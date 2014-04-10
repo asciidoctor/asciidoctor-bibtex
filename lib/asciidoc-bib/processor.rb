@@ -225,7 +225,7 @@ module AsciidocBib
     # Other citations are formatted by citeproc.
     def make_citation item, ref, cite_data, cite
       if Styles.is_numeric? @style
-        cite_text = "#{@citations.cites_used.index(cite.ref) + 1}"
+        cite_text = "#{sorted_cites.index(cite.ref) + 1}"
         fc = '['
         lc = ']'
       else
