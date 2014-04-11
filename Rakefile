@@ -7,8 +7,16 @@ require 'rake/testtask'
 
 Rake::TestTask.new do |t|
   t.libs.push "lib"
+  t.libs.push "test"
   t.test_files = FileList['test/*_test.rb']
   t.verbose = true
+end
+
+desc 'Generates a coverage report'
+task :coverage do
+  `rm -rf coverage`
+  ENV['COVERAGE'] = 'true'
+  Rake::Task['test'].execute
 end
 
 desc 'run lib code on sample'

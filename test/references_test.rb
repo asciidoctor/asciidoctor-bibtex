@@ -3,10 +3,7 @@
 # Copyright (c) Peter Lane, 2012.
 # Released under Open Works License, 0.9.2
 
-require 'asciidoc-bib'
-require 'minitest/autorun'
-
-include AsciidocBib
+require 'test_helper'
 
 describe AsciidocBib do
   it "must return Chicago style references" do

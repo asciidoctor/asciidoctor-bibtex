@@ -138,6 +138,7 @@ Command-line options:
 - no automatic use of _et_ _al_
 - use header to define style/biblio etc
 - no asciidoctor options in asciidoctor-bib
+- BUG: asciidoctor-bib not including images
 
 == License
 
