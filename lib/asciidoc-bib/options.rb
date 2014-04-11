@@ -43,16 +43,16 @@ module AsciidocBib
 
       begin
         options.parse!
-      rescue
+      rescue 
         puts options
         exit!
       end
 
       # unless specified by caller, try to find the bibliography
       if @bibfile.empty?
-        @bibfile = AsciidocBib::FileUtils.find_bibliography "."
+        @bibfile = AsciidocBib::FileHandlers.find_bibliography "."
         if @bibfile.empty?
-          @bibfile = AsciidocBib::FileUtils.find_bibliography "#{ENV['HOME']}/Documents"
+          @bibfile = AsciidocBib::FileHandlers.find_bibliography "#{ENV['HOME']}/Documents"
         end
       end
       if @bibfile.empty?
@@ -63,6 +63,7 @@ module AsciidocBib
         puts "Error: style #{@style} was not one of the available styles"
         exit
       end
+
       if ARGV.length == 1
         @filename = ARGV[0]
       else

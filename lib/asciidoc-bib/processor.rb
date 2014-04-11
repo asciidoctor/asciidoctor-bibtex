@@ -67,7 +67,7 @@ module AsciidocBib
     # Assumes @filenames has been set to list of filenames to process.
     def add_citations 
       @filenames.each do |curr_file|
-        ref_filename = FileUtils.add_ref(curr_file)
+        ref_filename = FileHandlers.add_ref(curr_file)
         puts "Writing file:	#{ref_filename}"
         output = File.new(ref_filename, "w")
 
@@ -104,7 +104,7 @@ module AsciidocBib
         ifile = filetxt.partition(/\s|\[/).first
         file = File.expand_path ifile 
         # make sure included file points to the -ref version
-        line.gsub!("include::#{ifile}", "include::#{FileUtils.add_ref(file)}")
+        line.gsub!("include::#{ifile}", "include::#{FileHandlers.add_ref(file)}")
       end
       output.puts line
     end

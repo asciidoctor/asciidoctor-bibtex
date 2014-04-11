@@ -42,7 +42,7 @@ document.
 The second is for _asciidoctor_ only, and uses its extension mechanism to
 provide a single pass compilation of your documentation, including references.
 'asciidoctor-bib' works as a replacement for asciidoctor.  (Currently, asciidoctor 
-options not supported.)
+command-line options are not supported.)
 
 Styles must be one of those supported by CSL: https://github.com/citation-style-language/styles
 
@@ -97,7 +97,7 @@ Check the new file, and process in the usual way with asciidoc.
 Command-line options:
 
   > asciidoc-bib -h
-  asciidoc-bib 2.1.0
+  asciidoc-bib 2.2.0
 
   Usage: asciidoc-bib filename
       -h, --help                       help message
@@ -120,7 +120,7 @@ Outputs an html file, including all citations and references.
 Command-line options: 
 
   > asciidoctor-bib -h
-  asciidoc-bib 2.1.0
+  asciidoc-bib 2.2.0
 
   Usage: asciidoc-bib filename
       -h, --help                       help message
@@ -138,7 +138,7 @@ Command-line options:
 - no automatic use of _et_ _al_
 - use header to define style/biblio etc
 - no asciidoctor options in asciidoctor-bib
-- BUG: asciidoctor-bib not including images
+- bracketed citations should not be placed in footnotes
 
 == License
 
