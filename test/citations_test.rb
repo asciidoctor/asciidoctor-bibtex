@@ -40,6 +40,7 @@ describe AsciidocBib do
     citationdata.first.cites[0].pages.must_equal "1-20"
     citationdata.first.cites[1].ref.must_equal "another11"
     citationdata.first.cites[1].pages.must_equal "15"
+    citationdata.first.cites[0].to_s.must_equal 'author12:1-20'
   end
 
   it "should extract page numbers as well as refs" do

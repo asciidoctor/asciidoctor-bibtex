@@ -1,13 +1,13 @@
 #
-# fileutils.rb
+# filehandlers.rb
 # Contains top-level file utility methods
 #
 
 module AsciidocBib
 
-  module FileUtils
+  module FileHandlers
     # Locate a bibliography file to read in given dir
-    def FileUtils.find_bibliography dir
+    def FileHandlers.find_bibliography dir
       begin
         candidates = Dir.glob("#{dir}/*.bib")
         if candidates.empty?
@@ -21,7 +21,7 @@ module AsciidocBib
     end
 
     # Add '-ref' before the extension of a filename
-    def FileUtils.add_ref filename
+    def FileHandlers.add_ref filename
       file_dir = File.dirname(File.expand_path(filename))
       file_base = File.basename(filename, ".*")
       file_ext = File.extname(filename)
