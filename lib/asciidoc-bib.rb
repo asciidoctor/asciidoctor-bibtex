@@ -8,7 +8,10 @@ require 'citeproc'
 require 'csl/styles'
 require 'set'
 
-require 'asciidoc-bib/asciidoctor'
+# Only require asciidoctor file if asciidoctor gem is installed
+unless Gem::Specification.find_all_by_name('asciidoctor').empty?
+  require 'asciidoc-bib/asciidoctor'
+end
 require 'asciidoc-bib/citation'
 require 'asciidoc-bib/citationdata'
 require 'asciidoc-bib/citationutils'
