@@ -22,11 +22,14 @@ Installs two executable programs:
 - 'asciidoc-bib' for transforming source text into asciidoc 
 - 'asciidoctor-bib' uses asciidoctor extension for single-pass output
 
-asciidoc-bib depends on bibtex-ruby[http://github.com/inukshuk/bibtex-ruby] and
-citeproc-ruby[http://github.com/inukshuk/citeproc-ruby].
+asciidoc-bib depends on bibtex-ruby[http://github.com/inukshuk/bibtex-ruby],
+citeproc-ruby[http://github.com/inukshuk/citeproc-ruby] and
+csl-styles[http://github.com/inukshuk/csl-styles].
 (Ensure 'ruby-dev' and 'libxslt1-dev' are installed, so the dependencies will 
 compile.)
 
+asciidoctor[https://github.com/asciidoctor/asciidoctor] must also be installed
+for 'asciidoctor-bib' to work.
 
 == Use 
 
