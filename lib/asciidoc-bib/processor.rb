@@ -93,7 +93,8 @@ module AsciidocBib
 
     # Output bibliography to given output
     def output_bibliography output
-      sorted_cites.each do |ref|
+      cites = if Styles.is_numeric? @style then @citations.cites_used else sorted_cites end
+      cites.each do |ref|
         output.puts get_reference(ref)
         output.puts
       end
@@ -225,7 +226,7 @@ module AsciidocBib
     # Other citations are formatted by citeproc.
     def make_citation item, ref, cite_data, cite
       if Styles.is_numeric? @style
-        cite_text = "#{sorted_cites.index(cite.ref) + 1}"
+        cite_text = "#{@citations.cites_used.index(cite.ref) + 1}"
         fc = '['
         lc = ']'
       else
