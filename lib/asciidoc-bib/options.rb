@@ -13,6 +13,7 @@ module AsciidocBib
     def initialize(program_name = 'asciidoc-bib')
       @bibfile = ''
       @links = true
+      @numeric_order = :alphabetical
       @style = AsciidocBib::Styles.default_style
 
       options = OptionParser.new do |opts|
@@ -31,6 +32,12 @@ module AsciidocBib
         end
         opts.on("-n", "--no-links", "do not add internal links") do |v|
           @links = false
+        end
+        opts.on('', '--numeric-alphabetic-order', 'sort numeric styles in alphabetical order (DEFAULT)') do |v|
+          @numeric_order = :alphabetical
+        end
+        opts.on('', '--numeric-appearance-order', 'sort numeric styles in order of appearance') do |v|
+          @numeric_order = :appearance
         end
         opts.on("-s", "--style STYLE", "reference style") do |v|
           @style = v
@@ -73,6 +80,10 @@ module AsciidocBib
 
       puts "Reading biblio: #{@bibfile}"
       puts "Reference style: #{@style}"
+    end
+
+    def numeric_in_appearance_order?
+      @numeric_order == :appearance
     end
   end
 end

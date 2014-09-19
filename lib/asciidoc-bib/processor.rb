@@ -13,7 +13,7 @@ module AsciidocBib
 
     # Top-level method to include citations in given asciidoc file
     def Processor.run options
-      processor = Processor.new BibTeX.open(options.bibfile), options.links, options.style
+      processor = Processor.new BibTeX.open(options.bibfile), options.links, options.style, options.numeric_in_appearance_order?
       processor.read_filenames options.filename
       processor.read_citations 
       processor.add_citations
@@ -21,9 +21,10 @@ module AsciidocBib
 
     attr_reader :biblio, :links, :style, :citations
 
-    def initialize biblio, links, style
+    def initialize biblio, links, style, numeric_in_appearance_order
       @biblio = biblio
       @links = links
+      @numeric_in_appearance_order = numeric_in_appearance_order
       @style = style
       @citations = Citations.new
       @filenames = Set.new
@@ -93,7 +94,11 @@ module AsciidocBib
 
     # Output bibliography to given output
     def output_bibliography output
-      cites = if Styles.is_numeric? @style then @citations.cites_used else sorted_cites end
+      cites = if Styles.is_numeric?(@style) and @numeric_in_appearance_order
+                @citations.cites_used 
+              else 
+                sorted_cites 
+              end
       cites.each do |ref|
         output.puts get_reference(ref)
         output.puts
@@ -226,7 +231,11 @@ module AsciidocBib
     # Other citations are formatted by citeproc.
     def make_citation item, ref, cite_data, cite
       if Styles.is_numeric? @style
-        cite_text = "#{@citations.cites_used.index(cite.ref) + 1}"
+        cite_text = if @numeric_in_appearance_order
+                      "#{@citations.cites_used.index(cite.ref) + 1}"
+                    else
+                      "#{sorted_cites.index(cite.ref) + 1}"
+                    end
         fc = '['
         lc = ']'
       else

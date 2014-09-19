@@ -1,0 +1,7 @@
+= Changes to asciidoc-bib
+
+== version 2.3.0
+
+. added switch for order of numeric citations in bibliography, with choice of 
+  order of appearance or alphabetical order
+
