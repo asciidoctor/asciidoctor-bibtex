@@ -74,7 +74,6 @@ module AsciidocBib
 
         IO.foreach(curr_file) do |line|
           begin # catch any errors, and ensure the lines of text are written
-            line.strip! 
             case 
             when line.include?('include::')
               output_include_line output, line
