@@ -21,7 +21,7 @@ module AsciidocBib
 
     attr_reader :biblio, :links, :style, :citations
 
-    def initialize biblio, links, style, numeric_in_appearance_order
+    def initialize biblio, links, style, numeric_in_appearance_order = false
       @biblio = biblio
       @links = links
       @numeric_in_appearance_order = numeric_in_appearance_order
