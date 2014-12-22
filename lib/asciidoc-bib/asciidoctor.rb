@@ -14,16 +14,12 @@ module AsciidocBib
       Class.new(::Asciidoctor::Extensions::Preprocessor) do
         @@options = options
 
-        def process reader, lines
-          return reader if lines.empty?
+        def process document, reader
+          return reader if reader.eof?
 
           # -- read in all lines from reader, processing the lines
 
-          lines = []
-          while reader.has_more_lines?
-            lines << reader.read_line
-          end
-
+          lines = reader.readlines
           biblio = BibTeX.open @@options.bibfile
 
           processor = Processor.new biblio, @@options.links, @@options.style
@@ -50,13 +46,14 @@ module AsciidocBib
             end
           end
 
-          return ::Asciidoctor::Reader.new lines
+          reader.unshift_lines lines
+          reader
         end
       end
     end
 
     def Asciidoctor.setup_extension options
-      ::Asciidoctor::Extensions.register do |document|
+      ::Asciidoctor::Extensions.register do
         preprocessor Asciidoctor.AsciidocBibExtension(options)
       end
     end
