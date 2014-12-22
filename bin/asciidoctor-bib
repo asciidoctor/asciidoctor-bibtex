@@ -8,8 +8,10 @@
 # Copyright (c) Peter Lane, 2013.
 # Released under Open Works License, 0.9.2
 
+unless $:.include?(libdir = File.expand_path('../lib', File.dirname(__FILE__)))
+  $:.unshift libdir
+end
 require 'asciidoc-bib'
 
 options = AsciidocBib::Options.new('asciidoctor-bib')
 AsciidocBib::Asciidoctor.run options
-
