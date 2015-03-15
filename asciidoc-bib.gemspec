@@ -1,7 +1,4 @@
-lib = File.expand_path('lib/', __FILE__)
-$:.unshift lib unless $:.include?(lib)
-
-require 'asciidoc-bib/version'
+require File.expand_path('lib/asciidoc-bib/version', File.dirname(__FILE__))
 
 Gem::Specification.new do |s|
   s.name = 'asciidoc-bib'
