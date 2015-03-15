@@ -29,7 +29,7 @@ csl-styles[http://github.com/inukshuk/csl-styles].
 compile.)
 
 asciidoctor[https://github.com/asciidoctor/asciidoctor] must also be installed
-for 'asciidoctor-bib' to work.
+for 'asciidoctor-bib' to work; version 2.3.1 requires asciidoctor version 1.5.2 or higher.
 
 == Use 
 
@@ -125,7 +125,7 @@ Outputs an html file, including all citations and references.
 Command-line options: 
 
   > asciidoctor-bib -h
-  asciidoctor-bib 2.3.0
+  asciidoctor-bib 2.3.1
 
   Usage: asciidoctor-bib filename
       -h, --help                       help message
@@ -144,7 +144,6 @@ Command-line options:
 == Limitations/TODO
 
 - no automatic use of _et_ _al_
-- use header to define style/biblio etc
 - no asciidoctor options in asciidoctor-bib
 - bracketed citations should not be placed in footnotes
 
@@ -168,3 +167,5 @@ a section template name, [sect1], before it.
 citeproc.
 
 {Patrick Huck}[https://github.com/tschaume] presentation order for numeric styles.
+
+{Dan Allen}[https://github.com/mojavelinux] for updating asciidoctor processing to use new API.

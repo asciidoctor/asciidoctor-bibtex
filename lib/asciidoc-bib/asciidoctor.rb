@@ -37,17 +37,23 @@ module AsciidocBib
 
           # -- add in bibliography
 
-          biblio_index = lines.index "[bibliography]\n"
+          biblio_index = lines.index do |line|
+            # find [bibliography] on line by itself, with or without newline
+            (line =~ /\[bibliography\](\n)?/) != nil
+          end
           unless biblio_index.nil?
             lines.delete_at biblio_index
             processor.sorted_cites.reverse.each do |ref|
               lines.insert biblio_index, "\n"
-              lines.insert biblio_index, processor.get_reference(ref) + "\n"
+              lines.insert biblio_index, processor.get_reference(ref)
+              lines.insert biblio_index, "\n"
+              lines.insert biblio_index, "[normal]\n" # ? needed to force paragraph breaks
             end
           end
 
           reader.unshift_lines lines
-          reader
+
+          return reader
         end
       end
     end

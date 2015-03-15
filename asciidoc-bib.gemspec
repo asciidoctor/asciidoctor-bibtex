@@ -23,13 +23,13 @@ END
     'bin/asciidoc-bib',
     'bin/asciidoctor-bib'
   ]
-  s.require_path = 'lib'
   s.has_rdoc = true
   s.extra_rdoc_files << 'README.rdoc'
   s.executables << 'asciidoc-bib'
   s.executables << 'asciidoctor-bib'
-  s.add_runtime_dependency('bibtex-ruby', '~>2.2')
-  s.add_runtime_dependency('citeproc-ruby', '~>1.0', '>=1.0.1')
-  s.add_runtime_dependency('csl-styles', '~>1.0', '>=1.0.1.4')
+  s.required_ruby_version = '~> 2.0'
+  s.add_runtime_dependency('bibtex-ruby', '~>4.0', '>=4.0.11')
+  s.add_runtime_dependency('citeproc-ruby', '~>1.0', '>=1.0.5')
+  s.add_runtime_dependency('csl-styles', '~>1.0', '>=1.0.1.6')
 end
 
