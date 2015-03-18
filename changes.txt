@@ -1,5 +1,9 @@
 = Changes to asciidoc-bib
 
+== version 2.3.1
+
+. now works with asciidoctor 1.5 api
+
 == version 2.3.0
 
 . added switch for order of numeric citations in bibliography, with choice of 
