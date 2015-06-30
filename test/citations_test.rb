@@ -61,4 +61,11 @@ describe AsciidocBib do
     cites.add_from_line "[citenp:author12;another11;author12]"
     cites.cites_used.size.must_equal 2
   end
+
+  it 'should work with dash in citation' do
+    cites = Citations.new
+    cites.add_from_line "[cite:some-author]"
+    cites.cites_used.size.must_equal 1
+    cites.cites_used[0].must_equal 'some-author'
+  end
 end
