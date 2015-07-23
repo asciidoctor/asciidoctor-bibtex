@@ -28,7 +28,7 @@ unless (ARGV & ['-V', '--version']).empty?
 end
 
 # Add help information on how to set bibtex related values via asciidoctor
-# commandline
+# commandline. This is the usual CLI attributes definition.
 if not (ARGV & ['-h', '--help']).empty?
   # parse argument with asciidoctor to print asciidoctor's helps
   options.parse! ARGV
@@ -37,13 +37,22 @@ if not (ARGV & ['-h', '--help']).empty?
   puts ""
   puts "    -a bib-file=FILENAME    Set BibTex filename (default: auto-find)"
   puts "    -a bib-style=STYLE      Set BibTex items style (default: apa)"
-  puts "    -a bib-numeric-order=(alphabetical|appearance)"
+  puts "    -a bib-numeric-order=<alphabetical|appearance>"
   puts "                            Set citation order scheme (default: alphabetical)"
   puts "    -a bib-no-links=1       Do not use links (default: use links)"
   puts ""
   exit 0
-else
-  options.parse! ARGV
 end
 
-AsciidocBib::Asciidoctor.run options
+# Use standard asciidoctor CLI mechanism to call asciidoctor, so we can accept
+# all asciidoctor options. Note that we only accept asciidoctor options here.
+# This code is stolen shamlessly from asciidoctor-pdf
+case (result = options.parse! ARGV)
+when Integer
+  exit result
+else
+  invoker = Asciidoctor::Cli::Invoker.new options
+  GC.start
+  invoker.invoke!
+  exit invoker.code
+end
