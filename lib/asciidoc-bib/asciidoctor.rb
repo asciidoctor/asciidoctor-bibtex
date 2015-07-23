@@ -7,15 +7,19 @@
 
 require 'asciidoctor'
 require 'asciidoctor/extensions'
+require 'asciidoctor/cli'
+require 'asciidoc-bib/options'
 
 module AsciidocBib
   module Asciidoctor
-    def Asciidoctor.AsciidocBibExtension options
+    def Asciidoctor.AsciidocBibExtension
       Class.new(::Asciidoctor::Extensions::Preprocessor) do
-        @@options = options
+        @@options = Options.new
 
         def process document, reader
           return reader if reader.eof?
+
+          @@options.parse_attributes document.attributes
 
           # -- read in all lines from reader, processing the lines
 
@@ -57,16 +61,21 @@ module AsciidocBib
       end
     end
 
-    def Asciidoctor.setup_extension options
+    def Asciidoctor.setup_extension
       ::Asciidoctor::Extensions.register do
-        preprocessor Asciidoctor.AsciidocBibExtension(options)
+        preprocessor Asciidoctor.AsciidocBibExtension
       end
     end
 
-    # TODO: Use CLI to include asciidoctor options
+    # Use standard asciidoctor CLI mechanism to call asciidoctor, so we can
+    # accept all asciidoctor options. Note that we only accept asciidoctor
+    # options here.
     def Asciidoctor.run options
-      Asciidoctor.setup_extension options
-      ::Asciidoctor.render_file options.filename, :safe => :safe, :in_place => true
+      Asciidoctor.setup_extension
+      invoker = ::Asciidoctor::Cli::Invoker.new options
+      GC.start
+      invoker.invoke!
+      exit invoker.code
     end
   end
 end

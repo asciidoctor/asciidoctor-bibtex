@@ -12,6 +12,38 @@ unless $:.include?(libdir = File.expand_path('../lib', File.dirname(__FILE__)))
   $:.unshift libdir
 end
 require 'asciidoc-bib'
+require 'asciidoctor/cli'
 
-options = AsciidocBib::Options.new('asciidoctor-bib')
+# Treat '--version' specially, like that in asciidoctor-pdf
+options = Asciidoctor::Cli::Options.new
+unless (ARGV & ['-V', '--version']).empty?
+  $stdout.write %(Asciidoctor Bib #{AsciidocBib::VERSION} using )
+  # NOTE the print_version method was added in Asciidoctor 1.5.2
+  if options.respond_to? :print_version
+    options.print_version
+  else
+    puts %(Asciidoctor #{::Asciidoctor::VERSION} [http://asciidoctor.org])
+  end
+  exit 0
+end
+
+# Add help information on how to set bibtex related values via asciidoctor
+# commandline
+if not (ARGV & ['-h', '--help']).empty?
+  # parse argument with asciidoctor to print asciidoctor's helps
+  options.parse! ARGV
+  puts ""
+  puts "AsciidoctorBib related options:"
+  puts ""
+  puts "    -a bib-file=FILENAME    Set BibTex filename (default: auto-find)"
+  puts "    -a bib-style=STYLE      Set BibTex items style (default: apa)"
+  puts "    -a bib-numeric-order=(alphabetical|appearance)"
+  puts "                            Set citation order scheme (default: alphabetical)"
+  puts "    -a bib-no-links=1       Do not use links (default: use links)"
+  puts ""
+  exit 0
+else
+  options.parse! ARGV
+end
+
 AsciidocBib::Asciidoctor.run options

@@ -15,4 +15,5 @@ end
 require 'asciidoc-bib'
 
 options = AsciidocBib::Options.new
+options.parse!
 AsciidocBib::Processor.run options
