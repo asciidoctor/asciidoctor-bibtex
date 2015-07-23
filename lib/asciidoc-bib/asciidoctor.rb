@@ -46,7 +46,6 @@ module AsciidocBib
             processor.sorted_cites.reverse.each do |ref|
               lines.insert biblio_index, "\n"
               lines.insert biblio_index, processor.get_reference(ref)
-              lines.insert biblio_index, "\n"
               lines.insert biblio_index, "[normal]\n" # ? needed to force paragraph breaks
             end
           end
