@@ -3,12 +3,12 @@
 The bibliography is searched in the folder of the document, and then 
 in ~/Documents.
 
-Author-year references can use different styles such as: [cite:Lane12a] or
-[citenp:Lane12a].
+Author-year references can use different styles such as: cite:[Lane12a] or
+citenp:[Lane12a].
 
-Page numbers can be added: [cite:Lane12a,89] or [citenp:Lane12a,89-93].
+Page numbers can be added: cite:[Lane12a(89)] or citenp:[Lane12a(89-93)].
 
-A bit of pretext can be included too: [cite:See:Lane12a,89]
+A bit of pretext can be included too: See cite:[Lane12a(89)]
 
 We can include other files, which are also processed:
 
@@ -20,4 +20,4 @@ title, to prevent problems with a2x.
 [sect2] 
 == Bibliography ==
 
-[bibliography]
+bibliography::[]

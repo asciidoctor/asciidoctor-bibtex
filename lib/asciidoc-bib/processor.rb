@@ -77,7 +77,7 @@ module AsciidocBib
             case 
             when line.include?('include::')
               output_include_line output, line
-            when line.include?('[bibliography]')
+            when (line =~ BIBMACRO_FULL) != nil
               output_bibliography output
             else
               output_cite_completed_line output, line
@@ -262,6 +262,8 @@ module AsciidocBib
     def sorted_cites
       @citations.sorted_cites @biblio
     end
+
+    BIBMACRO_FULL = /bibliography::(.*?)\[(\w+)?\]/
   end
 end
 

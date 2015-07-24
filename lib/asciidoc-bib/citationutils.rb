@@ -13,12 +13,16 @@ module AsciidocBib
       result = []
       md = CITATION_FULL.match line
       while md
-        data = CitationData.new md[0], md[1], md[3], []
-        cm = CITATION.match md[4]
+        data = CitationData.new md[0], md[1], nil, []
+        cm = CITATION_KEY.match md[2]
         while cm
-          data.cites << Citation.new(cm[1], cm[3])
+          pages = nil
+          if cm[2]
+            pages = cm[2][1...-1]
+          end
+          data.cites << Citation.new(cm[1], pages)
           # look for next ref within citation
-          cm = CITATION.match cm.post_match 
+          cm = CITATION_KEY.match cm.post_match 
         end
         result << data
         # look for next citation on line
@@ -50,9 +54,14 @@ module AsciidocBib
       arrange_authors authors, true 
     end
 
-    # matches a single ref with optional pages
-    CITATION = /([\w\-]+)(,([\w\.\- ]+))?/
-    # matches complete citation with multiple references
-    CITATION_FULL = /\[(cite|citenp):(([\w\-\;\!\? ]+):)?(#{CITATION}(;#{CITATION})*)\]/
+    # matches a citation key, such as 'Dan2012(99-100)'
+    CITATION_KEY = /(\w+)(\(\d+(-\d+)*\))?/
+    # matches a citation type
+    CITATION_TYPE = /cite|citenp/
+    # matches a citation list
+    CITATION_LIST_TAIL = /(\s*,\s*#{CITATION_KEY})*/
+    CITATION_LIST = /(?:#{CITATION_KEY}#{CITATION_LIST_TAIL})/
+    # matches the whole citation
+    CITATION_FULL = /(#{CITATION_TYPE}):\[(#{CITATION_LIST})\]/
   end
 end

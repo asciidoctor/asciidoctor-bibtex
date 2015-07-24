@@ -59,7 +59,7 @@ module AsciidocBib
         return reader
       end
 
-      BIBMACRO_FULL = /bibliography::(.*?)\[(\w+)\]/
+      BIBMACRO_FULL = /bibliography::(.*?)\[(\w+)?\]/
     end
 
   end
