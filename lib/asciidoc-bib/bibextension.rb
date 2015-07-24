@@ -42,8 +42,8 @@ module AsciidocBib
         # -- add in bibliography
 
         biblio_index = lines.index do |line|
-          # find [bibliography] on line by itself, with or without newline
-          (line =~ /\[bibliography\](\n)?/) != nil
+          # find bibliography macro on line by itself, with or without newline
+          (line =~ BIBMACRO_FULL) != nil
         end
         unless biblio_index.nil?
           lines.delete_at biblio_index
@@ -58,6 +58,8 @@ module AsciidocBib
 
         return reader
       end
+
+      BIBMACRO_FULL = /bibliography::(.*?)\[(\w+)\]/
     end
 
   end
