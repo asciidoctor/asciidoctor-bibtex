@@ -168,7 +168,7 @@ module AsciidocBib
       begin
         cptext = @citeproc.render :bibliography, id: ref
       rescue Exception => e
-        puts "Failed to render #{id}: #{e}"
+        puts "Failed to render #{ref}: #{e}"
       end
       result << "[[#{ref}]]" if @links
       if cptext.nil?
