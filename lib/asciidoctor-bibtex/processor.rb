@@ -3,7 +3,7 @@
 # and main operations.
 #
 
-module AsciidocBib
+module AsciidoctorBibtex
 
   # Class used through utility method to hold data about citations for 
   # current document, and run the different steps to add the citations 

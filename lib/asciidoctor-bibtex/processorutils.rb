@@ -1,5 +1,5 @@
 
-module AsciidocBib
+module AsciidoctorBibtex
   module ProcessorUtils
     # Used with numeric styles to combine consecutive numbers into ranges
     # e.g. 1,2,3 -> 1-3, or 1,2,3,6,7,8,9,12 -> 1-3,6-9,12

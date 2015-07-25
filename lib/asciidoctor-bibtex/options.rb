@@ -1,4 +1,4 @@
-# Class to read in asciidoc-bib options from command-line, and 
+# Class to read in asciidoc-bibtex options from command-line, and 
 # store results in an accessible form.
 #
 # Copyright (c) Peter Lane, 2013.
@@ -6,15 +6,15 @@
 
 require 'optparse'
 
-module AsciidocBib
+module AsciidoctorBibtex
   class Options
     attr_reader :bibfile, :filename, :links, :style
 
-    def initialize(program_name = 'asciidoc-bib')
+    def initialize(program_name = 'asciidoc-bibtex')
       @bibfile = ''
       @links = true
       @numeric_order = :alphabetical
-      @style = AsciidocBib::Styles.default_style
+      @style = AsciidoctorBibtex::Styles.default_style
       @program_name = program_name
     end
 
@@ -24,7 +24,7 @@ module AsciidocBib
       options = OptionParser.new do |opts|
         opts.banner = "Usage: #{@program_name} filename"
         opts.on("-h", "--help", "help message") do |v|
-          puts "#{@program_name} #{AsciidocBib::VERSION}"
+          puts "#{@program_name} #{AsciidoctorBibtex::VERSION}"
           puts
           puts options
           puts
@@ -48,7 +48,7 @@ module AsciidocBib
           @style = v
         end
         opts.on("-v", "--version", "show version") do |v|
-          puts "#{@program_name} version #{AsciidocBib::VERSION}"
+          puts "#{@program_name} version #{AsciidoctorBibtex::VERSION}"
           exit!
         end
       end
@@ -62,16 +62,16 @@ module AsciidocBib
 
       # unless specified by caller, try to find the bibliography
       if @bibfile.empty?
-        @bibfile = AsciidocBib::FileHandlers.find_bibliography "."
+        @bibfile = AsciidoctorBibtex::FileHandlers.find_bibliography "."
         if @bibfile.empty?
-          @bibfile = AsciidocBib::FileHandlers.find_bibliography "#{ENV['HOME']}/Documents"
+          @bibfile = AsciidoctorBibtex::FileHandlers.find_bibliography "#{ENV['HOME']}/Documents"
         end
       end
       if @bibfile.empty?
         puts "Error: could not find a bibliography file"
         exit
       end
-      unless AsciidocBib::Styles.valid? @style
+      unless AsciidoctorBibtex::Styles.valid? @style
         puts "Error: style #{@style} was not one of the available styles"
         exit
       end
@@ -114,16 +114,16 @@ module AsciidocBib
 
       # unless specified by caller, try to find the bibliography
       if @bibfile.empty?
-        @bibfile = AsciidocBib::FileHandlers.find_bibliography "."
+        @bibfile = AsciidoctorBibtex::FileHandlers.find_bibliography "."
         if @bibfile.empty?
-          @bibfile = AsciidocBib::FileHandlers.find_bibliography "#{ENV['HOME']}/Documents"
+          @bibfile = AsciidoctorBibtex::FileHandlers.find_bibliography "#{ENV['HOME']}/Documents"
         end
       end
       if @bibfile.empty?
         puts "Error: could not find a bibliography file"
         exit
       end
-      unless AsciidocBib::Styles.valid? @style
+      unless AsciidoctorBibtex::Styles.valid? @style
         puts "Error: style #{@style} was not one of the available styles"
         exit
       end

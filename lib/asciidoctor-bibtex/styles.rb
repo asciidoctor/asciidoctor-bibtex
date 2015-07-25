@@ -3,7 +3,7 @@
 # Simple checks on available styles through CSL
 #
 
-module AsciidocBib
+module AsciidoctorBibtex
 
   module Styles
 

@@ -3,7 +3,7 @@
 # Copyright (c) Peter Lane, 2012-13.
 # Released under Open Works License, 0.9.2
 
-module AsciidocBibArrayExtensions
+module AsciidoctorBibtexArrayExtensions
 
   # Retrieve the third item of an array
   # Note: no checks for validity
@@ -33,7 +33,7 @@ end
 
 # monkey patch the extension methods to Array
 class Array
-  include AsciidocBibArrayExtensions
+  include AsciidoctorBibtexArrayExtensions
 end
 
 # Converts html output produced by citeproc to asciidoc markup

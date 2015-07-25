@@ -4,7 +4,7 @@
 # Copyright (c) Peter Lane, 2013.
 # Released under Open Works License, 0.9.2
 
-module AsciidocBib
+module AsciidoctorBibtex
   # Class to store list of citations used in document
   class Citations
     include CitationUtils

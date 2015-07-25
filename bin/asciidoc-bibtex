@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# Executable for asciidoc-bib
+# Executable for asciidoc-bibtex
 #
 # Provides some command line options for adding reference material 
 # to asciidoc files, generating revised files for processing by 
@@ -12,8 +12,8 @@
 unless $:.include?(libdir = File.expand_path('../lib', File.dirname(__FILE__)))
   $:.unshift libdir
 end
-require 'asciidoc-bib'
+require 'asciidoctor-bibtex'
 
-options = AsciidocBib::Options.new
+options = AsciidoctorBibtex::Options.new
 options.parse!
-AsciidocBib::Processor.run options
+AsciidoctorBibtex::Processor.run options

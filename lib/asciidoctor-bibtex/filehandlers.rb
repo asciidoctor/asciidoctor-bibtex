@@ -3,7 +3,7 @@
 # Contains top-level file utility methods
 #
 
-module AsciidocBib
+module AsciidoctorBibtex
 
   module FileHandlers
     # Locate a bibliography file to read in given dir

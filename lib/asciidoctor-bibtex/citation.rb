@@ -3,7 +3,7 @@
 # Copyright (c) Peter Lane, 2012.
 # Released under Open Works License, 0.9.2
 
-module AsciidocBib
+module AsciidoctorBibtex
   # Class to hold information about a single citation:
   # its reference and any page numbers
   class Citation

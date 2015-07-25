@@ -3,7 +3,7 @@
 # Copyright (c) Peter Lane, 2013.
 # Released under Open Works License, 0.9.2
 
-module AsciidocBib
+module AsciidoctorBibtex
   # Class to hold information about a citation in text:
   # the text forming the citation, its type, pretext, and enclosed cites
   class CitationData 

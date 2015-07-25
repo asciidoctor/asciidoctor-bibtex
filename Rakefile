@@ -1,4 +1,4 @@
-# Rakefile for managing asciidoc-bib project
+# Rakefile for managing asciidoctor-bibtex project
 #
 # Copyright (c) Peter Lane, 2012-13.
 # Released under Open Works License, 0.9.2
@@ -22,7 +22,7 @@ end
 desc 'run lib code on sample'
 task :samples do
   Dir.chdir("samples") do
-    sh "ruby -I../lib ../bin/asciidoc-bib sample-1.txt"
+    sh "ruby -I../lib ../bin/asciidoctor-bibtex sample-1.txt"
   end
 end
 
@@ -30,11 +30,11 @@ directory 'release'
 
 desc 'build gem: keeps generated gems in release/'
 task :build_gem => 'release' do
-  sh "gem build asciidoc-bib.gemspec"
+  sh "gem build asciidoctor-bibtex.gemspec"
   sh "mv *.gem release"
 end
 
 desc 'build documentation'
 task :doc do
-  sh "rdoc -t asciidoc-bib README.rdoc lib/"
+  sh "rdoc -t asciidoctor-bibtex README.rdoc lib/"
 end

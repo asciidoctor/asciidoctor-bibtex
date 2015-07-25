@@ -10,10 +10,10 @@ require 'asciidoctor/extensions'
 require 'asciidoctor/cli'
 require_relative 'options'
 
-module AsciidocBib
+module AsciidoctorBibtex
   module Asciidoctor
 
-    class AsciidocBibExtension < ::Asciidoctor::Extensions::Preprocessor
+    class AsciidoctorBibtexExtension < ::Asciidoctor::Extensions::Preprocessor
 
       def process document, reader
         return reader if reader.eof?
