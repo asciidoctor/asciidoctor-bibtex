@@ -15,18 +15,60 @@ module AsciidoctorBibtex
 
     class AsciidoctorBibtexExtension < ::Asciidoctor::Extensions::Preprocessor
 
+      ASCIIDOC_ATTR_ENTRY = /^:([^\s:]+):(.*)$/
+      BIB_ATTR_NAMES = ['bib-file', 'bib-style', 'bib-numeric-order', 'bib-no-links']
+      BIBLIOGRAPHY_BLOCK_MACRO = /^bibliography::(.*?)\[([^\s\]]+)?\]$/
+      
+      def extract_bib_attrs_from_source lines
+        attrs = Hash.new
+        lines.each do |line|
+          if (m = ASCIIDOC_ATTR_ENTRY.match line)
+            name, value = m[1], m[2].strip
+            if not ([name] & BIB_ATTR_NAMES).empty?
+              attrs[name] = value
+            end
+          elsif (m = BIBLIOGRAPHY_BLOCK_MACRO.match line)
+            bibfile, style = m[1], m[2]
+            if not bibfile.empty?
+              attrs['bib-file'] = bibfile.strip
+            end
+            if style and not style.empty?
+              attrs['bib-style'] = style.strip
+            end
+          end
+        end
+        attrs
+      end
+
+      def extract_bib_attrs_from_cli document
+        attrs = Hash.new
+        BIB_ATTR_NAMES.each do |x|
+          if document.attributes.has_key? x
+            attrs[x] = document.attributes[x]
+          end
+        end
+        attrs
+      end
+
       def process document, reader
         return reader if reader.eof?
 
+        # -- parse options from document attributes and document source
+
+        lines = reader.readlines
+
+        attrs_src = extract_bib_attrs_from_source lines
+        attrs_cli = extract_bib_attrs_from_cli document
+
         options = Options.new
-        options.parse_attributes document.attributes
+        options.parse_attributes attrs_cli, attrs_src
 
         # -- read in all lines from reader, processing the lines
 
-        lines = reader.readlines
         biblio = BibTeX.open options.bibfile
 
         processor = Processor.new biblio, options.links, options.style
+
         lines.each do |line|
           processor.citations.add_from_line line
         end

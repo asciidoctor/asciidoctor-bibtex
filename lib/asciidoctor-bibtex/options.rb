@@ -90,25 +90,34 @@ module AsciidoctorBibtex
     
     # Public: Parse values given `attrs`
     # This function is used by asciidoctor preprocessor to determine options
-    # from document attributes.
-    def parse_attributes(attrs)
-      if attrs['bib-style']
-        @style = attrs['bib-style']
+    # from document attributes. According to the attribute preccedence rule,
+    # attrs_cli > attrs_src > default
+    def parse_attributes(attrs_cli, attrs_src)
+      if attrs_cli['bib-style']
+        @style = attrs_cli['bib-style']
+      elsif attrs_src['bib-style']
+        @style = attrs_src['bib-style']
       end
-      if attrs['bib-file']
-        @bibfile = attrs['bib-file']
+      if attrs_cli['bib-file']
+        @bibfile = attrs_cli['bib-file']
+      elsif attrs_src['bib-file']
+        @bibfile = attrs_src['bib-file']
       end
-      if attrs['bib-numeric-order']
-        order = attrs['bib-numeric-order']
-        if order == "appearance"
-          @numeric_order = :appearance
-        elsif order == "alphabetical"
-          @numeric_order = :alphabetical
-        else
-          raise RuntimeError.new "Unknown numeric order: #{order}"
-        end
+      if attrs_cli['bib-numeric-order']
+        order = attrs_cli['bib-numeric-order']
+      elsif attrs_src['bib-numeric-order']
+        order = attrs_src['bib-numeric-order']
       end
-      if attrs['bib-no-links']
+      if order == "appearance"
+        @numeric_order = :appearance
+      elsif order == "alphabetical"
+        @numeric_order = :alphabetical
+      else
+        raise RuntimeError.new "Unknown numeric order: #{order}"
+      end
+      if attrs_cli['bib-no-links']
+        @links = false
+      elsif attrs_src['bib-no-links']
         @links = false
       end
 
@@ -118,6 +127,9 @@ module AsciidoctorBibtex
         if @bibfile.empty?
           @bibfile = AsciidoctorBibtex::FileHandlers.find_bibliography "#{ENV['HOME']}/Documents"
         end
+      elsif not File.file? @bibfile
+        puts "Error: bibliography file '#{@bibfile}' does not exist"
+        exit
       end
       if @bibfile.empty?
         puts "Error: could not find a bibliography file"
@@ -138,4 +150,3 @@ module AsciidoctorBibtex
     end
   end
 end
-

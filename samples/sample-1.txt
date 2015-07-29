@@ -1,5 +1,10 @@
 = Sample of using asciidoc-bib =
 
+:bib-file: biblio.bib
+:bib-numeric-order: appearance
+:bib-style: ieee
+:bib-no-links:
+
 The bibliography is searched in the folder of the document, and then 
 in ~/Documents.
 
