@@ -103,12 +103,15 @@ module AsciidoctorBibtex
       elsif attrs_src['bib-file']
         @bibfile = attrs_src['bib-file']
       end
+      order = nil
       if attrs_cli['bib-numeric-order']
         order = attrs_cli['bib-numeric-order']
       elsif attrs_src['bib-numeric-order']
         order = attrs_src['bib-numeric-order']
       end
-      if order == "appearance"
+      if order == nil
+        @numeric_order = :appearance
+      elsif order == "appearance"
         @numeric_order = :appearance
       elsif order == "alphabetical"
         @numeric_order = :alphabetical
