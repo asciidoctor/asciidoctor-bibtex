@@ -66,8 +66,7 @@ module AsciidoctorBibtex
         # -- read in all lines from reader, processing the lines
 
         biblio = BibTeX.open options.bibfile
-
-        processor = Processor.new biblio, options.links, options.style
+        processor = Processor.new biblio, options.links, options.style, options.numeric_in_appearance_order?
 
         lines.each do |line|
           processor.citations.add_from_line line
@@ -89,7 +88,7 @@ module AsciidoctorBibtex
         end
         unless biblio_index.nil?
           lines.delete_at biblio_index
-          processor.sorted_cites.reverse.each do |ref|
+          processor.cites.reverse.each do |ref|
             lines.insert biblio_index, "\n"
             lines.insert biblio_index, processor.get_reference(ref)
             lines.insert biblio_index, "[normal]\n" # ? needed to force paragraph breaks

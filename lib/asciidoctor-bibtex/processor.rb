@@ -263,6 +263,14 @@ module AsciidoctorBibtex
       @citations.sorted_cites @biblio
     end
 
+    def cites
+      if Styles.is_numeric?(@style) and @numeric_in_appearance_order
+        @citations.cites_used
+      else
+        sorted_cites
+      end
+    end
+
     BIBMACRO_FULL = /bibliography::(.*?)\[(\w+)?\]/
   end
 end
