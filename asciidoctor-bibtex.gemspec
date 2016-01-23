@@ -29,8 +29,8 @@ END
   s.executables << 'asciidoctor-bibtex'
   s.executables << 'asciidoc-bibtex'
   s.required_ruby_version = '~> 2.0'
-  s.add_runtime_dependency('bibtex-ruby', '~>4.0', '>=4.0.11')
-  s.add_runtime_dependency('citeproc-ruby', '~>1.0', '>=1.0.5')
-  s.add_runtime_dependency('csl-styles', '~>1.0', '>=1.0.1.6')
+  s.add_runtime_dependency('bibtex-ruby', "~> 4")
+  s.add_runtime_dependency('citeproc-ruby', "~> 1")
+  s.add_runtime_dependency('csl-styles', '~> 1')
 end
 
