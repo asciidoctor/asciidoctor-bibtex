@@ -1,33 +1,35 @@
 #
-# Manage the current set of citations, the document settings, 
+# Manage the current set of citations, the document settings,
 # and main operations.
 #
 
 module AsciidoctorBibtex
 
-  # Class used through utility method to hold data about citations for 
-  # current document, and run the different steps to add the citations 
+  # Class used through utility method to hold data about citations for
+  # current document, and run the different steps to add the citations
   # and bibliography
   class Processor
     include ProcessorUtils
 
     # Top-level method to include citations in given asciidoc file
     def Processor.run options
-      processor = Processor.new BibTeX.open(options.bibfile), options.links, options.style, options.numeric_in_appearance_order?
+      processor = Processor.new BibTeX.open(options.bibfile), options.links, options.style, options.numeric_in_appearance_order?, options.output, options.bibfile
       processor.read_filenames options.filename
-      processor.read_citations 
+      processor.read_citations
       processor.add_citations
     end
 
     attr_reader :biblio, :links, :style, :citations
 
-    def initialize biblio, links, style, numeric_in_appearance_order = false
+    def initialize biblio, links, style, numeric_in_appearance_order = false, output = "asciidoc", bibfile = ""
       @biblio = biblio
       @links = links
       @numeric_in_appearance_order = numeric_in_appearance_order
       @style = style
       @citations = Citations.new
       @filenames = Set.new
+      @output = output
+      @bibfile = bibfile
 
       @citeproc = CiteProc::Processor.new style: @style, format: :html
       @citeproc.import @biblio.to_citeproc
@@ -45,7 +47,7 @@ module AsciidoctorBibtex
           if line.include?("include::")
             line.split("include::").drop(1).each do |filetxt|
               file = File.expand_path(filetxt.partition(/\s|\[/).first)
-                files_to_process << file unless @filenames.include?(file)
+              files_to_process << file unless @filenames.include?(file)
             end
           end
         end
@@ -53,12 +55,12 @@ module AsciidoctorBibtex
     end
 
     # Scans each filename and extracts citations
-    def read_citations 
+    def read_citations
       @filenames.each do |file|
         IO.foreach(file) do |line|
           @citations.add_from_line line
         end
-      end 
+      end
     end
 
     # Read given text to add cites and biblio to a new file
@@ -66,15 +68,15 @@ module AsciidoctorBibtex
     # If no author present, then use editor field.
     # Links indicates if internal links to be added.
     # Assumes @filenames has been set to list of filenames to process.
-    def add_citations 
+    def add_citations
       @filenames.each do |curr_file|
         ref_filename = FileHandlers.add_ref(curr_file)
-        puts "Writing file:	#{ref_filename}"
+        puts "Writing file: #{ref_filename}"
         output = File.new(ref_filename, "w")
 
         IO.foreach(curr_file) do |line|
           begin # catch any errors, and ensure the lines of text are written
-            case 
+            case
             when line.include?('include::')
               output_include_line output, line
             when (line =~ BIBMACRO_FULL) != nil
@@ -88,26 +90,31 @@ module AsciidoctorBibtex
         end
 
         output.close
-      end 
+      end
     end
 
     # Output bibliography to given output
     def output_bibliography output
-      cites = if Styles.is_numeric?(@style) and @numeric_in_appearance_order
-                @citations.cites_used 
-              else 
-                sorted_cites 
-              end
-      cites.each do |ref|
-        output.puts get_reference(ref)
-        output.puts
+      if @output == "asciidoc"
+        cites = if Styles.is_numeric?(@style) and @numeric_in_appearance_order
+                  @citations.cites_used
+                else
+                  sorted_cites
+                end
+        cites.each do |ref|
+          output.puts get_reference(ref)
+          output.puts
+        end
+      else
+        output.puts "++\\bibliography{#{@bibfile}}++"
+        output.puts "++\\bibliographystyle{#{@style}}++"
       end
     end
 
     def output_include_line output, line
       line.split("include::").drop(1).each do |filetxt|
         ifile = filetxt.partition(/\s|\[/).first
-        file = File.expand_path ifile 
+        file = File.expand_path ifile
         # make sure included file points to the -ref version
         line.gsub!("include::#{ifile}", "include::#{FileHandlers.add_ref(file)}")
       end
@@ -125,38 +132,55 @@ module AsciidoctorBibtex
 
     # Return the complete citation text for given cite_data
     def complete_citation cite_data
-      result = ''
-      ob, cb = '(', ')'
 
-      cite_data.cites.each_with_index do |cite, index|
-        # before all items apart from the first, insert appropriate separator
-        result << "#{separator} " unless index.zero?
+      if @output == "latex"
+        result = '++'
+        cite_data.cites.each do |cite|
+          result << "\\" << cite_data.type
+          if cite.pages != ''
+            result << "[p. " << cite.pages << "]"
+          end
+          result << "{" << "#{cite.ref}" << "},"
+        end
+        if result[-1] == ','
+          result = result[0..-2]
+        end
+        result << "++"
+        return result          
+      else
+        result = ''
+        ob, cb = '(', ')'
 
-        # @links requires adding hyperlink to reference
-        result << "<<#{cite.ref}," if @links
+        cite_data.cites.each_with_index do |cite, index|
+          # before all items apart from the first, insert appropriate separator
+          result << "#{separator} " unless index.zero?
 
-        # if found, insert reference information
-        unless biblio[cite.ref].nil?
-          item = biblio[cite.ref].clone
-          cite_text, ob, cb = make_citation item, cite.ref, cite_data, cite
-        else
-          puts "Unknown reference: #{cite.ref}"
-          cite_text = "#{cite.ref}"
+          # @links requires adding hyperlink to reference
+          result << "<<#{cite.ref}," if @links
+
+          # if found, insert reference information
+          unless biblio[cite.ref].nil?
+            item = biblio[cite.ref].clone
+            cite_text, ob, cb = make_citation item, cite.ref, cite_data, cite
+          else
+            puts "Unknown reference: #{cite.ref}"
+            cite_text = "#{cite.ref}"
+          end
+
+          result << cite_text.html_to_asciidoc
+          # @links requires finish hyperlink
+          result << ">>" if @links
         end
 
-        result << cite_text.html_to_asciidoc
-        # @links requires finish hyperlink
-        result << ">>" if @links
-      end
-
-      unless @links
-        # combine numeric ranges
-        if Styles.is_numeric? @style
-          result = combine_consecutive_numbers result
+        unless @links
+          # combine numeric ranges
+          if Styles.is_numeric? @style
+            result = combine_consecutive_numbers result
+          end
         end
-      end
 
-      include_pretext result, cite_data, ob, cb
+        return include_pretext result, cite_data, ob, cb
+      end
     end
 
     # Retrieve text for reference in given style
@@ -218,14 +242,14 @@ module AsciidoctorBibtex
 
       if Styles.is_numeric? @style
         "#{pretext}#{ob}#{result}#{cb}"
-      elsif cite_data.type == "cite" 
+      elsif cite_data.type == "cite"
         "#{ob}#{pretext}#{result}#{cb}"
-      else 
+      else
         "#{pretext}#{result}"
       end
     end
 
-    # Numeric citations are handled by computing the position of the reference 
+    # Numeric citations are handled by computing the position of the reference
     # in the list of used citations.
     # Other citations are formatted by citeproc.
     def make_citation item, ref, cite_data, cite
@@ -250,13 +274,13 @@ module AsciidoctorBibtex
       elsif cite_data.type == "citenp"
         cite_text.gsub!(item.year, "#{fc}#{item.year}#{page_str(cite)}#{lc}")
         cite_text.gsub!(", #{fc}", " #{fc}")
-      else 
+      else
         cite_text << page_str(cite)
       end
 
       cite_text.gsub!(",", "&#44;") if @links # replace comma
 
-        return cite_text, fc, lc
+      return cite_text, fc, lc
     end
 
     def sorted_cites

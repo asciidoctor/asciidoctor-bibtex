@@ -1,5 +1,5 @@
 # Uses Asciidoctor extension mechanism to insert asciidoc-bib processing
-# as a preprocessor step.  This provides single-pass compilation of 
+# as a preprocessor step.  This provides single-pass compilation of
 # documents, including citations and references.
 #
 # Copyright (c) Peter Lane, 2013.
@@ -16,9 +16,9 @@ module AsciidoctorBibtex
     class AsciidoctorBibtexExtension < ::Asciidoctor::Extensions::Preprocessor
 
       ASCIIDOC_ATTR_ENTRY = /^:([^\s:]+):(.*)$/
-      BIB_ATTR_NAMES = ['bib-file', 'bib-style', 'bib-numeric-order', 'bib-no-links']
+      BIB_ATTR_NAMES = ['bib-file', 'bib-style', 'bib-numeric-order', 'bib-no-links', 'bib-output']
       BIBLIOGRAPHY_BLOCK_MACRO = /^bibliography::(.*?)\[([^\s\]]+)?\]$/
-      
+
       def extract_bib_attrs_from_source lines
         attrs = Hash.new
         lines.each do |line|
@@ -27,7 +27,8 @@ module AsciidoctorBibtex
             if not ([name] & BIB_ATTR_NAMES).empty?
               attrs[name] = value
             end
-          elsif (m = BIBLIOGRAPHY_BLOCK_MACRO.match line)
+          end
+          if (m = BIBLIOGRAPHY_BLOCK_MACRO.match line)
             bibfile, style = m[1], m[2]
             if not bibfile.empty?
               attrs['bib-file'] = bibfile.strip
@@ -35,6 +36,11 @@ module AsciidoctorBibtex
             if style and not style.empty?
               attrs['bib-style'] = style.strip
             end
+          end
+        end
+        if attrs.has_key? 'bib-output'
+          if attrs['bib-output'] != "asciidoc" and attrs['bib-output'] != "latex"
+            attrs['bib-output'] = "asciidoc"
           end
         end
         attrs
@@ -45,6 +51,11 @@ module AsciidoctorBibtex
         BIB_ATTR_NAMES.each do |x|
           if document.attributes.has_key? x
             attrs[x] = document.attributes[x]
+          end
+        end
+        if attrs.has_key? 'bib-output'
+          if attrs['bib-output'] != "asciidoc" and attrs['bib-output'] != "latex"
+            attrs['bib-output'] = "asciidoc"
           end
         end
         attrs
@@ -88,10 +99,15 @@ module AsciidoctorBibtex
         end
         unless biblio_index.nil?
           lines.delete_at biblio_index
-          processor.cites.reverse.each do |ref|
-            lines.insert biblio_index, "\n"
-            lines.insert biblio_index, processor.get_reference(ref)
-            lines.insert biblio_index, "[normal]\n" # ? needed to force paragraph breaks
+          if options.output == "asciidoc"
+            processor.cites.reverse.each do |ref|
+              lines.insert biblio_index, "\n"
+              lines.insert biblio_index, processor.get_reference(ref)
+              lines.insert biblio_index, "[normal]\n" # ? needed to force paragraph breaks
+            end
+          else
+            lines.insert biblio_index, "++\\bibliographystyle{#{options.style}}++", "\n"
+            lines.insert biblio_index, "++\\bibliography{#{options.bibfile}}++", "\n"
           end
         end
 

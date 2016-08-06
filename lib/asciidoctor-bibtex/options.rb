@@ -8,7 +8,7 @@ require 'optparse'
 
 module AsciidoctorBibtex
   class Options
-    attr_reader :bibfile, :filename, :links, :style
+    attr_reader :bibfile, :filename, :links, :style, :output
 
     def initialize(program_name = 'asciidoc-bibtex')
       @bibfile = ''
@@ -16,6 +16,7 @@ module AsciidoctorBibtex
       @numeric_order = :alphabetical
       @style = AsciidoctorBibtex::Styles.default_style
       @program_name = program_name
+      @output = "asciidoc"
     end
 
     # Public: Parse options from commandline.
@@ -46,6 +47,9 @@ module AsciidoctorBibtex
         end
         opts.on("-s", "--style STYLE", "reference style") do |v|
           @style = v
+        end
+        opts.on("--output-style OUTPUT_STYLE", "Output style (asciidoc or latex)") do |v|
+          @output = v
         end
         opts.on("-v", "--version", "show version") do |v|
           puts "#{@program_name} version #{AsciidoctorBibtex::VERSION}"
@@ -86,6 +90,7 @@ module AsciidoctorBibtex
       puts "Reading biblio: #{@bibfile}"
       puts "Reference style: #{@style}"
       puts "Numerical order: #{@numeric_order}"
+      puts "Output style: #{@output}"
     end
     
     # Public: Parse values given `attrs`
@@ -123,6 +128,13 @@ module AsciidoctorBibtex
       elsif attrs_src['bib-no-links']
         @links = false
       end
+      if attrs_cli['bib-output']
+        @output = attrs_cli['bib-output']
+      elsif attrs_src['bib-output']
+        @output = attrs_src["bib-output"]
+      else
+        @output = "asciidoc"
+      end
 
       # unless specified by caller, try to find the bibliography
       if @bibfile.empty?
@@ -146,6 +158,7 @@ module AsciidoctorBibtex
       puts "Reading biblio: #{@bibfile}"
       puts "Reference style: #{@style}"
       puts "Numerical order: #{@numeric_order}"
+      puts "Output style: #{@output}"
     end
 
     def numeric_in_appearance_order?
