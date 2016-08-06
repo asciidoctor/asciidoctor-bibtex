@@ -11,12 +11,13 @@ Gem::Specification.new do |s|
   s.license = 'OWL'
   s.description = <<-END
 asciidoctor-bibtex is a fork of asciidoc-bib. It generates in-text references
-and a reference list for an asciidoc file, using a bibtex file as a source of
-citation information. The citation syntax tries to assemble asciidoc inline
-macros and block macros, with `cite:[bibref]` for in-text citation and
-`bibliography::[]` for reference list. It can be used standalone or as an
-asciidoctor extension. See the README for more examples and further options.
-The references are formatted using styles provided by CSL.
+and reference lists for asciidoc files, using specified bibtex file as
+ciatation source.  The citation syntax follows asciidoc inline and block macro
+idiom and resembles bibtex macros, with `cite:[bibref]` or `citenp:[bibref]`
+for in-text citation and `bibliography::[]` for reference list. It can be used
+standalone or as an asciidoctor extension. See the README for more examples
+and further options.  The references are formatted using styles provided by
+CSL.
 END
   s.files = Dir['lib/**/*'] + Dir['samples/*'] + [
     'LICENSE.txt',
