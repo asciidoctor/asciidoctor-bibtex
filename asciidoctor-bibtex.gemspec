@@ -21,12 +21,10 @@ CSL.
 END
   s.files = Dir['lib/**/*'] + Dir['samples/*'] + [
     'LICENSE.txt',
-    'README.rdoc',
+    'README.md',
     'bin/asciidoctor-bibtex',
     'bin/asciidoc-bibtex'
   ]
-  s.has_rdoc = true
-  s.extra_rdoc_files << 'README.rdoc'
   s.executables << 'asciidoctor-bibtex'
   s.executables << 'asciidoc-bibtex'
   s.required_ruby_version = '~> 2.0'
