@@ -1,12 +1,10 @@
-= Sample of using asciidoc-bib =
+= Sample of using asciidoctor-bibtex
+:bibtex-file: biblio.bib
+:bibtex-order: appearance
+:bibtex-style: ieee
 
-:bib-file: biblio.bib
-:bib-numeric-order: appearance
-:bib-style: ieee
-:bib-no-links:
-
-The bibliography is searched in the folder of the document, and then 
-in ~/Documents.
+The bibliography is searched in the folder of the document, and then in
+~/Documents.
 
 Author-year references can use different styles such as: cite:[Lane12b] or
 citenp:[Lane12a].
@@ -19,10 +17,10 @@ We can include other files, which are also processed:
 
 include::sample-2.txt[]
 
-To include the reference list, use the section template before
-title, to prevent problems with a2x.
+To include the reference list, use the section template before title, to
+prevent problems with a2x.
 
 [sect2] 
-== Bibliography ==
+== Bibliography
 
 bibliography::[]
