@@ -2,5 +2,5 @@ require 'asciidoctor/extensions'
 require_relative 'bibextension'
 
 Asciidoctor::Extensions.register do
-  preprocessor AsciidoctorBibtex::Asciidoctor::AsciidoctorBibtexExtension
+  treeprocessor AsciidoctorBibtex::Asciidoctor::AsciidoctorBibtexExtension
 end
