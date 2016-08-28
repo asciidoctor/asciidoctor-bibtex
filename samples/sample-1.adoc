@@ -15,7 +15,7 @@ A bit of pretext can be included too: See cite:[Lane12a(89)]
 
 We can include other files, which are also processed:
 
-include::sample-2.txt[]
+include::sample-2.adoc[]
 
 To include the reference list, use the section template before title, to
 prevent problems with a2x.
