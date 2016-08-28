@@ -23,4 +23,4 @@ prevent problems with a2x.
 [sect2] 
 == Bibliography
 
-bibliography::[]
+bibliography::biblio.bib[ieee]

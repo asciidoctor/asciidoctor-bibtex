@@ -35,11 +35,10 @@ if not (ARGV & ['-h', '--help']).empty?
   puts ""
   puts "AsciidoctorBibtex related options:"
   puts ""
-  puts "    -a bib-file=FILENAME    Set BibTex filename (default: auto-find)"
-  puts "    -a bib-style=STYLE      Set BibTex items style (default: apa)"
-  puts "    -a bib-numeric-order=<alphabetical|appearance>"
+  puts "    -a bibtex-file=FILENAME    Set BibTex filename (default: auto-find)"
+  puts "    -a bibtex-style=STYLE      Set BibTex items style (default: apa)"
+  puts "    -a bibtex-order=<alphabetical|appearance>"
   puts "                            Set citation order scheme (default: alphabetical)"
-  puts "    -a bib-no-links=1       Do not use links (default: use links)"
   puts ""
   exit 0
 end
