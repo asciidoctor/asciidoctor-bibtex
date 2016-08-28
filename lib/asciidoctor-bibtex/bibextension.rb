@@ -46,6 +46,7 @@ module AsciidoctorBibtex
         bibtex_file = (document.attr 'bibtex-file').to_s
         bibtex_style = ((document.attr 'bibtex-style') || 'ieee').to_s
         bibtex_order = ((document.attr 'bibtex-order') || 'alphabetical').to_sym
+        bibtex_output = ((document.attr 'bibtex-output') || 'asciidoc').to_sym
 
         if bibtex_file.empty?
           bibtex_file = AsciidoctorBibtex::FileHandlers.find_bibliography "."
@@ -59,7 +60,7 @@ module AsciidoctorBibtex
         end
 
         bibtex = BibTeX.open bibtex_file
-        processor = Processor.new bibtex, true, bibtex_style, bibtex_order == :appearance
+        processor = Processor.new bibtex, true, bibtex_style, bibtex_order == :appearance, bibtex_output
 
         prose_blocks = document.find_by {|b| b.content_model == :simple or b.context == :list_item}
         prose_blocks.each do |block|
@@ -104,7 +105,14 @@ module AsciidoctorBibtex
           block_index = block.parent.blocks.index do |b|
             b == block
           end
-          reference_blocks = parse_asciidoc block.parent, references_asciidoc
+          if bibtex_output == :latex
+            content = []
+            content << %(+++\\bibliography{#{bibtex_file}}{}+++)
+            content << %(+++\\bibliographystyle{#{bibtex_style}}+++)
+            reference_blocks = parse_asciidoc block.parent, content
+          else
+            reference_blocks = parse_asciidoc block.parent, references_asciidoc
+          end
           reference_blocks.reverse.each do |b|
             block.parent.blocks.insert block_index, b
           end

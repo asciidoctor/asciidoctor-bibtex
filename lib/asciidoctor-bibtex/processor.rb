@@ -21,7 +21,7 @@ module AsciidoctorBibtex
 
     attr_reader :biblio, :links, :style, :citations
 
-    def initialize biblio, links, style, numeric_in_appearance_order = false, output = "asciidoc", bibfile = ""
+    def initialize biblio, links, style, numeric_in_appearance_order = false, output = :asciidoc, bibfile = ""
       @biblio = biblio
       @links = links
       @numeric_in_appearance_order = numeric_in_appearance_order
@@ -95,7 +95,7 @@ module AsciidoctorBibtex
 
     # Output bibliography to given output
     def output_bibliography output
-      if @output == "asciidoc"
+      if @output == :asciidoc
         cites = if Styles.is_numeric?(@style) and @numeric_in_appearance_order
                   @citations.cites_used
                 else
@@ -133,10 +133,13 @@ module AsciidoctorBibtex
     # Return the complete citation text for given cite_data
     def complete_citation cite_data
 
-      if @output == "latex"
-        result = '++'
+      if @output == :latex
+        result = '+++'
         cite_data.cites.each do |cite|
-          result << "\\" << cite_data.type
+          # NOTE: xelatex does not support "\citenp", so we output all
+          # references as "cite" here.
+          # result << "\\" << cite_data.type
+          result << "\\" << 'cite'
           if cite.pages != ''
             result << "[p. " << cite.pages << "]"
           end
@@ -145,7 +148,7 @@ module AsciidoctorBibtex
         if result[-1] == ','
           result = result[0..-2]
         end
-        result << "++"
+        result << "+++"
         return result          
       else
         result = ''
