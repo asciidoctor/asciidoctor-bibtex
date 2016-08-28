@@ -31,8 +31,10 @@ module AsciidoctorBibtex
       @output = output
       @bibfile = bibfile
 
-      @citeproc = CiteProc::Processor.new style: @style, format: :html
-      @citeproc.import @biblio.to_citeproc
+      if output != :latex
+        @citeproc = CiteProc::Processor.new style: @style, format: :html
+        @citeproc.import @biblio.to_citeproc
+      end
     end
 
     # Given an asciidoc filename, reads in all dependent files based on 'include::' statements
@@ -149,7 +151,7 @@ module AsciidoctorBibtex
           result = result[0..-2]
         end
         result << "+++"
-        return result          
+        return result
       else
         result = ''
         ob, cb = '(', ')'

@@ -91,9 +91,14 @@ module AsciidoctorBibtex
         end
 
         references_asciidoc = []
-        processor.cites.each do |ref|
-          references_asciidoc << processor.get_reference(ref)
-          references_asciidoc << ''
+        if bibtex_output == :latex
+          references_asciidoc << %(+++\\bibliography{#{bibtex_file}}{}+++)
+          references_asciidoc << %(+++\\bibliographystyle{#{bibtex_style}}+++)
+        else
+          processor.cites.each do |ref|
+            references_asciidoc << processor.get_reference(ref)
+            references_asciidoc << ''
+          end
         end
 
         biblio_blocks = document.find_by do |b|
@@ -105,14 +110,7 @@ module AsciidoctorBibtex
           block_index = block.parent.blocks.index do |b|
             b == block
           end
-          if bibtex_output == :latex
-            content = []
-            content << %(+++\\bibliography{#{bibtex_file}}{}+++)
-            content << %(+++\\bibliographystyle{#{bibtex_style}}+++)
-            reference_blocks = parse_asciidoc block.parent, content
-          else
-            reference_blocks = parse_asciidoc block.parent, references_asciidoc
-          end
+          reference_blocks = parse_asciidoc block.parent, references_asciidoc
           reference_blocks.reverse.each do |b|
             block.parent.blocks.insert block_index, b
           end
