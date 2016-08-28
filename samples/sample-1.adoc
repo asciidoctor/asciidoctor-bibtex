@@ -1,6 +1,6 @@
 = Sample of using asciidoctor-bibtex
 :bibtex-file: biblio.bib
-:bibtex-order: appearance
+:bibtex-order: alphabetical
 :bibtex-style: ieee
 
 The bibliography is searched in the folder of the document, and then in
