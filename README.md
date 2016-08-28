@@ -97,16 +97,14 @@ One may also use as an asciidoctor extension, for example:
 Options are set through the command-line using the asciidoctor attributes
 setting syntax:
 
-  > asciidoctor-bibtex -h
+    asciidoctor-bibtex -h
 
-  ...
-  AsciidoctorBibtex related options:
+or through AsciidoctorBibtex related options:
 
-      -a bib-file=FILENAME    Set BibTex filename (default: auto-find)
-      -a bib-style=STYLE      Set BibTex items style (default: apa)
-      -a bib-numeric-order=<alphabetical|appearance>
+      -a bibtex-file=FILENAME    Set BibTex filename (default: auto-find)
+      -a bibtex-style=STYLE      Set BibTex items style (default: apa)
+      -a bibtex-order=<alphabetical|appearance>
                             Set citation order scheme (default: alphabetical)
-      -a bib-no-links=1       Do not use links (default: use links)
 
 ### Processing text: Asciidoc
 
