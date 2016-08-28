@@ -20,6 +20,18 @@ include::sample-2.adoc[]
 To include the reference list, use the section template before title, to
 prevent problems with a2x.
 
+References can be inserted in lists, too:
+
+1. See cite:[Lane12a].
+2. See cite:[Anderson98].
+3. See cite:[Anderson04].
+
+Also works for unordered list:
+
+* See cite:[Lane12a].
+* See cite:[Anderson98].
+* See cite:[Anderson04].
+
 [sect2] 
 == Bibliography
 

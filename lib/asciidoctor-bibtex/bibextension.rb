@@ -61,17 +61,30 @@ module AsciidoctorBibtex
         bibtex = BibTeX.open bibtex_file
         processor = Processor.new bibtex, true, bibtex_style, bibtex_order
 
-        prose_blocks = document.find_by {|b| b.content_model == :simple}
+        prose_blocks = document.find_by {|b| b.content_model == :simple or b.context == :list_item}
         prose_blocks.each do |block|
-          block.lines.each do |line|
+          if block.context == :list_item
+            line = block.instance_variable_get :@text
             processor.citations.add_from_line line
+          else
+            block.lines.each do |line|
+              processor.citations.add_from_line line
+            end
           end
         end
 
         prose_blocks.each do |block|
-          block.lines.each do |line|
+          if block.context == :list_item
+            line = block.instance_variable_get :@text
             processor.citations.retrieve_citations(line).each do |citation|
               line.gsub!(citation.original, processor.complete_citation(citation))
+            end
+            block.instance_variable_set :@text, line
+          else
+            block.lines.each do |line|
+              processor.citations.retrieve_citations(line).each do |citation|
+                line.gsub!(citation.original, processor.complete_citation(citation))
+              end
             end
           end
         end
