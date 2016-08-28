@@ -1,40 +1,24 @@
-# Rakefile for managing asciidoctor-bibtex project
-#
-# Copyright (c) Peter Lane, 2012-13.
-# Released under Open Works License, 0.9.2
+require 'rake/clean'
 
-require 'rake/testtask'
+default_tasks = []
 
-Rake::TestTask.new do |t|
-  t.libs.push "lib"
-  t.libs.push "test"
-  t.test_files = FileList['test/*_test.rb']
-  t.verbose = true
-end
-
-desc 'Generates a coverage report'
-task :coverage do
-  `rm -rf coverage`
-  ENV['COVERAGE'] = 'true'
-  Rake::Task['test'].execute
-end
-
-desc 'run lib code on sample'
-task :samples do
-  Dir.chdir("samples") do
-    sh "ruby -I../lib ../bin/asciidoctor-bibtex sample-1.txt"
+begin
+  require 'rspec/core/rake_task'
+  RSpec::Core::RakeTask.new(:spec) do |t|
+    t.rspec_opts = ['-c']
   end
+  default_tasks << :spec
+rescue LoadError
 end
 
-directory 'release'
-
-desc 'build gem: keeps generated gems in release/'
-task :build_gem => 'release' do
-  sh "gem build asciidoctor-bibtex.gemspec"
-  sh "mv *.gem release"
+begin
+  require 'bundler/gem_tasks'
+  default_tasks << :build
+rescue LoadError
+  warn 'asciidoctor-bibtex: Bundler is required to build this gem. 
+  You can install Bundler using `gem install` command:
+  
+  $ [sudo] gem install bundler' + %(\n\n)
 end
 
-desc 'build documentation'
-task :doc do
-  sh "rdoc -t asciidoctor-bibtex README.rdoc lib/"
-end
+task :default => default_tasks unless default_tasks.empty?

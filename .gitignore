@@ -4,3 +4,4 @@
 *.swo
 /samples/*.html
 /samples/*-ref.*
+pkg
