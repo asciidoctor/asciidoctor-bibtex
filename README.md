@@ -1,25 +1,39 @@
 # asciidoctor-bibtex: add bibtex functionality to asciidoc
 
-asciidoctor-bibtex is a fork of [asciidoc-bib](https://github.com/petercrlane/asciidoc-bib) It generates in-text references and a reference list for an asciidoc file, using a bibtex file as a source of citation information. However, asciidoctor-bibtex proposes a different citation and reference grammar, which resembles the bibtex grammar in LaTeX. The grammar follows asciidoc inline and block macro semantics.
+asciidoctor-bibtex adds bibtex support for asciidoc documents by introducing
+two new macros: `cite:[KEY]` and `bibliography::[]`. Citations are parsed and
+replaced with formatted inline texts, and reference lists are automatically
+generated and inserted into where `bibliography::[]` is placed. 
 
-## Why a fork
+asciidoctor-bibtex is designed to be used as an extension to
+[asciidoctor](http://asciidoctor.org), although it supports asciidoc to
+asciidoc transformation at the moment. Thus this extension can be used
+together with other asciidoctor extensions such as
+[asciidoctor-mathematical][] and [asciidoctor-pdf][] to enrich your
+asciidoc experience.
 
-When I began switching from latex/word to asciidoc, I searched for an easy way to integrate bibtex like references into asciidoc. Then I came across asciidoc-bib, which nearly meet my needs. I can insert citations, generate automatically a complete reference list. But there are aspects in asciidoc-bib that are not pleasing to work with.
+[asciidoctor-mathematical]: https://github.com/asciidoctor/asciidoctor-mathematical
+[asciidoctor-pdf]: https://github.com/asciidoctor/asciidoctor-pdf
 
-The first is the overriding of `[bibliography]`. Asciidoctor introduces `[xxx]` as an mechanism to customize block styles, roles, etc.  `[bibliography]` is reserved for the bibliography section style. asciidoc-bib breaks it and there is no apparent way to fix it.
+## History
 
-The second is the grammar inconsistency with the rest of asciidoc. The `[cite:xxx]` is actually an inline macro but it does not follow the grammar of inline macros. This makes asciidoc-bib not that confortable to write with since it breaks the semantic memory.
+asciidoctor-bibtex starts as a fork of [asciidoc-bib][] and goes along a
+different way. The major reason for the fork at the time was the differences in
+citation and bibliography macros. asciidoc-bib failed to follow the grammar of
+macros in asciidoc, thus to avoid breaking existing documents, a fork is
+inevitable. Other reasons include the inability to use asciidoctor arguments
+in asciidoc-bib. 
 
-The last is asciidoc-bib does not support asciidoctor arguments and extensions. So I can not use asciidoctor-pdf with it.
+While [asciidoc-bib][] focuses on replacing citations in the original
+documents and produces new asciidoc documents, asciidoctor-bibtex focuses on
+compatibility with asciidoctor and other asciidoctor extensions at the very
+beginning. As time passes, asciidoctor-bibtex diverges significantly from its
+ancesstor. For example, asciidoctor-bibtex now supports generating real bibtex
+ciations and bibliography, so it can be used together with
+[asciidoctor-latex][] for native bibtex support.
 
-To accommodate the above problems, I create this fork. This fork tries to be as consistent with asciidoctor as possible. 
-
-## Features
-
-- bibtex-like syntax for adding a citation within text and placing bibliography
-- formatting of references and reference list according to range of styles supported by citeproc-ruby
-- supports some styling of citation text (page numbers, bracket placement)
-- can be used as an asciidoctor extension
+[asciidoc-bib]: https://github.com/petercrlane/asciidoc-bib
+[asciidoc-latex]: https://github.com/asciidoctor/asciidoctor-latex
 
 ## Install
 
@@ -30,9 +44,15 @@ Installs two executable programs:
 - 'asciidoc-bibtex' for transforming source text into asciidoc 
 - 'asciidoctor-bibtex' uses asciidoctor extension for single-pass output
 
-asciidoctor-bibtex depends on [bibtex-ruby](http://github.com/inukshuk/bibtex-ruby), [citeproc-ruby](http://github.com/inukshuk/citeproc-ruby) and [csl-styles](http://github.com/inukshuk/csl-styles).  (Ensure 'ruby-dev' and 'libxslt1-dev' are installed, so the dependencies will compile.)
+asciidoctor-bibtex depends on
+[bibtex-ruby](http://github.com/inukshuk/bibtex-ruby),
+[citeproc-ruby](http://github.com/inukshuk/citeproc-ruby) and
+[csl-styles](http://github.com/inukshuk/csl-styles).  (Ensure 'ruby-dev' and
+'libxslt1-dev' are installed, so the dependencies will compile.)
 
-[asciidoctor](https://github.com/asciidoctor/asciidoctor) must also be installed for 'asciidoctor-bibtex' to work. asciidoctor version 1.5.2 or higher is required.
+[asciidoctor](https://github.com/asciidoctor/asciidoctor) must also be
+installed for 'asciidoctor-bibtex' to work. asciidoctor version 1.5.2 or
+higher is required.
 
 ## Usage
 
