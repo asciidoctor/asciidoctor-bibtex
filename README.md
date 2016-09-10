@@ -33,7 +33,7 @@ ciations and bibliography, so it can be used together with
 [asciidoctor-latex][] for native bibtex support.
 
 [asciidoc-bib]: https://github.com/petercrlane/asciidoc-bib
-[asciidoc-latex]: https://github.com/asciidoctor/asciidoctor-latex
+[asciidoctor-latex]: https://github.com/asciidoctor/asciidoctor-latex
 
 ## Install
 
@@ -56,85 +56,48 @@ higher is required.
 
 ## Usage
 
-There are three ways of using asciidoctor-bibtex.
-
-The first is required if using _asciidoc_.  'asciidoc-bibtex' works by transforming an asciidoc document containing syntax to include citations and a bibliography. The transformed document will contain a complete reference and bibliography list where indicated, and can then be processed further by asciidoc's toolchain to produce a completed document.
-
-The second is to use 'asciidoctor-bibtex' to transform your bibtex-enabled documents directly to any backend format supported by asciidoctor. It uses the asciidoctor extension mechanism to hook in the asciidoctor preprocessing process. It support all asciidoctor command-line options.
-
-The third is to use asciidoctor-bibtex as an asciidoctor extension. It works the same way as the second approach. In addition, one can use other extensions together to provides even richer functionality. 
-
-Styles must be one of those supported by CSL: https://github.com/citation-style-language/styles
-
-### Citation syntax
+### Macros
 
 Syntax for inserting a citation is the following inline macro:
 
-    cite|citenp:[ref(pages)]
+    cite|citenp:[ref(pages), ...]
 
-where '(pages)' is optional.  The ref and optional pages may be repeated multiple times, separated by ','.  A citation _must_ be complete on a single line of text.
+where '(pages)' is optional.
 
 Examples of "chicago-author-date" style:
 
-`cite:[Lane12]` becomes "(Lane 2012)"
-
-`citenp:[Lane12]` becomes "Lane (2012)"
-
-`cite:[Lane12(59)]` becomes "(Lane 2012, 59)"
+- `cite:[Lane12]` becomes "(Lane 2012)"
+- `citenp:[Lane12]` becomes "Lane (2012)"
+- `cite:[Lane12(59)]` becomes "(Lane 2012, 59)"
 
 For *apa* (Harvard-like) style:
 
-`cite:[Lane12]` becomes "(Lane, 2012)"
-
-`citenp:[Lane12]` becomes "Lane (2012)"
-
-`cite:[Lane12(59)]` becomes "(Lane, 2012, p.59)"
+- `cite:[Lane12]` becomes "(Lane, 2012)"
+- `citenp:[Lane12]` becomes "Lane (2012)"
+- `cite:[Lane12(59)]` becomes "(Lane, 2012, p.59)"
 
 For *ieee*, a numeric style:
 
 `cite:[Lane12,Lane11]` becomes "[1, 2]"
 
-### Place bibliography in text
+To add a list of formatted references, place `bibliography::[]` on a line by itself.
 
-`bibliography::[]` on a line by itself.
+### Document Attributes
 
-### Processing Text: Asciidoctor
+| Attribute Name | Description                              | Valid Values                      | Default Value       |
+| -------------- | ---------------                          | ----------                        | --------------      |
+| bibtex-file    | Bibtex database file                     | any string, or empty              | Automatic searching |
+| bibtex-style   | Reference formatting style               | any style supported by csl-styles | ieee                |
+| bibtex-order   | Order of citations                       | `appearance` or `alphabetical`    | `appearance`        |
+| bibtex-format  | Formatting of citations and bibliography | `asciidoc` or `latex`             | `asciidoc`          |
 
-    asciidoctor-bibtex [OPTIONS] filename
+### Commandline
 
-Looks for a bib file in current folder and in ~/Documents.
+Use asciidoctor-bibtex as an extension:
 
-Outputs an html file, including all citations and references.
-
-asciidoctor-bibtex support all command-line options of asciidoctor, for example, use the follow command to output docbook file:
-
-    asciidoctor-bibtex -b docbook filename
-
-One may also use as an asciidoctor extension, for example:
-
-    asciidoctor -r asciidoctor-bibtex -r asciidoctor-pdf -b pdf filename
-
-Options are set through the command-line using the asciidoctor attributes
-setting syntax:
-
-    asciidoctor-bibtex -h
-
-or through AsciidoctorBibtex related options:
-
-      -a bibtex-file=FILENAME    Set BibTex filename (default: auto-find)
-      -a bibtex-style=STYLE      Set BibTex items style (default: apa)
-      -a bibtex-order=<alphabetical|appearance>
-                            Set citation order scheme (default: alphabetical)
-
-### Processing text: Asciidoc
-
-    asciidoc-bibtex filename.txt
-
-Looks for a bib file in current folder and in ~/Documents.
-
-Outputs a new file: filename-ref.txt which includes your references.
-
-asciidoc-bibtex supports the same command-line options as asciidoc-bib. The only difference is the citation and bibliography syntex.
+```bash
+asciidoctor -r asciidoctor-bibtex sample.adoc
+```
 
 ## License
 

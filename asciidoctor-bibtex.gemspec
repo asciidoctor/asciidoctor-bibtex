@@ -6,18 +6,15 @@ Gem::Specification.new do |s|
   s.author = 'Zhang YANG'
   s.version = AsciidoctorBibtex::VERSION
   s.email = 'zyangmath@gmail.com'
-  s.homepage = 'https://github.com/ProgramFan/asciidoctor-bibtex'
-  s.summary = 'asciidoctor-bibtex adds bibtex references to an asciidoc file.'
+  s.homepage = 'https://github.com/asciidoctor/asciidoctor-bibtex'
+  s.summary = 'Adding bibtex functionality to asciidoc'
   s.license = 'OWL'
   s.description = <<-END
-asciidoctor-bibtex is a fork of asciidoc-bib. It generates in-text references
-and reference lists for asciidoc files, using specified bibtex file as
-ciatation source.  The citation syntax follows asciidoc inline and block macro
-idiom and resembles bibtex macros, with `cite:[bibref]` or `citenp:[bibref]`
-for in-text citation and `bibliography::[]` for reference list. It can be used
-standalone or as an asciidoctor extension. See the README for more examples
-and further options.  The references are formatted using styles provided by
-CSL.
+asciidoctor-bibtex adds bibtex support for asciidoc documents by introducing
+two new macros: `cite:[KEY]` and `bibliography::[]`. Citations are parsed and
+replaced with formatted inline texts, and reference lists are automatically
+generated and inserted into where `bibliography::[]` is placed.  The
+references are formatted using styles provided by CSL.
 END
   s.files = Dir['lib/**/*'] + Dir['samples/*'] + [
     'LICENSE.txt',
@@ -32,4 +29,3 @@ END
   s.add_runtime_dependency('citeproc-ruby', "~> 1")
   s.add_runtime_dependency('csl-styles', '~> 1')
 end
-
