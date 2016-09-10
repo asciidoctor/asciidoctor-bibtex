@@ -13,7 +13,7 @@ module AsciidoctorBibtex
 
     # Top-level method to include citations in given asciidoc file
     def Processor.run options
-      processor = Processor.new BibTeX.open(options.bibfile), options.links, options.style, options.numeric_in_appearance_order?, options.output, options.bibfile
+      processor = Processor.new (BibTeX.open(options.bibfile, :filter => :latex), options.links, options.style, options.numeric_in_appearance_order?, options.output, options.bibfile
       processor.read_filenames options.filename
       processor.read_citations
       processor.add_citations

@@ -59,7 +59,7 @@ module AsciidoctorBibtex
           exit
         end
 
-        bibtex = BibTeX.open bibtex_file
+        bibtex = BibTeX.open bibtex_file, :filter => :latex
         processor = Processor.new bibtex, true, bibtex_style, bibtex_order == :appearance, bibtex_output
 
         prose_blocks = document.find_by {|b| b.content_model == :simple or b.context == :list_item}
