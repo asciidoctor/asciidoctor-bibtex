@@ -11,14 +11,6 @@ module AsciidoctorBibtex
   class Processor
     include ProcessorUtils
 
-    # Top-level method to include citations in given asciidoc file
-    def Processor.run options
-      processor = Processor.new BibTeX.open(options.bibfile, :filter => :latex), options.links, options.style, options.numeric_in_appearance_order?, options.output, options.bibfile
-      processor.read_filenames options.filename
-      processor.read_citations
-      processor.add_citations
-    end
-
     attr_reader :biblio, :links, :style, :citations
 
     def initialize biblio, links, style, numeric_in_appearance_order = false, output = :asciidoc, bibfile = ""
@@ -35,101 +27,6 @@ module AsciidoctorBibtex
         @citeproc = CiteProc::Processor.new style: @style, format: :html
         @citeproc.import @biblio.to_citeproc
       end
-    end
-
-    # Given an asciidoc filename, reads in all dependent files based on 'include::' statements
-    # Leaving a list of files in @filenames
-    def read_filenames filename
-      puts "Reading file: #{filename}"
-      files_to_process = [filename]
-
-      begin
-        @filenames.add files_to_process.first
-        File.new(files_to_process.shift).each_line do |line|
-          if line.include?("include::")
-            line.split("include::").drop(1).each do |filetxt|
-              file = File.expand_path(filetxt.partition(/\s|\[/).first)
-              files_to_process << file unless @filenames.include?(file)
-            end
-          end
-        end
-      end until files_to_process.empty?
-    end
-
-    # Scans each filename and extracts citations
-    def read_citations
-      @filenames.each do |file|
-        IO.foreach(file) do |line|
-          @citations.add_from_line line
-        end
-      end
-    end
-
-    # Read given text to add cites and biblio to a new file
-    # Order is always decided by author surname first with year.
-    # If no author present, then use editor field.
-    # Links indicates if internal links to be added.
-    # Assumes @filenames has been set to list of filenames to process.
-    def add_citations
-      @filenames.each do |curr_file|
-        ref_filename = FileHandlers.add_ref(curr_file)
-        puts "Writing file: #{ref_filename}"
-        output = File.new(ref_filename, "w")
-
-        IO.foreach(curr_file) do |line|
-          begin # catch any errors, and ensure the lines of text are written
-            case
-            when line.include?('include::')
-              output_include_line output, line
-            when (line =~ BIBMACRO_FULL) != nil
-              output_bibliography output
-            else
-              output_cite_completed_line output, line
-            end
-          rescue # Any errors, just output the line
-            output.puts line
-          end
-        end
-
-        output.close
-      end
-    end
-
-    # Output bibliography to given output
-    def output_bibliography output
-      if @output == :asciidoc
-        cites = if Styles.is_numeric?(@style) and @numeric_in_appearance_order
-                  @citations.cites_used
-                else
-                  sorted_cites
-                end
-        cites.each do |ref|
-          output.puts get_reference(ref)
-          output.puts
-        end
-      else
-        output.puts "++\\bibliography{#{@bibfile}}++"
-        output.puts "++\\bibliographystyle{#{@style}}++"
-      end
-    end
-
-    def output_include_line output, line
-      line.split("include::").drop(1).each do |filetxt|
-        ifile = filetxt.partition(/\s|\[/).first
-        file = File.expand_path ifile
-        # make sure included file points to the -ref version
-        line.gsub!("include::#{ifile}", "include::#{FileHandlers.add_ref(file)}")
-      end
-      output.puts line
-    end
-
-    # For each citation in given line, expand into complete citation text
-    # before outputting the line
-    def output_cite_completed_line output, line
-      @citations.retrieve_citations(line).each do |citation|
-        line.gsub!(citation.original, complete_citation(citation))
-      end
-      output.puts line
     end
 
     # Return the complete citation text for given cite_data
@@ -300,8 +197,5 @@ module AsciidoctorBibtex
       end
     end
 
-    BIBMACRO_FULL = /bibliography::(.*?)\[(\w+)?\]/
   end
 end
-
-
