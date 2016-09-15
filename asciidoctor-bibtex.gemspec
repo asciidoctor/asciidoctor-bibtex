@@ -16,16 +16,10 @@ replaced with formatted inline texts, and reference lists are automatically
 generated and inserted into where `bibliography::[]` is placed.  The
 references are formatted using styles provided by CSL.
 END
-  s.files = Dir['lib/**/*'] + Dir['samples/*'] + [
-    'LICENSE.txt',
-    'README.md',
-    'bin/asciidoctor-bibtex',
-    'bin/asciidoc-bibtex'
-  ]
-  s.executables << 'asciidoctor-bibtex'
-  s.executables << 'asciidoc-bibtex'
+  s.files = Dir['lib/**/*'] + ['LICENSE.txt', 'README.md']
   s.required_ruby_version = '~> 2.0'
   s.add_runtime_dependency('bibtex-ruby', "~> 4")
   s.add_runtime_dependency('citeproc-ruby', "~> 1")
   s.add_runtime_dependency('csl-styles', '~> 1')
+  s.add_runtime_dependency('latex-decode', '~> 0.2')
 end
