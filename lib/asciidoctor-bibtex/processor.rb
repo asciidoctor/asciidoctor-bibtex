@@ -85,6 +85,52 @@ module AsciidoctorBibtex
       end
     end
 
+    def complete_citation_raw cite_data
+
+      if @output == :latex
+        result = '+++'
+        cite_data.cites.each do |cite|
+          # NOTE: xelatex does not support "\citenp", so we output all
+          # references as "cite" here.
+          # result << "\\" << cite_data.type
+          result << "\\" << 'cite'
+          if cite.pages != ''
+            result << "[p. " << cite.pages << "]"
+          end
+          result << "{" << "#{cite.ref}" << "},"
+        end
+        if result[-1] == ','
+          result = result[0..-2]
+        end
+        result << "+++"
+        return result
+      else
+        result = ''
+        ob, cb = '', ''
+
+        cite_data.cites.each_with_index do |cite, index|
+          # before all items apart from the first, insert appropriate separator
+          result << "#{separator} " unless index.zero?
+
+          # if found, insert reference information
+          unless biblio[cite.ref].nil?
+            item = biblio[cite.ref].clone
+            cite_text, ob, cb = make_citation item, cite.ref, cite_data, cite
+          else
+            puts "Unknown reference: #{cite.ref}"
+            cite_text = "#{cite.ref}"
+          end
+
+          if @links
+            result << "<a href=\"\##{cite.ref}\">#{cite_text}</a>"
+          else
+            result << "#{cite.ref}"
+          end
+        end
+        return result
+      end
+    end
+
     # Retrieve text for reference in given style
     # - ref is reference for item to give reference for
     def get_reference ref
