@@ -39,11 +39,6 @@ ciations and bibliography, so it can be used together with
 
     gem install asciidoctor-bibtex
 
-Installs two executable programs:
-
-- 'asciidoc-bibtex' for transforming source text into asciidoc 
-- 'asciidoctor-bibtex' uses asciidoctor extension for single-pass output
-
 asciidoctor-bibtex depends on
 [bibtex-ruby](http://github.com/inukshuk/bibtex-ruby),
 [citeproc-ruby](http://github.com/inukshuk/citeproc-ruby) and
