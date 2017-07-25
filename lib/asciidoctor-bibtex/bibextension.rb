@@ -123,9 +123,11 @@ module AsciidoctorBibtex
         end
 
         references_asciidoc = []
-        if bibtex_format == :latex
+        if bibtex_format == :latex or bibtex_format == :bibtex
           references_asciidoc << %(+++\\bibliography{#{bibtex_file}}{}+++)
           references_asciidoc << %(+++\\bibliographystyle{#{bibtex_style}}+++)
+        elsif bibtex_format == :biblatex
+          references_asciidoc << %(+++\\printbibliography+++)
         else
           processor.cites.each do |ref|
             references_asciidoc << processor.get_reference(ref)
