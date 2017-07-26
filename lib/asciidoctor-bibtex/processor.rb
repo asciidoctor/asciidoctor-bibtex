@@ -36,9 +36,16 @@ module AsciidoctorBibtex
         result = '+++'
         cite_data.cites.each do |cite|
           # NOTE: xelatex does not support "\citenp", so we output all
-          # references as "cite" here.
-          # result << "\\" << cite_data.type
-          result << "\\" << 'cite'
+          # references as "cite" here unless we're using biblatex.
+          if @output == :biblatex
+            if cite_data.type == "citenp"
+              result << "\\" << 'textcite'
+            else
+              result << "\\" << 'parencite'
+            end
+          else
+            result << "\\" << 'cite'
+          end
           if cite.pages != ''
             result << "[p. " << cite.pages << "]"
           end
