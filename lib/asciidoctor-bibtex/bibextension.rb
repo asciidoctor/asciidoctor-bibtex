@@ -52,7 +52,7 @@ module AsciidoctorBibtex
     class BibliographyBlockMacro < ::Asciidoctor::Extensions::BlockMacroProcessor
       use_dsl
       named :bibliography
-      positional_attributes :style
+      name_positional_attributes :style
 
       def process parent, target, attrs
         # NOTE: bibtex-file and bibtex-style set by this macro shall be
