@@ -79,12 +79,12 @@ To add a list of formatted references, place `bibliography::[]` on a line by its
 
 ### Document Attributes
 
-| Attribute Name | Description                              | Valid Values                      | Default Value       |
-| -------------- | ---------------                          | ----------                        | --------------      |
-| bibtex-file    | Bibtex database file                     | any string, or empty              | Automatic searching |
-| bibtex-style   | Reference formatting style               | any style supported by csl-styles | ieee                |
-| bibtex-order   | Order of citations                       | `appearance` or `alphabetical`    | `appearance`        |
-| bibtex-format  | Formatting of citations and bibliography | `asciidoc` or `latex`             | `asciidoc`          |
+| Attribute Name | Description                              | Valid Values                         | Default Value       |
+| -------------- | ---------------                          | ----------                           | --------------      |
+| bibtex-file    | Bibtex database file                     | any string, or empty                 | Automatic searching |
+| bibtex-style   | Reference formatting style               | any style supported by csl-styles    | ieee                |
+| bibtex-order   | Order of citations                       | `appearance` or `alphabetical`       | `appearance`        |
+| bibtex-format  | Formatting of citations and bibliography | `asciidoc` or `bibtex` or `biblatex` | `asciidoc`          |
 
 ### Commandline
 

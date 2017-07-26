@@ -23,7 +23,7 @@ module AsciidoctorBibtex
       @output = output
       @bibfile = bibfile
 
-      if output != :latex
+      if output != :latex and output != :bibtex and output != :biblatex
         @citeproc = CiteProc::Processor.new style: @style, format: :html
         @citeproc.import @biblio.to_citeproc
       end
@@ -32,7 +32,7 @@ module AsciidoctorBibtex
     # Return the complete citation text for given cite_data
     def complete_citation cite_data
 
-      if @output == :latex
+      if @output == :latex or @output == :bibtex or @output == :biblatex
         result = '+++'
         cite_data.cites.each do |cite|
           # NOTE: xelatex does not support "\citenp", so we output all
