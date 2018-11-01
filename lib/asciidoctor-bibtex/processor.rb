@@ -172,10 +172,8 @@ module AsciidoctorBibtex
         lc = ']'
       else
         cite_text = @citeproc.process id: ref, mode: :citation
-
-        fc = cite_text[0,1]
-        lc = cite_text[-1,1]
-        cite_text = cite_text[1..-2]
+        fc = ''
+        lc = ''
       end
 
       if Styles.is_numeric? @style
