@@ -13,18 +13,19 @@ module AsciidoctorBibtex
 
     attr_reader :biblio, :links, :style, :citations
 
-    def initialize biblio, links, style, numeric_in_appearance_order = false, output = :asciidoc, bibfile = ""
+    def initialize biblio, links, style, locale, numeric_in_appearance_order = false, output = :asciidoc, bibfile = ""
       @biblio = biblio
       @links = links
       @numeric_in_appearance_order = numeric_in_appearance_order
       @style = style
+	  @locale = locale
       @citations = Citations.new
       @filenames = Set.new
       @output = output
       @bibfile = bibfile
 
       if output != :latex and output != :bibtex and output != :biblatex
-        @citeproc = CiteProc::Processor.new style: @style, format: :html
+        @citeproc = CiteProc::Processor.new style: @style, format: :html, locale: @locale
         @citeproc.import @biblio.to_citeproc
       end
     end
