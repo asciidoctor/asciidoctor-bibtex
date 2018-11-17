@@ -68,7 +68,6 @@ module AsciidoctorBibtex
           parent.document.set_attribute 'bibtex-locale', attrs[:locale]
         end
         create_paragraph parent, BibliographyBlockMacroPlaceholder, {}
-        create_paragraph parent, BibliographyBlockMacroPlaceholder, {}
       end
     end
 
