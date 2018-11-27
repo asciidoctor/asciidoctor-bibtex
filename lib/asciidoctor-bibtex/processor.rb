@@ -18,7 +18,7 @@ module AsciidoctorBibtex
       @links = links
       @numeric_in_appearance_order = numeric_in_appearance_order
       @style = style
-	  @locale = locale
+      @locale = locale
       @citations = Citations.new
       @filenames = Set.new
       @output = output
