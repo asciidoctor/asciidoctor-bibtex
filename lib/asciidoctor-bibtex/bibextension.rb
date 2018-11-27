@@ -64,6 +64,9 @@ module AsciidoctorBibtex
         if attrs.key? :style and not parent.document.attr? 'bibtex-style'
           parent.document.set_attribute 'bibtex-style', attrs[:style]
         end
+        if attrs.key? :locale and not parent.document.attr? 'bibtex-locale'
+          parent.document.set_attribute 'bibtex-locale', attrs[:locale]
+        end
         create_paragraph parent, BibliographyBlockMacroPlaceholder, {}
       end
     end
@@ -77,6 +80,7 @@ module AsciidoctorBibtex
       def process document
         bibtex_file = (document.attr 'bibtex-file').to_s
         bibtex_style = ((document.attr 'bibtex-style') || 'ieee').to_s
+        bibtex_locale = ((document.attr 'bibtex-locale') || 'en-US').to_s
         bibtex_order = ((document.attr 'bibtex-order') || 'appearance').to_sym
         bibtex_format = ((document.attr 'bibtex-format') || 'asciidoc').to_sym
 
@@ -92,7 +96,7 @@ module AsciidoctorBibtex
         end
 
         bibtex = BibTeX.open bibtex_file, :filter => [LatexFilter]
-        processor = Processor.new bibtex, true, bibtex_style, bibtex_order == :appearance, bibtex_format
+        processor = Processor.new bibtex, true, bibtex_style, bibtex_locale, bibtex_order == :appearance, bibtex_format
 
         prose_blocks = document.find_by {|b| b.content_model == :simple or b.context == :list_item}
         prose_blocks.each do |block|
