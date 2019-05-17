@@ -35,9 +35,7 @@ module AsciidoctorBibtex
         LaTeX::Decode::Punctuation.decode!(text)
         LaTeX::Decode::Symbols.decode!(text)
         LaTeX::Decode::Greek.decode!(text)
-        text.gsub!(/\\url\{(.+?)\}/, " \\1 ")
-        text.gsub!(/\\\w+(?=\s+\w)/, "")
-        text.gsub!(/\\\w+(?:\[.+?\])?\s*\{(.+?)\}/, "\\1")
+        text = text.gsub(/\\url\{(.+?)\}/, " \\1 ").gsub(/\\\w+(?=\s+\w)/, "").gsub(/\\\w+(?:\[.+?\])?\s*\{(.+?)\}/, "\\1")
         LaTeX::Decode::Base.strip_braces(text)
         LaTeX.normalize_C(text)
       end
@@ -114,13 +112,13 @@ module AsciidoctorBibtex
           if block.context == :list_item
             line = block.instance_variable_get :@text
             processor.citations.retrieve_citations(line).each do |citation|
-              line.gsub!(citation.original, processor.complete_citation(citation))
+              line = line.gsub(citation.original, processor.complete_citation(citation))
             end
             block.instance_variable_set :@text, line
           else
             block.lines.each do |line|
               processor.citations.retrieve_citations(line).each do |citation|
-                line.gsub!(citation.original, processor.complete_citation(citation))
+                line = line.gsub(citation.original, processor.complete_citation(citation))
               end
             end
           end

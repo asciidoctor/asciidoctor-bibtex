@@ -14,7 +14,7 @@ module AsciidoctorBibtex
       @pages = pages
       # clean up pages
       @pages = '' unless @pages
-      @pages.gsub!("--","-")
+      @pages = @pages.gsub("--","-")
     end
 
     def to_s
