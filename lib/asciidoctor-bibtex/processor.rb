@@ -180,13 +180,12 @@ module AsciidoctorBibtex
       if Styles.is_numeric? @style
         cite_text << "#{page_str(cite)}"
       elsif cite_data.type == "citenp"
-        cite_text.gsub!(item.year, "#{fc}#{item.year}#{page_str(cite)}#{lc}")
-        cite_text.gsub!(", #{fc}", " #{fc}")
+        cite_text = cite_text.gsub(item.year, "#{fc}#{item.year}#{page_str(cite)}#{lc}").gsub(", #{fc}", " #{fc}")
       else
         cite_text << page_str(cite)
       end
 
-      cite_text.gsub!(",", "&#44;") if @links # replace comma
+      cite_text = cite_text.gsub(",", "&#44;") if @links # replace comma
 
       return cite_text, fc, lc
     end
