@@ -117,9 +117,11 @@ module AsciidoctorBibtex
             block.instance_variable_set :@text, line
           else
             block.lines.each do |line|
+              tmp = line.clone
               processor.citations.retrieve_citations(line).each do |citation|
-                line = line.gsub(citation.original, processor.complete_citation(citation))
+                tmp = tmp.gsub(citation.original, processor.complete_citation(citation))
               end
+              line.replace tmp
             end
           end
         end
