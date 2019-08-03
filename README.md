@@ -29,7 +29,7 @@ documents and produces new asciidoc documents, asciidoctor-bibtex focuses on
 compatibility with asciidoctor and other asciidoctor extensions at the very
 beginning. As time passes, asciidoctor-bibtex diverges significantly from its
 ancesstor. For example, asciidoctor-bibtex now supports generating real bibtex
-ciations and bibliography, so it can be used together with
+citations and bibliography, so it can be used together with
 [asciidoctor-latex][] for native bibtex support.
 
 [asciidoc-bib]: https://github.com/petercrlane/asciidoc-bib
