@@ -41,7 +41,7 @@ module AsciidoctorBibtex
       end
     end
 
-    BibliographyBlockMacroPlaceholder = %(BIBLIOGRAPHY BLOCK MACRO PLACEHOLDER)
+    BibliographyBlockMacroPlaceholder = %(asciidoctor-bibex-a5d42deb-3cfc-4293-b96a-fcb47316ce56)
 
     # This macro processor does only half the work. It just parse the macro
     # and set bibtex file and style if found in the macro. The macro is then
