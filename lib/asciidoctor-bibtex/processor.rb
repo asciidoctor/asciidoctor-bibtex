@@ -13,7 +13,9 @@ module AsciidoctorBibtex
 
     attr_reader :biblio, :links, :style, :citations
 
-    def initialize biblio, links, style, locale, numeric_in_appearance_order = false, output = :asciidoc, bibfile = ""
+    def initialize biblio, links, style, locale,
+                   numeric_in_appearance_order = false, output = :asciidoc,
+                   bibfile = "", throw_on_unknown = false
       @biblio = biblio
       @links = links
       @numeric_in_appearance_order = numeric_in_appearance_order
@@ -23,6 +25,7 @@ module AsciidoctorBibtex
       @filenames = Set.new
       @output = output
       @bibfile = bibfile
+      @throw_on_unknown = throw_on_unknown
 
       if output != :latex and output != :bibtex and output != :biblatex
         @citeproc = CiteProc::Processor.new style: @style, format: :html, locale: @locale
@@ -73,8 +76,12 @@ module AsciidoctorBibtex
             item = biblio[cite.ref].clone
             cite_text, ob, cb = make_citation item, cite.ref, cite_data, cite
           else
-            puts "Unknown reference: #{cite.ref}"
-            cite_text = "#{cite.ref}"
+            if @throw_on_unknown
+              raise "Unknown reference: #{cite.ref}"
+            else
+              puts "Unknown reference: #{cite.ref}"
+              cite_text = "#{cite.ref}"
+            end
           end
 
           result << cite_text.html_to_asciidoc

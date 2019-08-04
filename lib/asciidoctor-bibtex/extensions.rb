@@ -81,6 +81,7 @@ module AsciidoctorBibtex
         bibtex_locale = ((document.attr 'bibtex-locale') || 'en-US').to_s
         bibtex_order = ((document.attr 'bibtex-order') || 'appearance').to_sym
         bibtex_format = ((document.attr 'bibtex-format') || 'asciidoc').to_sym
+        bibtex_throw = ((document.attr 'bibtex-throw') || 'false').to_s.downcase
 
         if bibtex_file.empty?
           bibtex_file = AsciidoctorBibtex::FileHandlers.find_bibliography "."
@@ -94,7 +95,8 @@ module AsciidoctorBibtex
         end
 
         bibtex = BibTeX.open bibtex_file, :filter => [LatexFilter]
-        processor = Processor.new bibtex, true, bibtex_style, bibtex_locale, bibtex_order == :appearance, bibtex_format
+        processor = Processor.new bibtex, true, bibtex_style, bibtex_locale,
+          bibtex_order == :appearance, bibtex_format, "", bibtex_throw == 'true'
 
         prose_blocks = document.find_by {|b| b.content_model == :simple or
                                          b.context == :list_item or
