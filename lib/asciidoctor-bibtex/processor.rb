@@ -169,8 +169,8 @@ module AsciidoctorBibtex
                     else
                       "#{sorted_cites.index(cite.ref) + 1}"
                     end
-        fc = '['
-        lc = ']'
+        fc = '+[+'
+        lc = '+]+'
       else
         cite_text = @citeproc.process id: ref, mode: :citation
         fc = ''

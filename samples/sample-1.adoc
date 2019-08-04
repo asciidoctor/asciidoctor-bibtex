@@ -32,7 +32,7 @@ Also works for unordered list:
 * See cite:[Anderson98].
 * See cite:[Anderson04].
 
-Shall also work in tables and footnotes.
+Shall also work in tables:
 
 [cols="1,1",options="header"]
 |===
@@ -42,6 +42,8 @@ Shall also work in tables and footnotes.
 | Item 1
 | Illustrated in cite:[Lane12a].
 |===
+
+Shall also work in a footnote footnote:[We cite cite:[Lane12a] for this.].
 
 [sect2] 
 == Bibliography
