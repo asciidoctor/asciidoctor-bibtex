@@ -3,9 +3,9 @@
 # Copyright (c) Peter Lane, 2012.
 # Released under Open Works License, 0.9.2
 
-require 'test_helper'
+require_relative 'helpers'
 
-describe AsciidocBib do
+describe AsciidoctorBibtex do
   it "should add ref to end of filename" do
     FileHandlers.add_ref('/tmp/example.txt').must_equal '/tmp/example-ref.txt'
   end

@@ -1,6 +1,6 @@
-require 'test_helper'
+require_relative 'helpers'
 
-describe AsciidocBib do
+describe AsciidoctorBibtex do
   it "should do comma/join on arrays" do
     ["1"].comma_and_join.must_equal '1'
     ["1", "2"].comma_and_join.must_equal '1 and 2'
