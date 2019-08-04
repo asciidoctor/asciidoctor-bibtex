@@ -18,11 +18,13 @@ references are formatted using styles provided by CSL.
 END
   s.files = Dir['lib/**/*'] + ['LICENSE.txt', 'README.md']
   s.required_ruby_version = '~> 2.0'
-  s.add_runtime_dependency('asciidoctor', '>= 2.0.0', '< 3.0.0')
-  s.add_runtime_dependency('bibtex-ruby', "~> 4")
-  s.add_runtime_dependency('citeproc-ruby', "~> 1")
-  s.add_runtime_dependency('csl-styles', '~> 1')
-  s.add_runtime_dependency('latex-decode', '~> 0.2')
+  s.add_runtime_dependency 'asciidoctor', '>= 2.0.0', '< 3.0.0'
+  s.add_runtime_dependency 'bibtex-ruby', "~> 4"
+  s.add_runtime_dependency 'citeproc-ruby', "~> 1"
+  s.add_runtime_dependency 'csl-styles', '~> 1'
+  s.add_runtime_dependency 'latex-decode', '~> 0.2'
 
-  s.add_development_dependency('minitest')
+  s.add_development_dependency 'minitest', '~> 5'
+  s.add_development_dependency 'bundler', '~> 2'
+  s.add_development_dependency 'rake', '~> 12'
 end
