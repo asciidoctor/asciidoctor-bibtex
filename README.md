@@ -84,8 +84,7 @@ To add a list of formatted references, place `bibliography::[]` on a line by its
 | bibtex-style   | Reference formatting style               | any style supported by csl-styles    | ieee                |
 | bibtex-order   | Order of citations                       | `appearance` or `alphabetical`       | `appearance`        |
 | bibtex-format  | Formatting of citations and bibliography | `asciidoc`, `bibtex` or `biblatex` | `asciidoc`          |
-| bibtex-throw  | Throw an error on unknown references | `true` or `false` |
-`false`          |
+| bibtex-throw  | Throw an error on unknown references | `true` or `false` | `false`          |
 
 ### Commandline
 
