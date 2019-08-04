@@ -4,7 +4,7 @@
 # Copyright (c) Zhang Yang, 2019.
 # Released under Open Works License, 0.9.2
 
-require_relative 'test_helper'
+require_relative 'helpers'
 
 describe AsciidoctorBibtex do
 
