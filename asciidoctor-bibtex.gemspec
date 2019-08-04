@@ -23,4 +23,6 @@ END
   s.add_runtime_dependency('citeproc-ruby', "~> 1")
   s.add_runtime_dependency('csl-styles', '~> 1')
   s.add_runtime_dependency('latex-decode', '~> 0.2')
+
+  s.add_development_dependency('minitest')
 end
