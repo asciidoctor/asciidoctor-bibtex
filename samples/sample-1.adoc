@@ -32,6 +32,17 @@ Also works for unordered list:
 * See cite:[Anderson98].
 * See cite:[Anderson04].
 
+Shall also work in tables and footnotes.
+
+[cols="1,1",options="header"]
+|===
+| Term
+| Citation
+
+| Item 1
+| Illustrated in cite:[Lane12a].
+|===
+
 [sect2] 
 == Bibliography
 

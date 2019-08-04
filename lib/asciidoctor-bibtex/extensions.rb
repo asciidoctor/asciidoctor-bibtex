@@ -96,10 +96,15 @@ module AsciidoctorBibtex
         bibtex = BibTeX.open bibtex_file, :filter => [LatexFilter]
         processor = Processor.new bibtex, true, bibtex_style, bibtex_locale, bibtex_order == :appearance, bibtex_format
 
-        prose_blocks = document.find_by {|b| b.content_model == :simple or b.context == :list_item}
+        prose_blocks = document.find_by {|b| b.content_model == :simple or
+                                         b.context == :list_item or
+                                         b.context == :table_cell}
         prose_blocks.each do |block|
           if block.context == :list_item
             line = block.instance_variable_get :@text
+            processor.citations.add_from_line line
+          elsif block.context == :table_cell
+            line = block.text
             processor.citations.add_from_line line
           else
             block.lines.each do |line|
@@ -115,6 +120,12 @@ module AsciidoctorBibtex
               line = line.gsub(citation.original, processor.complete_citation(citation))
             end
             block.instance_variable_set :@text, line
+          elsif block.context == :table_cell
+            line = block.text
+            processor.citations.retrieve_citations(line).each do |citation|
+              line = line.gsub(citation.original, processor.complete_citation(citation))
+            end
+            block.text = line
           else
             block.lines.each do |line|
               tmp = line.clone
