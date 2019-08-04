@@ -6,11 +6,10 @@ replaced with formatted inline texts, and reference lists are automatically
 generated and inserted into where `bibliography::[]` is placed. 
 
 asciidoctor-bibtex is designed to be used as an extension to
-[asciidoctor](http://asciidoctor.org), although it supports asciidoc to
-asciidoc transformation at the moment. Thus this extension can be used
+[asciidoctor](http://asciidoctor.org). Thus this extension can be used
 together with other asciidoctor extensions such as
 [asciidoctor-mathematical][] and [asciidoctor-pdf][] to enrich your
-asciidoc experience.
+asciidoc experience. Note that asciidoctor-bibtex no longer support asciidoc-to-asciidoc conversion.
 
 [asciidoctor-mathematical]: https://github.com/asciidoctor/asciidoctor-mathematical
 [asciidoctor-pdf]: https://github.com/asciidoctor/asciidoctor-pdf
@@ -84,7 +83,7 @@ To add a list of formatted references, place `bibliography::[]` on a line by its
 | bibtex-file    | Bibtex database file                     | any string, or empty                 | Automatic searching |
 | bibtex-style   | Reference formatting style               | any style supported by csl-styles    | ieee                |
 | bibtex-order   | Order of citations                       | `appearance` or `alphabetical`       | `appearance`        |
-| bibtex-format  | Formatting of citations and bibliography | `asciidoc` or `bibtex` or `biblatex` | `asciidoc`          |
+| bibtex-format  | Formatting of citations and bibliography | `asciidoc`, `bibtex` or `biblatex` | `asciidoc`          |
 
 ### Commandline
 
