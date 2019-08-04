@@ -8,10 +8,11 @@ require 'citeproc'
 require 'csl/styles'
 require 'set'
 
-# Requires utils first since it monkey-patches string and array.
+# Load utils first since it monkey-patches string and array.
 require_relative 'asciidoctor-bibtex/utils'
+# Load asciidoctor extensions introduced by this package.
+require_relative 'asciidoctor-bibtex/extensions'
 
-require_relative 'asciidoctor-bibtex/extensions_impl'
 require_relative 'asciidoctor-bibtex/citation'
 require_relative 'asciidoctor-bibtex/citationdata'
 require_relative 'asciidoctor-bibtex/citationutils'
