@@ -175,3 +175,8 @@ module AsciidoctorBibtex
 
   end
 end
+
+Asciidoctor::Extensions.register do
+  block_macro AsciidoctorBibtex::Asciidoctor::BibliographyBlockMacro
+  treeprocessor AsciidoctorBibtex::Asciidoctor::CitationProcessor
+end
