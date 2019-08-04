@@ -13,9 +13,9 @@ module AsciidoctorBibtex
 
     attr_reader :biblio, :links, :style, :citations
 
-    def initialize biblio, links, style, locale,
+    def initialize biblio, links = false, style = 'ieee', locale = 'en-US',
                    numeric_in_appearance_order = false, output = :asciidoc,
-                   bibfile = "", throw_on_unknown = false
+                   throw_on_unknown = false
       @biblio = biblio
       @links = links
       @numeric_in_appearance_order = numeric_in_appearance_order
@@ -24,7 +24,6 @@ module AsciidoctorBibtex
       @citations = Citations.new
       @filenames = Set.new
       @output = output
-      @bibfile = bibfile
       @throw_on_unknown = throw_on_unknown
 
       if output != :latex and output != :bibtex and output != :biblatex

@@ -96,7 +96,7 @@ module AsciidoctorBibtex
 
         bibtex = BibTeX.open bibtex_file, :filter => [LatexFilter]
         processor = Processor.new bibtex, true, bibtex_style, bibtex_locale,
-          bibtex_order == :appearance, bibtex_format, "", bibtex_throw == 'true'
+          bibtex_order == :appearance, bibtex_format, bibtex_throw == 'true'
 
         prose_blocks = document.find_by {|b| b.content_model == :simple or
                                          b.context == :list_item or

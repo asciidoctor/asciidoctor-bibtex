@@ -1,11 +1,12 @@
 # Test cases for formatting references
 #
 # Copyright (c) Peter Lane, 2012.
+# Copyright (c) Zhang Yang, 2019.
 # Released under Open Works License, 0.9.2
 
-require 'test_helper'
+require_relative 'helpers'
 
-describe AsciidocBib do
+describe AsciidoctorBibtex do
   it "must return Chicago style references" do
     p = Processor.new BibTeX.open('test/data/test.bib'), false, 'chicago-author-date'
     p.get_reference('smith10').must_equal "Smith, D. 2010. _Book Title_. Mahwah, NJ: Lawrence Erlbaum."
