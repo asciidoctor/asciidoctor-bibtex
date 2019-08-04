@@ -1,0 +1,18 @@
+= Latex Macros In Bibtex Items
+:bibtex-file: reference.bib
+:bibtex-style: ieee
+:bibtex-order: appearance
+
+== Contents
+
+[quote, 'Arthur C. Clarke', A Space Odyssey (cite:[guo2009])]
+____
+This is a quote.
+____
+
+This is a real citation (cite:[guo2009])
+
+== Bibliography
+
+bibliography::[]
+
