@@ -5,21 +5,21 @@
 
 module AsciidoctorBibtex
 
-  module Styles
+  module StyleUtils
 
-    def Styles.available
+    def StyleUtils.available
       CSL::Style.ls
     end
 
-    def Styles.default_style
+    def StyleUtils.default_style
       'apa'
     end
 
-    def Styles.valid? style
+    def StyleUtils.valid? style
       Styles.available.include? style
     end
 
-    def Styles.is_numeric? style
+    def StyleUtils.is_numeric? style
       CSL::Style.load(style).citation_format == :numeric
     end
   end

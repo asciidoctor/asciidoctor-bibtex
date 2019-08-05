@@ -14,8 +14,7 @@ require 'latex/decode/diacritics'
 require 'latex/decode/punctuation'
 require 'latex/decode/symbols'
 require 'latex/decode/greek'
-require_relative 'styles'
-require_relative 'filehandlers'
+require_relative 'FileUtils'
 
 module AsciidoctorBibtex
   module Asciidoctor
@@ -84,10 +83,10 @@ module AsciidoctorBibtex
         bibtex_throw = ((document.attr 'bibtex-throw') || 'false').to_s.downcase
 
         if bibtex_file.empty?
-          bibtex_file = AsciidoctorBibtex::FileHandlers.find_bibliography "."
+          bibtex_file = AsciidoctorBibtex::FileUtils.find_bibliography "."
         end
         if bibtex_file.empty?
-          bibtex_file = AsciidoctorBibtex::FileHandlers.find_bibliography "#{ENV['HOME']}/Documents"
+          bibtex_file = AsciidoctorBibtex::FileUtils.find_bibliography "#{ENV['HOME']}/Documents"
         end
         if bibtex_file.empty?
           puts "Error: bibtex-file is not set and automatic search failed"
