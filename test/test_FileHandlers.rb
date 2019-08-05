@@ -6,10 +6,6 @@
 require_relative 'helpers'
 
 describe AsciidoctorBibtex do
-  it "should add ref to end of filename" do
-    FileHandlers.add_ref('/tmp/example.txt').must_equal '/tmp/example-ref.txt'
-  end
-
   it "should find biblio file" do
     FileHandlers.find_bibliography('test/data').must_equal 'test/data/test.bib'
     FileHandlers.find_bibliography('test').must_equal ''

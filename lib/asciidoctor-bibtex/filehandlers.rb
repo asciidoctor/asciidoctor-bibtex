@@ -1,5 +1,6 @@
 #
 # filehandlers.rb
+#
 # Contains top-level file utility methods
 #
 
@@ -20,13 +21,5 @@ module AsciidoctorBibtex
       end
     end
 
-    # Add '-ref' before the extension of a filename
-    def FileHandlers.add_ref filename
-      file_dir = File.dirname(File.expand_path(filename))
-      file_base = File.basename(filename, ".*")
-      file_ext = File.extname(filename)
-      return "#{file_dir}#{File::SEPARATOR}#{file_base}-ref#{file_ext}"
-    end
   end
 end
-
