@@ -6,9 +6,9 @@
 
 module AsciidoctorBibtex
 
-  module FileHandlers
+  module FileUtils
     # Locate a bibliography file to read in given dir
-    def FileHandlers.find_bibliography dir
+    def FileUtils.find_bibliography dir
       begin
         candidates = Dir.glob("#{dir}/*.bib")
         if candidates.empty?

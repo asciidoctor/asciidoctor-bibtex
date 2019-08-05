@@ -2,6 +2,10 @@
 #
 # Copyright (c) Peter Lane, 2013.
 # Released under Open Works License, 0.9.2
+#
+
+require_relative 'CitationData'
+require_relative 'Citation'
 
 module AsciidoctorBibtex
   # Some utility functions used in Citations class

@@ -3,7 +3,13 @@
 # and main operations.
 #
 
+require 'citeproc'
+require 'csl/styles'
+require 'set'
+
 require_relative 'StyleUtils'
+require_relative 'ProcessorUtils'
+require_relative 'Citations'
 
 module AsciidoctorBibtex
 
