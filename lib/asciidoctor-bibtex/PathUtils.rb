@@ -17,9 +17,5 @@ module AsciidoctorBibtex
     rescue StandardError # catch all errors, and return empty string
       ''
     end
-
-    def self.doBad
-      ''
-    end
   end
 end
