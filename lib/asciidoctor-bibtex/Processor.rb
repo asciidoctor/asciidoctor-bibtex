@@ -18,7 +18,8 @@ require 'set'
 
 require_relative 'StyleUtils'
 require_relative 'ProcessorUtils'
-require_relative 'Citations'
+require_relative 'CitationMacro'
+require_relative 'CitationUtils'
 
 module AsciidoctorBibtex
    # This filter extends the original latex filter in bibtex-ruby to handle
@@ -58,7 +59,7 @@ module AsciidoctorBibtex
       @numeric_in_appearance_order = numeric_in_appearance_order
       @style = style
       @locale = locale
-      @citations = Citations.new
+      @citations = []
       @filenames = Set.new
       @output = output
       @throw_on_unknown = throw_on_unknown
@@ -71,14 +72,17 @@ module AsciidoctorBibtex
 
     # Scan a line and process citation macros.
     def process_citation_macros line
-      @citations.add_from_line line
+      CitationMacro.extract_macros(line).each do |citation|
+        @citations += citation.items.collect(&:key)
+      end
+      @citations.uniq!(&:to_s) # only keep each reference once
     end
 
     # Replace citation macros with corresponding citation texts.
     #
     # Return new text with all macros replaced.
     def replace_citation_macros line
-      @citations.retrieve_citations(line).each do |citation|
+      CitationMacro.extract_macros(line).each do |citation|
         line = line.gsub(citation.text, complete_citation(citation))
       end
       line
@@ -260,13 +264,26 @@ module AsciidoctorBibtex
       return cite_text, fc, lc
     end
 
+    # Return a list of citation references in document, sorted into order
     def sorted_cites
-      @citations.sorted_cites @biblio
+      @citations.sort_by do |ref|
+        bibitem = @biblio[ref]
+
+        if bibitem.nil?
+          [ref]
+        else
+          # extract the reference, and uppercase.
+          # Remove { } from grouped names for sorting.
+          author = bibitem.author
+          author = bibitem.editor if author.nil?
+          CitationUtils.author_chicago(author).collect { |s| s.upcase.gsub('{', '').gsub('}', '') } + [bibitem.year]
+        end
+      end
     end
 
     def cites
       if StyleUtils.is_numeric?(@style) and @numeric_in_appearance_order
-        @citations.cites_used
+        @citations
       else
         sorted_cites
       end
