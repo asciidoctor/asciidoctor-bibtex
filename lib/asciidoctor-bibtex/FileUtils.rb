@@ -20,6 +20,5 @@ module AsciidoctorBibtex
         return ""
       end
     end
-
   end
 end

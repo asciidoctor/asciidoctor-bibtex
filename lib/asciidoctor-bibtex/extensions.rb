@@ -8,41 +8,12 @@ require 'asciidoctor'
 require 'asciidoctor/extensions'
 require 'asciidoctor/reader'
 require 'asciidoctor/parser'
-require 'bibtex'
-require 'bibtex/filters'
-require 'latex/decode/base'
-require 'latex/decode/maths'
-require 'latex/decode/accents'
-require 'latex/decode/diacritics'
-require 'latex/decode/punctuation'
-require 'latex/decode/symbols'
-require 'latex/decode/greek'
 
 require_relative 'FileUtils'
 require_relative 'Processor'
 
 module AsciidoctorBibtex
   module Asciidoctor
-    # This filter extends the original latex filter in bibtex-ruby to handle
-    # unknown latex macros more gracefully. We could have used latex-decode
-    # gem together with our custom replacement rules, but latex-decode eats up
-    # all braces after it finishes all decoding. So we hack over the
-    # LaTeX.decode function and insert our rules before `strip_braces`.
-    class LatexFilter < ::BibTeX::Filter
-      def apply(value)
-        text = value.to_s
-        LaTeX::Decode::Base.normalize(text)
-        LaTeX::Decode::Maths.decode!(text)
-        LaTeX::Decode::Accents.decode!(text)
-        LaTeX::Decode::Diacritics.decode!(text)
-        LaTeX::Decode::Punctuation.decode!(text)
-        LaTeX::Decode::Symbols.decode!(text)
-        LaTeX::Decode::Greek.decode!(text)
-        text = text.gsub(/\\url\{(.+?)\}/, ' \\1 ').gsub(/\\\w+(?=\s+\w)/, '').gsub(/\\\w+(?:\[.+?\])?\s*\{(.+?)\}/, '\\1')
-        LaTeX::Decode::Base.strip_braces(text)
-        LaTeX.normalize_C(text)
-      end
-    end
 
     BibliographyBlockMacroPlaceholder = %(asciidoctor-bibex-a5d42deb-3cfc-4293-b96a-fcb47316ce56)
 
@@ -96,8 +67,7 @@ module AsciidoctorBibtex
           exit
         end
 
-        bibtex = BibTeX.open bibtex_file, filter: [LatexFilter]
-        processor = Processor.new bibtex, true, bibtex_style, bibtex_locale,
+        processor = Processor.new bibtex_file, true, bibtex_style, bibtex_locale,
                                   bibtex_order == :appearance, bibtex_format, bibtex_throw == 'true'
 
         prose_blocks = document.find_by do |b|

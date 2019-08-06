@@ -3,8 +3,17 @@
 # and main operations.
 #
 
+require 'bibtex'
+require 'bibtex/filters'
 require 'citeproc'
 require 'csl/styles'
+require 'latex/decode/base'
+require 'latex/decode/maths'
+require 'latex/decode/accents'
+require 'latex/decode/diacritics'
+require 'latex/decode/punctuation'
+require 'latex/decode/symbols'
+require 'latex/decode/greek'
 require 'set'
 
 require_relative 'StyleUtils'
@@ -12,6 +21,26 @@ require_relative 'ProcessorUtils'
 require_relative 'Citations'
 
 module AsciidoctorBibtex
+   # This filter extends the original latex filter in bibtex-ruby to handle
+   # unknown latex macros more gracefully. We could have used latex-decode
+   # gem together with our custom replacement rules, but latex-decode eats up
+   # all braces after it finishes all decoding. So we hack over the
+   # LaTeX.decode function and insert our rules before `strip_braces`.
+   class LatexFilter < ::BibTeX::Filter
+     def apply(value)
+       text = value.to_s
+       LaTeX::Decode::Base.normalize(text)
+       LaTeX::Decode::Maths.decode!(text)
+       LaTeX::Decode::Accents.decode!(text)
+       LaTeX::Decode::Diacritics.decode!(text)
+       LaTeX::Decode::Punctuation.decode!(text)
+       LaTeX::Decode::Symbols.decode!(text)
+       LaTeX::Decode::Greek.decode!(text)
+       text = text.gsub(/\\url\{(.+?)\}/, ' \\1 ').gsub(/\\\w+(?=\s+\w)/, '').gsub(/\\\w+(?:\[.+?\])?\s*\{(.+?)\}/, '\\1')
+       LaTeX::Decode::Base.strip_braces(text)
+       LaTeX.normalize_C(text)
+     end
+   end
 
   # Class used through utility method to hold data about citations for
   # current document, and run the different steps to add the citations
@@ -21,10 +50,12 @@ module AsciidoctorBibtex
 
     attr_reader :biblio, :links, :style, :citations
 
-    def initialize biblio, links = false, style = 'ieee', locale = 'en-US',
+    def initialize bibfile, links = false, style = 'ieee', locale = 'en-US',
                    numeric_in_appearance_order = false, output = :asciidoc,
                    throw_on_unknown = false
-      @biblio = biblio
+      raise "BibTex file '#{bibfile}' is not found" unless FileTest::file? bibfile
+      bibtex = BibTeX.open bibfile, filter: [LatexFilter]
+      @biblio = bibtex
       @links = links
       @numeric_in_appearance_order = numeric_in_appearance_order
       @style = style
