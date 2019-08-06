@@ -7,6 +7,8 @@
 require 'minitest/autorun'
 require_relative '../lib/asciidoctor-bibtex/StringUtils'
 
+include AsciidoctorBibtex
+
 describe AsciidoctorBibtex do
   it 'provides method to  recognise integers in strings' do
     StringUtils.is_i?('123').must_equal true

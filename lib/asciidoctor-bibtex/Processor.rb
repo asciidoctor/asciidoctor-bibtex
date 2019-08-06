@@ -71,7 +71,7 @@ module AsciidoctorBibtex
 
     # Scan a line and process citation macros.
     def process_citation_macros(line)
-      CitationMacro.extract_macros(line).each do |citation|
+      CitationMacro.extract_citations(line).each do |citation|
         @citations += citation.items.collect(&:key)
       end
       @citations.uniq!(&:to_s) # only keep each reference once
@@ -81,7 +81,7 @@ module AsciidoctorBibtex
     #
     # Return new text with all macros replaced.
     def replace_citation_macros(line)
-      CitationMacro.extract_macros(line).each do |citation|
+      CitationMacro.extract_citations(line).each do |citation|
         line = line.gsub(citation.text, complete_citation(citation))
       end
       line
