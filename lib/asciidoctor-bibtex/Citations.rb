@@ -4,6 +4,7 @@
 # Copyright (c) Peter Lane, 2013.
 # Released under Open Works License, 0.9.2
 
+require_relative 'CitationMacro'
 require_relative 'CitationUtils'
 
 module AsciidoctorBibtex
@@ -17,10 +18,14 @@ module AsciidoctorBibtex
       @cites_used = []
     end
 
+    def retrieve_citations line
+      CitationMacro.extract_macros(line)
+    end
+
     # Given a line of text, extract any citations and include new citation references in current list
     def add_from_line line
-      retrieve_citations(line).each do |citation|
-        @cites_used += citation.cites.collect {|cite| cite.ref}
+      CitationMacro.extract_macros(line).each do |citation|
+        @cites_used += citation.items.collect {|item| item.key}
       end
       @cites_used.uniq! {|item| item.to_s} # only keep each reference once
     end

@@ -48,8 +48,6 @@ module AsciidoctorBibtex
   class Processor
     include ProcessorUtils
 
-    # attr_reader :biblio, :links, :style, :citations
-
     def initialize bibfile, links = false, style = 'ieee', locale = 'en-US',
                    numeric_in_appearance_order = false, output = :asciidoc,
                    throw_on_unknown = false
@@ -81,7 +79,7 @@ module AsciidoctorBibtex
     # Return new text with all macros replaced.
     def replace_citation_macros line
       @citations.retrieve_citations(line).each do |citation|
-        line = line.gsub(citation.original, complete_citation(citation))
+        line = line.gsub(citation.text, complete_citation(citation))
       end
       line
     end
@@ -102,7 +100,7 @@ module AsciidoctorBibtex
     def complete_citation cite_data
       if @output == :latex or @output == :bibtex or @output == :biblatex
         result = '+++'
-        cite_data.cites.each do |cite|
+        cite_data.items.each do |cite|
           # NOTE: xelatex does not support "\citenp", so we output all
           # references as "cite" here unless we're using biblatex.
           if @output == :biblatex
@@ -114,10 +112,10 @@ module AsciidoctorBibtex
           else
             result << "\\" << 'cite'
           end
-          if cite.pages != ''
-            result << "[p. " << cite.pages << "]"
+          if cite.locator != ''
+            result << "[p. " << cite.locator << "]"
           end
-          result << "{" << "#{cite.ref}" << "},"
+          result << "{" << "#{cite.key}" << "},"
         end
         if result[-1] == ','
           result = result[0..-2]
@@ -128,17 +126,17 @@ module AsciidoctorBibtex
         result = ''
         ob, cb = '(', ')'
 
-        cite_data.cites.each_with_index do |cite, index|
+        cite_data.items.each_with_index do |cite, index|
           # before all items apart from the first, insert appropriate separator
           result << "#{separator} " unless index.zero?
 
           # @links requires adding hyperlink to reference
-          result << "<<#{cite.ref}," if @links
+          result << "<<#{cite.key}," if @links
 
           # if found, insert reference information
-          unless @biblio[cite.ref].nil?
-            item = @biblio[cite.ref].clone
-            cite_text, ob, cb = make_citation item, cite.ref, cite_data, cite
+          unless @biblio[cite.key].nil?
+            item = @biblio[cite.key].clone
+            cite_text, ob, cb = make_citation item, cite.key, cite_data, cite
           else
             if @throw_on_unknown
               raise "Unknown reference: #{cite.ref}"
@@ -210,9 +208,9 @@ module AsciidoctorBibtex
     # Return page string for given cite
     def page_str cite
       result = ''
-      unless cite.pages.empty?
+      unless cite.locator.empty?
         result << "," unless StyleUtils.is_numeric? @style
-        result << " #{with_pp(cite.pages)}"
+        result << " #{with_pp(cite.locator)}"
       end
 
       return result
@@ -237,9 +235,9 @@ module AsciidoctorBibtex
     def make_citation item, ref, cite_data, cite
       if StyleUtils.is_numeric? @style
         cite_text = if @numeric_in_appearance_order
-                      "#{@citations.cites_used.index(cite.ref) + 1}"
+                      "#{@citations.cites_used.index(cite.key) + 1}"
                     else
-                      "#{sorted_cites.index(cite.ref) + 1}"
+                      "#{sorted_cites.index(cite.key) + 1}"
                     end
         fc = '+[+'
         lc = '+]+'
