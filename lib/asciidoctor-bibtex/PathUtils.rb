@@ -7,20 +7,19 @@
 module AsciidoctorBibtex
   module PathUtils
     # Locate a bibtex file to read in given dir
-    def PathUtils.find_bibfile dir
-      begin
-        candidates = Dir.glob("#{dir}/*.bib")
-        if candidates.empty?
-          return ""
-        else
-          return candidates.first
-        end
-      rescue # catch all errors, and return empty string
-        return ""
+    def self.find_bibfile(dir)
+      candidates = Dir.glob("#{dir}/*.bib")
+      if candidates.empty?
+        return ''
+      else
+        return candidates.first
       end
+    rescue StandardError # catch all errors, and return empty string
+      ''
     end
-    def PathUtils.doBad
-      return ""
+
+    def self.doBad
+      ''
     end
   end
 end

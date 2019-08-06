@@ -9,7 +9,7 @@ module AsciidoctorBibtex
   # Some utility functions used in Citations class
   module CitationUtils
     # arrange author string, flag for order of surname/initials
-    def CitationUtils.arrange_authors(authors, surname_first)
+    def self.arrange_authors(authors, surname_first)
       return [] if authors.nil?
 
       authors.split(/\band\b/).collect do |name|
@@ -27,7 +27,7 @@ module AsciidoctorBibtex
     end
 
     # Arrange given author string into Chicago format
-    def CitationUtils.author_chicago(authors)
+    def self.author_chicago(authors)
       arrange_authors authors, true
     end
   end

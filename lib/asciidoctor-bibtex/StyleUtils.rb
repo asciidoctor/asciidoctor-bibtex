@@ -7,24 +7,21 @@ require 'citeproc'
 require 'csl/styles'
 
 module AsciidoctorBibtex
-
   module StyleUtils
-
-    def StyleUtils.available
+    def self.available
       CSL::Style.ls
     end
 
-    def StyleUtils.default_style
+    def self.default_style
       'apa'
     end
 
-    def StyleUtils.valid? style
+    def self.valid?(style)
       Styles.available.include? style
     end
 
-    def StyleUtils.is_numeric? style
+    def self.is_numeric?(style)
       CSL::Style.load(style).citation_format == :numeric
     end
   end
 end
-
