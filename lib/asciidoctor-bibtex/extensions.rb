@@ -103,6 +103,8 @@ module AsciidoctorBibtex
             end
           end
         end
+        # Make processor finalize macro processing as required.
+        processor.finalize_macro_processing
 
         # Second pass: replace citations with citation texts.
         prose_blocks.each do |block|

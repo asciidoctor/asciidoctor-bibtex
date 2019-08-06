@@ -70,11 +70,37 @@ module AsciidoctorBibtex
     end
 
     # Scan a line and process citation macros.
+    #
+    # As this function being called iteratively on the lines of the document,
+    # processor will build a list of all citation keys in the same order as they
+    # appear in the original document.
     def process_citation_macros(line)
       CitationMacro.extract_citations(line).each do |citation|
         @citations += citation.items.collect(&:key)
       end
-      @citations.uniq!(&:to_s) # only keep each reference once
+    end
+
+    # Finalize citation macro processing and build internal citation list.
+    #
+    # As this function being called, processor will clean up the list of
+    # citation keys to form a correct ordered citation list.
+    def finalize_macro_processing
+      @citations = @citations.uniq(&:to_s) # only keep the first occurance
+      return if StyleUtils.is_numeric?(@style) && @numeric_in_appearance_order
+
+      @citations = @citations.sort_by do |ref|
+        bibitem = @biblio[ref]
+        if bibitem.nil?
+          [ref]
+        else
+          # extract the reference, and uppercase.
+          # Remove { } from grouped names for sorting.
+          author = bibitem.author
+          author = bibitem.editor if author.nil?
+          CitationUtils.author_chicago(author).collect { |s| s.upcase.gsub('{', '').gsub('}', '') } + [bibitem.year]
+        end
+      end
+      nil
     end
 
     # Replace citation macros with corresponding citation texts.
@@ -82,7 +108,7 @@ module AsciidoctorBibtex
     # Return new text with all macros replaced.
     def replace_citation_macros(line)
       CitationMacro.extract_citations(line).each do |citation|
-        line = line.gsub(citation.text, complete_citation(citation))
+        line = line.gsub(citation.text, build_citation_text(citation))
       end
       line
     end
@@ -92,22 +118,46 @@ module AsciidoctorBibtex
     # Return an array of texts representing an asciidoc list.
     def build_bibliography_list
       result = []
-      cites.each do |ref|
-        result << get_reference(ref)
+      @citations.each do |ref|
+        result << build_bibliography_item(ref)
         result << ''
       end
       result
     end
 
-    # Return the complete citation text for given cite_data
-    def complete_citation(cite_data)
+    #
+    # Internal functions
+    #
+
+    # Build bibliography text for a given reference
+    def build_bibliography_item(key)
+      result = ''
+      result << '. ' if StyleUtils.is_numeric? @style
+
+      begin
+        cptext = @citeproc.render :bibliography, id: key
+      rescue Exception => e
+        puts "Failed to render #{key}: #{e}"
+      end
+      result << "[[#{key}]]" if @links
+      if cptext.nil?
+        return result + key
+      else
+        result << cptext.first
+      end
+
+      StringUtils.html_to_asciidoc(result)
+    end
+
+    # Build the complete citation text for given citation macro
+    def build_citation_text(macro)
       if (@output == :latex) || (@output == :bibtex) || (@output == :biblatex)
         result = '+++'
-        cite_data.items.each do |cite|
+        macro.items.each do |cite|
           # NOTE: xelatex does not support "\citenp", so we output all
           # references as "cite" here unless we're using biblatex.
           result << '\\' << if @output == :biblatex
-                              if cite_data.type == 'citenp'
+                              if macro.type == 'citenp'
                                 'textcite'
                               else
                                 'parencite'
@@ -123,10 +173,21 @@ module AsciidoctorBibtex
         result
       else
         result = ''
-        ob = '('
-        cb = ')'
+        if StyleUtils.is_numeric? @style
+          ob = '+[+'
+          cb = '+]+'
+          separator = ','
+        elsif macro.type == 'cite'
+          ob = '('
+          cb = ')'
+          separator = ';'
+        else
+          ob = ''
+          cb = ''
+          separator = ';'
+        end
 
-        cite_data.items.each_with_index do |cite, index|
+        macro.items.each_with_index do |cite, index|
           # before all items apart from the first, insert appropriate separator
           result << "#{separator} " unless index.zero?
 
@@ -142,52 +203,18 @@ module AsciidoctorBibtex
               cite_text = cite.ref.to_s
             end
           else
-            item = @biblio[cite.key].clone
-            cite_text, ob, cb = make_citation item, cite.key, cite_data, cite
+            cite_text = citation_text(macro, cite)
            end
 
           result << StringUtils.html_to_asciidoc(cite_text)
-          # @links requires finish hyperlink
           result << '>>' if @links
         end
 
-        unless @links
-          # combine numeric ranges
-          if StyleUtils.is_numeric? @style
-            result = StringUtils.combine_consecutive_numbers(result)
-          end
+        if StyleUtils.is_numeric?(@style) && !@links
+          result = StringUtils.combine_consecutive_numbers(result)
         end
 
-        include_pretext result, cite_data, ob, cb
-      end
-    end
-
-    # Retrieve text for reference in given style
-    # - ref is reference for item to give reference for
-    def get_reference(ref)
-      result = ''
-      result << '. ' if StyleUtils.is_numeric? @style
-
-      begin
-        cptext = @citeproc.render :bibliography, id: ref
-      rescue Exception => e
-        puts "Failed to render #{ref}: #{e}"
-      end
-      result << "[[#{ref}]]" if @links
-      if cptext.nil?
-        return result + ref
-      else
-        result << cptext.first
-      end
-
-      StringUtils.html_to_asciidoc(result)
-    end
-
-    def separator
-      if StyleUtils.is_numeric? @style
-        ','
-      else
-        ';'
+        include_pretext result, macro, ob, cb
       end
     end
 
@@ -216,73 +243,50 @@ module AsciidoctorBibtex
       result
     end
 
-    def include_pretext(result, cite_data, ob, cb)
-      pretext = cite_data.pretext
+    def include_pretext(result, macro, ob, cb)
+      pretext = macro.pretext
       pretext += ' ' unless pretext.empty? # add space after any content
 
       if StyleUtils.is_numeric? @style
         "#{pretext}#{ob}#{result}#{cb}"
-      elsif cite_data.type == 'cite'
+      elsif macro.type == 'cite'
         "#{ob}#{pretext}#{result}#{cb}"
       else
         "#{pretext}#{result}"
       end
     end
 
-    # Numeric citations are handled by computing the position of the reference
-    # in the list of used citations.
-    # Other citations are formatted by citeproc.
-    def make_citation(item, ref, cite_data, cite)
+    # Generate a raw citation text for a single citation item
+    def citation_text(macro, cite)
       if StyleUtils.is_numeric? @style
-        cite_text = if @numeric_in_appearance_order
-                      (@citations.cites_used.index(cite.key) + 1).to_s
-                    else
-                      (sorted_cites.index(cite.key) + 1).to_s
-                    end
-        fc = '+[+'
-        lc = '+]+'
-      else
-        cite_text = @citeproc.process id: ref, mode: :citation
-        fc = ''
-        lc = ''
-      end
-
-      if StyleUtils.is_numeric? @style
-        cite_text << page_str(cite).to_s
-      elsif cite_data.type == 'citenp'
-        cite_text = cite_text.gsub(item.year, "#{fc}#{item.year}#{page_str(cite)}#{lc}").gsub(", #{fc}", " #{fc}")
-      else
+        cite_text = (@citations.index(cite.key) + 1).to_s
         cite_text << page_str(cite)
-      end
-
-      cite_text = cite_text.gsub(',', '&#44;') if @links # replace comma
-
-      [cite_text, fc, lc]
-    end
-
-    # Return a list of citation references in document, sorted into order
-    def sorted_cites
-      @citations.sort_by do |ref|
-        bibitem = @biblio[ref]
-
-        if bibitem.nil?
-          [ref]
-        else
-          # extract the reference, and uppercase.
-          # Remove { } from grouped names for sorting.
-          author = bibitem.author
-          author = bibitem.editor if author.nil?
-          CitationUtils.author_chicago(author).collect { |s| s.upcase.gsub('{', '').gsub('}', '') } + [bibitem.year]
-        end
-      end
-    end
-
-    def cites
-      if StyleUtils.is_numeric?(@style) && @numeric_in_appearance_order
-        @citations
       else
-        sorted_cites
+        # We generate the full citation with citeproc. But citeproc generate
+        # citation text for `cite` instead of `citenp`. So we process it a
+        # little bit to fit for both `cite` and `citenp`
+        cite_text = @citeproc.render :citation, id: cite.key, locator: cite.locator
+        # first strip braces around the text
+        cite_text = cite_text.gsub('(', '')
+        cite_text = cite_text.gsub(')', '')
+        # fix missing locators in chicago styles
+        if !cite.locator.empty? && @style.include?('chicago')
+          cite_text = cite_text + ", #{cite.locator}"
+        end
+        # then add braces around the year and locator if `citenp`
+        year = @biblio[cite.key].year
+        if !year.nil? && macro.type == 'citenp'
+          segs = cite_text.partition(year.to_s)
+          head = segs[0].gsub(', ', ' ')
+          tail = segs[1..segs.size].join
+          cite_text = "#{head}(#{tail})"
+        end
+        # finally escape some special chars
+        cite_text = cite_text.gsub('p. ', 'p.&#160;') # non-breaking spaces after page.
+        cite_text = cite_text.gsub(',', '&#44;') if @links # replace comma
       end
+
+      cite_text
     end
   end
 end
