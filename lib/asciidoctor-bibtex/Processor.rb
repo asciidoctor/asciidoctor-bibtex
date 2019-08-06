@@ -16,9 +16,10 @@ require 'latex/decode/symbols'
 require 'latex/decode/greek'
 require 'set'
 
-require_relative 'StyleUtils'
 require_relative 'CitationMacro'
 require_relative 'CitationUtils'
+require_relative 'StringUtils'
+require_relative 'StyleUtils'
 
 module AsciidoctorBibtex
    # This filter extends the original latex filter in bibtex-ruby to handle
@@ -147,7 +148,7 @@ module AsciidoctorBibtex
             end
           end
 
-          result << cite_text.html_to_asciidoc
+          result << StringUtils.html_to_asciidoc(cite_text)
           # @links requires finish hyperlink
           result << ">>" if @links
         end
@@ -155,7 +156,7 @@ module AsciidoctorBibtex
         unless @links
           # combine numeric ranges
           if StyleUtils.is_numeric? @style
-            result = result.combine_consecutive_numbers
+            result = StringUtils.combine_consecutive_numbers(result)
           end
         end
 
@@ -181,7 +182,7 @@ module AsciidoctorBibtex
         result << cptext.first
       end
 
-      return result.html_to_asciidoc
+      return StringUtils.html_to_asciidoc(result)
     end
 
     def separator

@@ -5,8 +5,6 @@
 #
 # Released under Open Works License, 0.9.2
 
-# Load utils first since it monkey-patches string and array.
-require_relative 'asciidoctor-bibtex/utils'
 # Register asciidoctor extensions introduced by this package.
 require_relative 'asciidoctor-bibtex/extensions'
 # Export the package version

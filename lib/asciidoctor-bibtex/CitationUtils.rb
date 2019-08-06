@@ -16,9 +16,9 @@ module AsciidoctorBibtex
         if name.include?(', ')
           parts = name.strip.rpartition(', ')
           if surname_first
-            "#{parts.first}, #{parts.third}"
+            "#{parts[0]}, #{parts[2]}"
           else
-            "#{parts.third} #{parts.first}"
+            "#{parts[2]} #{parts[0]}"
           end
         else
           name
