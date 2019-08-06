@@ -1,21 +1,23 @@
 = Sample of using asciidoctor-bibtex
-:bibtex-file: biblio.bib
+:bibtex-file: references.bib
 :bibtex-order: alphabetical
 :bibtex-style: ieee
 
 The bibliography is searched in the folder of the document, and then in
 ~/Documents.
 
+== Samples
+
 Author-year references can use different styles such as: cite:[Lane12b] or
 citenp:[Lane12a].
 
-Page numbers can be added: cite:[Lane12a(89)] or citenp:[Lane12a(89-93)].
+Page numbers (locators) can be added: cite:[Lane12a(89)] or citenp:[Lane12a(89-93)].
 
 A bit of pretext can be included too: See cite:[Lane12a(89)]
 
 We can include other files, which are also processed:
 
-include::sample-2.adoc[]
+include::sample-include.adoc[]
 
 To include the reference list, use the section template before title, to
 prevent problems with a2x.
@@ -48,4 +50,4 @@ Shall also work in a footnote footnote:[We cite cite:[Lane12a] for this.].
 [sect2] 
 == Bibliography
 
-bibliography::biblio.bib[ieee]
+bibliography::references.bib[ieee]

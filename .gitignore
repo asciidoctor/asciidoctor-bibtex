@@ -2,6 +2,6 @@
 /release/
 *.swp
 *.swo
-/samples/*.html
-/samples/*-ref.*
+/samples/*/*.html
+/samples/*/*.pdf
 pkg
