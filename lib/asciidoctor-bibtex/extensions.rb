@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 #
 # Treeprocessor extension for asciidoctor
 #
@@ -14,17 +12,23 @@ require_relative 'Processor'
 
 module AsciidoctorBibtex
   module Asciidoctor
+    # Placeholder paragraph for the bibliography paragraph. Choose a uuid so
+    # that it is a special word unlikeky to conflict with normal texts.
+    BibliographyBlockMacroPlaceholder = %(a5d42deb-3cfc-4293-b96a-fcb47316ce56)
 
-    BibliographyBlockMacroPlaceholder = %(asciidoctor-bibex-a5d42deb-3cfc-4293-b96a-fcb47316ce56)
-
+    # BibliographyBlockMacro
+    #
+    # The `bibliography::[] block macro` processor.
+    #
     # This macro processor does only half the work. It just parse the macro
     # and set bibtex file and style if found in the macro. The macro is then
     # expanded to a special paragraph, which is then replaced with generated
     # references by the treeprocessor.
+    #
     class BibliographyBlockMacro < ::Asciidoctor::Extensions::BlockMacroProcessor
       use_dsl
       named :bibliography
-      name_positional_attributes :style
+      name_positional_attributes :style, :locale
 
       def process(parent, target, attrs)
         # NOTE: bibtex-file and bibtex-style set by this macro shall be
@@ -43,10 +47,18 @@ module AsciidoctorBibtex
       end
     end
 
-    # This processor scans the document, generates a list of citations,
-    # replace each citation with correct text and the reference block macro
-    # placeholder with the final reference list. It relys on the block macro
-    # processor to generate the place holder.
+    # CitationProcessor
+    #
+    # A tree processor to replace all citations and bibliography.
+    #
+    # This processor scans the document, generates a list of citations, replaces
+    # each citation with citation text and the reference block macro placeholder
+    # with the final bibliography list. It relys on the block macro processor to
+    # generate the place holder.
+    #
+    # NOTE: According to the asiidoctor extension policy, the tree processor can
+    # only produce texts with inline macros.
+    #
     class CitationProcessor < ::Asciidoctor::Extensions::Treeprocessor
       def process(document)
         bibtex_file = (document.attr 'bibtex-file').to_s
@@ -56,6 +68,7 @@ module AsciidoctorBibtex
         bibtex_format = ((document.attr 'bibtex-format') || 'asciidoc').to_sym
         bibtex_throw = ((document.attr 'bibtex-throw') || 'false').to_s.downcase
 
+        # Fild bibtex file automatically if not supplied.
         if bibtex_file.empty?
           bibtex_file = AsciidoctorBibtex::PathUtils.fild_bibfile '.'
         end
@@ -67,48 +80,40 @@ module AsciidoctorBibtex
           exit
         end
 
-        processor = Processor.new bibtex_file, true, bibtex_style, bibtex_locale,
-                                  bibtex_order == :appearance, bibtex_format, bibtex_throw == 'true'
-
+        # Extract all AST nodes that can contain citations.
         prose_blocks = document.find_by do |b|
           (b.content_model == :simple) ||
             (b.context == :list_item) ||
             (b.context == :table_cell)
         end
+        return nil if prose_blocks.nil?
+
+        processor = Processor.new bibtex_file, true, bibtex_style, bibtex_locale,
+                                  bibtex_order == :appearance, bibtex_format,
+                                  bibtex_throw == 'true'
+
+        # First pass: extract all citations.
         prose_blocks.each do |block|
-          if block.context == :list_item
-            line = block.instance_variable_get :@text
-            processor.citations.add_from_line line
-          elsif block.context == :table_cell
+          if block.context == :list_item || block.context == :table_cell
             line = block.text
-            processor.citations.add_from_line line
+            processor.process_citation_macros line
           else
             block.lines.each do |line|
-              processor.citations.add_from_line line
+              processor.process_citation_macros line
             end
           end
         end
 
+        # Second pass: replace citations with citation texts.
         prose_blocks.each do |block|
-          if block.context == :list_item
-            line = block.instance_variable_get :@text
-            processor.citations.retrieve_citations(line).each do |citation|
-              line = line.gsub(citation.original, processor.complete_citation(citation))
-            end
-            block.instance_variable_set :@text, line
-          elsif block.context == :table_cell
+          if block.context == :list_item || block.context == :table_cell
             line = block.text
-            processor.citations.retrieve_citations(line).each do |citation|
-              line = line.gsub(citation.original, processor.complete_citation(citation))
-            end
+            line = processor.replace_citation_macros(line)
             block.text = line
           else
-            block.lines.each do |line|
-              tmp = line.clone
-              processor.citations.retrieve_citations(line).each do |citation|
-                tmp = tmp.gsub(citation.original, processor.complete_citation(citation))
-              end
-              line.replace tmp
+            block.lines.each_with_index do |line, index|
+              line = processor.replace_citation_macros(line)
+              block.lines[index] = line
             end
           end
         end
@@ -120,12 +125,11 @@ module AsciidoctorBibtex
         elsif bibtex_format == :biblatex
           references_asciidoc << %(+++\\printbibliography+++)
         else
-          processor.cites.each do |ref|
-            references_asciidoc << processor.get_reference(ref)
-            references_asciidoc << ''
-          end
+          references_asciidoc = processor.build_bibliography_list
         end
 
+        # Third pass: replace the bibliography paragraph with the bibliography
+        # list.
         biblio_blocks = document.find_by do |b|
           # for fast search (since most searches shall fail)
           (b.content_model == :simple) && (b.lines.size == 1) \
@@ -161,7 +165,8 @@ module AsciidoctorBibtex
   end
 end
 
+# Register the extensions to asciidoctor
 Asciidoctor::Extensions.register do
   block_macro AsciidoctorBibtex::Asciidoctor::BibliographyBlockMacro
-  treeprocessor AsciidoctorBibtex::Asciidoctor::CitationProcessor
+  treenrocessor AsciidoctorBibtex::Asciidoctor::CitationProcessor
 end

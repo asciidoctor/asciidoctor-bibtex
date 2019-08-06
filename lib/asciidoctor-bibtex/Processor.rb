@@ -71,6 +71,33 @@ module AsciidoctorBibtex
       end
     end
 
+    # Scan a line and process citation macros.
+    def process_citation_macros line
+      @citations.add_from_line line
+    end
+
+    # Replace citation macros with corresponding citation texts.
+    #
+    # Return new text with all macros replaced.
+    def replace_citation_macros line
+      @citations.retrieve_citations(line).each do |citation|
+        line = line.gsub(citation.original, complete_citation(citation))
+      end
+      line
+    end
+
+    # Build the bibliography list just as bibtex.
+    #
+    # Return an array of texts representing an asciidoc list.
+    def build_bibliography_list
+      result = []
+      cites.each do |ref|
+        result << get_reference(ref)
+        result << ''
+      end
+      result
+    end
+
     # Return the complete citation text for given cite_data
     def complete_citation cite_data
       if @output == :latex or @output == :bibtex or @output == :biblatex
