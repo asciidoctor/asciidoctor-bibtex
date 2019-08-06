@@ -17,7 +17,6 @@ require 'latex/decode/greek'
 require 'set'
 
 require_relative 'StyleUtils'
-require_relative 'ProcessorUtils'
 require_relative 'CitationMacro'
 require_relative 'CitationUtils'
 
@@ -47,8 +46,6 @@ module AsciidoctorBibtex
   # current document, and run the different steps to add the citations
   # and bibliography
   class Processor
-    include ProcessorUtils
-
     def initialize bibfile, links = false, style = 'ieee', locale = 'en-US',
                    numeric_in_appearance_order = false, output = :asciidoc,
                    throw_on_unknown = false
@@ -158,7 +155,7 @@ module AsciidoctorBibtex
         unless @links
           # combine numeric ranges
           if StyleUtils.is_numeric? @style
-            result = combine_consecutive_numbers result
+            result = result.combine_consecutive_numbers
           end
         end
 
