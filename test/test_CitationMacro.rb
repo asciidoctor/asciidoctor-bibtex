@@ -5,7 +5,7 @@
 # Released under Open Works License, 0.9.2
 
 require 'minitest/autorun'
-require_relative '../lib/asciidoctor-bibtex/Citations'
+require_relative '../lib/asciidoctor-bibtex/CitationMacro'
 
 include AsciidoctorBibtex
 
