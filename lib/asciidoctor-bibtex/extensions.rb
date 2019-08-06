@@ -168,5 +168,5 @@ end
 # Register the extensions to asciidoctor
 Asciidoctor::Extensions.register do
   block_macro AsciidoctorBibtex::Asciidoctor::BibliographyBlockMacro
-  treenrocessor AsciidoctorBibtex::Asciidoctor::CitationProcessor
+  treeprocessor AsciidoctorBibtex::Asciidoctor::CitationProcessor
 end

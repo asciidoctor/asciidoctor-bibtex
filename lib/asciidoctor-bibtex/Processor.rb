@@ -48,7 +48,7 @@ module AsciidoctorBibtex
   class Processor
     include ProcessorUtils
 
-    attr_reader :biblio, :links, :style, :citations
+    # attr_reader :biblio, :links, :style, :citations
 
     def initialize bibfile, links = false, style = 'ieee', locale = 'en-US',
                    numeric_in_appearance_order = false, output = :asciidoc,
@@ -136,8 +136,8 @@ module AsciidoctorBibtex
           result << "<<#{cite.ref}," if @links
 
           # if found, insert reference information
-          unless biblio[cite.ref].nil?
-            item = biblio[cite.ref].clone
+          unless @biblio[cite.ref].nil?
+            item = @biblio[cite.ref].clone
             cite_text, ob, cb = make_citation item, cite.ref, cite_data, cite
           else
             if @throw_on_unknown
