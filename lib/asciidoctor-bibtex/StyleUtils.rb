@@ -3,6 +3,9 @@
 # Simple checks on available styles through CSL
 #
 
+require 'citeproc'
+require 'csl/styles'
+
 module AsciidoctorBibtex
 
   module StyleUtils

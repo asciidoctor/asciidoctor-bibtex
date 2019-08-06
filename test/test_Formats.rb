@@ -3,7 +3,10 @@
 # Copyright (c) Peter Lane, 2012-13.
 # Released under Open Works License, 0.9.2
 
-require_relative 'helpers'
+require 'minitest/autorun'
+require_relative '../lib/asciidoctor-bibtex/Processor'
+
+include AsciidoctorBibtex
 
 describe AsciidoctorBibtex do
 
@@ -81,7 +84,7 @@ describe AsciidoctorBibtex do
   end
 
   it "provides method to combine consecutive numbers" do
-    p = Processor.new BibTeX.open('test/data/test.bib'), nil, :apa
+    p = Processor.new 'test/data/test.bib', nil, :apa
     p.combine_consecutive_numbers("1,2,3").must_equal "1-3"
     p.combine_consecutive_numbers("1,2,3,5,7,8,9,12").must_equal "1-3, 5, 7-9, 12"
   end

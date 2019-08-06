@@ -9,7 +9,7 @@ require 'asciidoctor/extensions'
 require 'asciidoctor/reader'
 require 'asciidoctor/parser'
 
-require_relative 'FileUtils'
+require_relative 'PathUtils'
 require_relative 'Processor'
 
 module AsciidoctorBibtex
@@ -57,10 +57,10 @@ module AsciidoctorBibtex
         bibtex_throw = ((document.attr 'bibtex-throw') || 'false').to_s.downcase
 
         if bibtex_file.empty?
-          bibtex_file = AsciidoctorBibtex::FileUtils.find_bibliography '.'
+          bibtex_file = AsciidoctorBibtex::PathUtils.fild_bibfile '.'
         end
         if bibtex_file.empty?
-          bibtex_file = AsciidoctorBibtex::FileUtils.find_bibliography "#{ENV['HOME']}/Documents"
+          bibtex_file = AsciidoctorBibtex::PathUtils.find_bibfile "#{ENV['HOME']}/Documents"
         end
         if bibtex_file.empty?
           puts 'Error: bibtex-file is not set and automatic search failed'

@@ -4,7 +4,10 @@
 # Copyright (c) Zhang Yang, 2019.
 # Released under Open Works License, 0.9.2
 
-require_relative 'helpers'
+require 'minitest/autorun'
+require_relative '../lib/asciidoctor-bibtex/Processor'
+
+include AsciidoctorBibtex
 
 describe AsciidoctorBibtex do
   it "must return Chicago style references" do

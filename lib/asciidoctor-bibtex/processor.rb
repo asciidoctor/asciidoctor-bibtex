@@ -53,7 +53,7 @@ module AsciidoctorBibtex
     def initialize bibfile, links = false, style = 'ieee', locale = 'en-US',
                    numeric_in_appearance_order = false, output = :asciidoc,
                    throw_on_unknown = false
-      raise "BibTex file '#{bibfile}' is not found" unless FileTest::file? bibfile
+      raise "File '#{bibfile}' is not found" unless FileTest::file? bibfile
       bibtex = BibTeX.open bibfile, filter: [LatexFilter]
       @biblio = bibtex
       @links = links
@@ -73,7 +73,6 @@ module AsciidoctorBibtex
 
     # Return the complete citation text for given cite_data
     def complete_citation cite_data
-
       if @output == :latex or @output == :bibtex or @output == :biblatex
         result = '+++'
         cite_data.cites.each do |cite|
@@ -167,6 +166,7 @@ module AsciidoctorBibtex
       end
     end
 
+    # TODO: numerical styles does not support locators.
     # Format pages with pp/p as appropriate
     def with_pp pages
       return '' if pages.empty?

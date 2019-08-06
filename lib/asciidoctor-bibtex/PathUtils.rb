@@ -1,14 +1,13 @@
 #
-# filehandlers.rb
+# PathUtils.rb
 #
-# Contains top-level file utility methods
+# High-level utilities for files.
 #
 
 module AsciidoctorBibtex
-
-  module FileUtils
-    # Locate a bibliography file to read in given dir
-    def FileUtils.find_bibliography dir
+  module PathUtils
+    # Locate a bibtex file to read in given dir
+    def PathUtils.find_bibfile dir
       begin
         candidates = Dir.glob("#{dir}/*.bib")
         if candidates.empty?
@@ -19,6 +18,9 @@ module AsciidoctorBibtex
       rescue # catch all errors, and return empty string
         return ""
       end
+    end
+    def PathUtils.doBad
+      return ""
     end
   end
 end

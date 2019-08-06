@@ -1,5 +1,12 @@
+#
+# test_StyleUtils.rb
+#
+# Test cases for StyleUtils
+#
+
 require 'minitest/autorun'
-require_relative 'helpers'
+require_relative '../lib/asciidoctor-bibtex/StyleUtils'
+include AsciidoctorBibtex
 
 describe StyleUtils do
   it "should recognise numeric styles" do
