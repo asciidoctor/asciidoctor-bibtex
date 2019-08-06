@@ -8,7 +8,7 @@ require_relative 'helpers'
 describe AsciidoctorBibtex do
 
   def check_complete_citation style, line, result, links = false
-    p = Processor.new BibTeX.open('test/data/test.bib'), links, style
+    p = Processor.new 'test/data/test.bib', links, style
     p.citations.add_from_line line
     p.complete_citation(p.citations.retrieve_citations(line).first).must_equal result
   end

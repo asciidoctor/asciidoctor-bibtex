@@ -4,10 +4,11 @@
 # Released under Open Works License, 0.9.2
 
 require_relative 'helpers'
+require_relative '../lib/asciidoctor-bibtex/FileUtils'
 
 describe AsciidoctorBibtex do
   it "should find biblio file" do
-    FileHandlers.find_bibliography('test/data').must_equal 'test/data/test.bib'
-    FileHandlers.find_bibliography('test').must_equal ''
+    FileUtils.find_bibliography('test/data').must_equal 'test/data/test.bib'
+    FileUtils.find_bibliography('test').must_equal ''
   end
 end
