@@ -31,6 +31,10 @@ describe AsciidoctorBibtex do
     check_complete_citation 'chicago-author-date', 'cite:[jones11,smith10]', '(Jones 2011; Smith 2010)'
     check_complete_citation 'chicago-author-date', 'cite:[jones11,smith10(11)]', '(Jones 2011; Smith 2010, 11)'
   end
+
+  it "must handle chicago style references with 'cite' and complex locators" do
+    check_complete_citation 'chicago-author-date', 'cite:[smith10(11 seq.)]', '(Smith 2010, 11 seq.)'
+  end
   
   it "must handle chicago style references with 'citenp' and multiple authors" do 
     check_complete_citation 'chicago-author-date', 'citenp:[jones11,smith10]', 'Jones (2011); Smith (2010)'
@@ -57,6 +61,10 @@ describe AsciidoctorBibtex do
     check_complete_citation 'ieee', 'citenp:[jones11,smith10(11)]', '+[+1, 2 p.&#160;11+]+'
   end
 
+  it "must handle numeric style references with 'cite' and complex locators" do
+    check_complete_citation 'ieee', 'cite:[smith10(11 seq.)]', '+[+1 pp.&#160;11 seq.+]+'
+  end
+
   it "must handle harvard style references with 'cite'" do
     check_complete_citation 'apa', 'cite:[smith10]', '(Smith, 2010)'
     check_complete_citation 'apa', 'cite:[smith10(11)]', '(Smith, 2010, p.&#160;11)'
@@ -76,6 +84,10 @@ describe AsciidoctorBibtex do
     check_complete_citation 'apa', 'citenp:[jones11,smith10]', 'Jones (2011); Smith (2010)'
   end
   
+  it "must handle harvard style references with 'cite' and complex locators" do
+    check_complete_citation 'apa', 'cite:[smith10(11 seq.)]', '(Smith, 2010, pp.&#160;11 seq.)'
+  end
+
   it "must handle references with no author but editor in biblio entry" do
     check_complete_citation 'chicago-author-date', 'cite:[brown09]', '(Brown 2009)'
   end

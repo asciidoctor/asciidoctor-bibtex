@@ -218,26 +218,21 @@ module AsciidoctorBibtex
       end
     end
 
-    # TODO: numerical styles does not support locators.
-    # Format pages with pp/p as appropriate
-    def with_pp(pages)
-      return '' if pages.empty?
-
-      if @style.include? 'chicago'
-        pages
-      elsif pages.include? '-'
-        "pp.&#160;#{pages}"
-      else
-        "p.&#160;#{pages}"
-      end
-    end
-
-    # Return page string for given cite
-    def page_str(cite)
+    # Format locator with pp/p as appropriate
+    def format_locator(cite)
       result = ''
       unless cite.locator.empty?
         result << ',' unless StyleUtils.is_numeric? @style
-        result << " #{with_pp(cite.locator)}"
+        result << ' '
+        # use p.x for single numerical page and pp.x for all others. This will
+        # produce pp. 1 seq for complex locators, which is the correct behavior.
+        if @style.include? 'chicago'
+          result << cite.locator
+        elsif /^\d+$/ =~ cite.locator
+          result << "p.&#160;#{cite.locator}"
+        else
+          result << "pp.&#160;#{cite.locator}"
+        end
       end
 
       result
@@ -260,29 +255,23 @@ module AsciidoctorBibtex
     def citation_text(macro, cite)
       if StyleUtils.is_numeric? @style
         cite_text = (@citations.index(cite.key) + 1).to_s
-        cite_text << page_str(cite)
+        cite_text << format_locator(cite)
       else
-        # We generate the full citation with citeproc. But citeproc generate
-        # citation text for `cite` instead of `citenp`. So we process it a
-        # little bit to fit for both `cite` and `citenp`
-        cite_text = @citeproc.render :citation, id: cite.key, locator: cite.locator
-        # first strip braces around the text
+        # We generate the citation without locator using citeproc, then strip
+        # the surrounding braces, finally add the locator and add braces for
+        # `citenp`.
+        cite_text = @citeproc.render :citation, id: cite.key
         cite_text = cite_text.gsub('(', '')
         cite_text = cite_text.gsub(')', '')
-        # fix missing locators in chicago styles
-        if !cite.locator.empty? && @style.include?('chicago')
-          cite_text = cite_text + ", #{cite.locator}"
-        end
-        # then add braces around the year and locator if `citenp`
+        cite_text = cite_text + format_locator(cite)
         year = @biblio[cite.key].year
         if !year.nil? && macro.type == 'citenp'
           segs = cite_text.partition(year.to_s)
           head = segs[0].gsub(', ', ' ')
-          tail = segs[1..segs.size].join
+          tail = segs[1..-1].join
           cite_text = "#{head}(#{tail})"
         end
         # finally escape some special chars
-        cite_text = cite_text.gsub('p. ', 'p.&#160;') # non-breaking spaces after page.
         cite_text = cite_text.gsub(',', '&#44;') if @links # replace comma
       end
 
