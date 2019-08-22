@@ -23,7 +23,7 @@ prevent problems with a2x.
 
 References can be inserted in lists, too:
 
-1. See cite:[Lane12a].
+1. This is a complex *item* with _formats_. See cite:[Lane12a].
 2. See cite:[Anderson98].
 3. See cite:[Anderson04].
 
