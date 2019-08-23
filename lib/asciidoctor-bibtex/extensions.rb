@@ -109,12 +109,11 @@ module AsciidoctorBibtex
         # Second pass: replace citations with citation texts.
         prose_blocks.each do |block|
           if block.context == :list_item || block.context == :table_cell
-            # NOTE: we access the instance variable @text directly to prevent
-            # asciidoctor from changing the raw texts.
+            # NOTE: we access the instance variable @text for raw text.
             line = block.instance_variable_get(:@text)
             if !line.empty?
               line = processor.replace_citation_macros(line)
-              block.instance_variable_set(:@text, line)
+              block.text = line
             end
           else
             block.lines.each_with_index do |line, index|
