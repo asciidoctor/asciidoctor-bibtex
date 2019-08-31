@@ -1,7 +1,18 @@
 require 'rake/clean'
-require 'rake/testtask'
 
 default_tasks = []
+
+begin
+  require 'rake/testtask'
+  Rake::TestTask.new :test do |t|
+    t.libs << 'test'
+    t.pattern = 'test/**/test_*.rb'
+    t.verbose = true
+    t.warning = true
+  end
+rescue LoadError
+  warn $!.message
+end
 
 begin
   require 'bundler/gem_tasks'
@@ -11,10 +22,6 @@ rescue LoadError
   You can install Bundler using `gem install` command:
   
   $ [sudo] gem install bundler' + %(\n\n)
-end
-
-Rake::TestTask.new do |t|
-  t.test_files = FileList['test/test_*.rb']
 end
 
 task :default => default_tasks unless default_tasks.empty?
