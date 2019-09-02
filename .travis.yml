@@ -1,0 +1,26 @@
+dist: trusty
+git:
+  # use depth 5 just in case two refs get pushed at once (like a tag)
+  depth: 5
+language: ruby
+rvm:
+- &release_rvm 2.6.3
+- 2.5.5
+- 2.4.6
+- 2.3.8
+bundler_args: --jobs=3 --retry=3
+script:
+- bundle exec rake test
+notifications:
+  email:
+    on_success: never
+    on_failure: change
+# TODO when the time comes, enable the deploy config
+#deploy:
+#  provider: rubygems
+#  gem: asciidoctor-bibtex
+#  api_key: ${RUBYGEMS_API_KEY}
+#  on:
+#    tags: true
+#    repo: asciidoctor/asciidoctor-bibtex
+#    rvm: *release_rvm
