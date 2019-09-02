@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.license = 'OWL'
   s.description = 'asciidoctor-bibtex is an Asciidocotor extension that adds bibtex support for AsciiDoc documents. It does so by introducing two new macros: `cite:[KEY]` and `bibliography::[]`. Citations are parsed and replaced with formatted inline text, and reference lists are automatically generated and inserted where the `bibliography::[]` macro is placed. The references are formatted using styles provided by CSL.'
   s.required_ruby_version = '>= 2.3.0'
-  s.files = Dir['lib/**/*'] + ['LICENSE.txt', 'README.md']
+  s.files = Dir['lib/**/*'] + ['LICENSE.txt', 'README.adoc']
   s.add_runtime_dependency 'asciidoctor', '~> 2.0'
   s.add_runtime_dependency 'bibtex-ruby', '~> 4'
   s.add_runtime_dependency 'citeproc-ruby', '~> 1'
