@@ -5,7 +5,7 @@
 #
 
 require 'minitest/autorun'
-require_relative '../lib/asciidoctor-bibtex/StyleUtils'
+require_relative '../lib/asciidoctor-bibtex/style_utils'
 include AsciidoctorBibtex
 
 describe StyleUtils do

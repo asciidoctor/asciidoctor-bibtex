@@ -10,7 +10,7 @@
 #
 
 require 'minitest/autorun'
-require_relative '../lib/asciidoctor-bibtex/PathUtils'
+require_relative '../lib/asciidoctor-bibtex/path_utils'
 include AsciidoctorBibtex
 
 describe AsciidoctorBibtex do

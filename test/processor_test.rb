@@ -5,7 +5,7 @@
 # Released under Open Works License, 0.9.2
 
 require 'minitest/autorun'
-require_relative '../lib/asciidoctor-bibtex/Processor'
+require_relative '../lib/asciidoctor-bibtex/processor'
 
 include AsciidoctorBibtex
 

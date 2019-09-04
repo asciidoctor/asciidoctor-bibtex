@@ -14,7 +14,7 @@ rescue LoadError
 end
 
 Rake::TestTask.new do |t|
-  t.test_files = FileList['test/test_*.rb']
+  t.test_files = FileList['test/*_test.rb']
 end
 
 task :default => default_tasks unless default_tasks.empty?

@@ -5,7 +5,7 @@
 #
 
 require 'minitest/autorun'
-require_relative '../lib/asciidoctor-bibtex/StringUtils'
+require_relative '../lib/asciidoctor-bibtex/string_utils'
 
 include AsciidoctorBibtex
 
