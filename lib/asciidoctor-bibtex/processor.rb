@@ -16,10 +16,10 @@ require 'latex/decode/symbols'
 require 'latex/decode/greek'
 require 'set'
 
-require_relative 'CitationMacro'
-require_relative 'CitationUtils'
-require_relative 'StringUtils'
-require_relative 'StyleUtils'
+require_relative 'citation_macro'
+require_relative 'citation_utils'
+require_relative 'string_utils'
+require_relative 'style_utils'
 
 module AsciidoctorBibtex
   # This filter extends the original latex filter in bibtex-ruby to handle

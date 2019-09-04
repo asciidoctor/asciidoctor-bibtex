@@ -7,8 +7,8 @@ require 'asciidoctor/extensions'
 require 'asciidoctor/reader'
 require 'asciidoctor/parser'
 
-require_relative 'PathUtils'
-require_relative 'Processor'
+require_relative 'path_utils'
+require_relative 'processor'
 
 module AsciidoctorBibtex
   module Asciidoctor
