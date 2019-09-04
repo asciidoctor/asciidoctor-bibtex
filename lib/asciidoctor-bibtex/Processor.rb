@@ -97,7 +97,10 @@ module AsciidoctorBibtex
           # Remove { } from grouped names for sorting.
           author = bibitem.author
           author = bibitem.editor if author.nil?
-          CitationUtils.author_chicago(author).collect { |s| s.upcase.gsub('{', '').gsub('}', '') } + [bibitem.year]
+          year = bibitem.year
+          sortable = CitationUtils.author_chicago(author).map { |s| s.upcase.delete '{}' }
+          sortable << year if year
+          sortable
         end
       end
       nil
