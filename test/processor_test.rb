@@ -27,5 +27,15 @@ describe AsciidoctorBibtex do
     p.build_bibliography_item('smith10').must_equal "Smith, D. (2010). _Book title_. Mahwah, NJ: Lawrence Erlbaum."
     p.build_bibliography_item('brown09').must_equal "Brown, J. (Ed.). (2009). _Book title_. OUP."
   end
+
+  it "must sort citations correctly" do
+    begin
+      p = Processor.new 'test/data/sort.bib', true, 'ieee'
+      p.process_citation_macros 'cite:[Morgan2018, Morgan2006]'
+      p.finalize_macro_processing
+    rescue
+      fail 'Should not throw exception when sorting citations'
+    end
+  end
 end
 
