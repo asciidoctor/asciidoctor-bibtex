@@ -17,7 +17,7 @@ endif::[]
 :url-asciidoctor-pdf: https://github.com/asciidoctor/asciidoctor-pdf
 :url-asciidoctor-latex: https://github.com/asciidoctor/asciidoctor-latex
 :url-asciidoc-bib: https://github.com/petercrlane/asciidoc-bib
-:url-gem: http://rubygems.org/gems/asciidoctor-bibtex
+:url-gem: https://rubygems.org/gems/asciidoctor-bibtex
 ifdef::status[]
 image:https://img.shields.io/travis/asciidoctor/asciidoctor-bibtex/master.svg[Build Status (Travis CI),link=https://travis-ci.org/asciidoctor/asciidoctor-bibtex]
 image:https://img.shields.io/gem/v/asciidoctor-bibtex.svg[Latest Release, link={url-gem}]
