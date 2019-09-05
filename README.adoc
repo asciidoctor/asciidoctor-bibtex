@@ -18,9 +18,10 @@ endif::[]
 :url-asciidoctor-latex: https://github.com/asciidoctor/asciidoctor-latex
 :url-asciidoc-bib: https://github.com/petercrlane/asciidoc-bib
 :url-gem: https://rubygems.org/gems/asciidoctor-bibtex
+
 ifdef::status[]
 image:https://img.shields.io/travis/asciidoctor/asciidoctor-bibtex/master.svg[Build Status (Travis CI),link=https://travis-ci.org/asciidoctor/asciidoctor-bibtex]
-image:https://img.shields.io/gem/v/asciidoctor-bibtex.svg[Latest Release, link={url-gem}]
+image:https://img.shields.io/gem/v/asciidoctor-bibtex.svg[Latest Release, link=https://rubygems.org/gems/asciidoctor-bibtex]
 endif::[]
 
 asciidoctor-bibtex adds bibtex integration to AsciiDoc documents by introducing two new macros: `cite:[KEY]` and `bibliography::[]`.
