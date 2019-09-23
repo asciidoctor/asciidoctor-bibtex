@@ -18,8 +18,14 @@ describe AsciidoctorBibtex do
 
   it "must return numeric style (IEEE) references" do
     p = Processor.new 'test/data/test.bib', false, 'ieee'
-    p.build_bibliography_item('smith10').must_equal ". D. Smith, _Book title_. Mahwah, NJ: Lawrence Erlbaum, 2010."
-    p.build_bibliography_item('brown09').must_equal ". J. Brown, Ed., _Book title_. OUP, 2009."
+    p.build_bibliography_item('smith10', 0).must_equal "[1] D. Smith, _Book title_. Mahwah, NJ: Lawrence Erlbaum, 2010."
+    p.build_bibliography_item('brown09', 1).must_equal "[2] J. Brown, Ed., _Book title_. OUP, 2009."
+  end
+
+  it "must support custom template in numeric style (IEEE) references" do
+    p = Processor.new 'test/data/test.bib', false, 'ieee', custom_citation_template: '/$id/'
+    p.build_bibliography_item('smith10', 0).must_equal "/1/ D. Smith, _Book title_. Mahwah, NJ: Lawrence Erlbaum, 2010."
+    p.build_bibliography_item('brown09', 1).must_equal "/2/ J. Brown, Ed., _Book title_. OUP, 2009."
   end
 
   it "must return harvard style (APA) references" do

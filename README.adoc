@@ -116,6 +116,11 @@ Configuration is applied in the form of AsciiDoc document attributes, which must
 | Throw an error on unknown references
 | `true` or `false`
 | `false`
+
+| bibtex-citation-template
+| Custom citation template for numeric style
+| Any string matching `/(.+?)\$id(.+)/`
+| `[$id]`
 |===
 
 === Commandline

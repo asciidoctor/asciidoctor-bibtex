@@ -67,6 +67,7 @@ module AsciidoctorBibtex
         bibtex_order = ((document.attr 'bibtex-order') || 'appearance').to_sym
         bibtex_format = ((document.attr 'bibtex-format') || 'asciidoc').to_sym
         bibtex_throw = ((document.attr 'bibtex-throw') || 'false').to_s.downcase
+        bibtex_citation_template = ((document.attr 'bibtex-citation-template') || '[$id]').to_s
 
         # Fild bibtex file automatically if not supplied.
         if bibtex_file.empty?
@@ -90,7 +91,7 @@ module AsciidoctorBibtex
 
         processor = Processor.new bibtex_file, true, bibtex_style, bibtex_locale,
                                   bibtex_order == :appearance, bibtex_format,
-                                  bibtex_throw == 'true'
+                                  bibtex_throw == 'true', custom_citation_template: bibtex_citation_template
 
         # First pass: extract all citations.
         prose_blocks.each do |block|
@@ -111,7 +112,7 @@ module AsciidoctorBibtex
           if block.context == :list_item || block.context == :table_cell
             # NOTE: we access the instance variable @text for raw text.
             line = block.instance_variable_get(:@text)
-            if !line.empty?
+            unless line.empty?
               line = processor.replace_citation_macros(line)
               block.text = line
             end

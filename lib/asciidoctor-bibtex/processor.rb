@@ -49,7 +49,7 @@ module AsciidoctorBibtex
   class Processor
     def initialize(bibfile, links = false, style = 'ieee', locale = 'en-US',
                    numeric_in_appearance_order = false, output = :asciidoc,
-                   throw_on_unknown = false)
+                   throw_on_unknown = false, custom_citation_template: '[$id]')
       raise "File '#{bibfile}' is not found" unless FileTest.file? bibfile
 
       bibtex = BibTeX.open bibfile, filter: [LatexFilter]
@@ -62,6 +62,13 @@ module AsciidoctorBibtex
       @filenames = Set.new
       @output = output
       @throw_on_unknown = throw_on_unknown
+      @bibtex_ob = '['
+      @bibtex_cb = ']'
+      match = custom_citation_template.match(/^(.+?)\$id(.+)$/)
+      if not match.nil?
+        @bibtex_ob = match[1]
+        @bibtex_cb = match[2]
+      end
 
       if (output != :latex) && (output != :bibtex) && (output != :biblatex)
         @citeproc = CiteProc::Processor.new style: @style, format: :html, locale: @locale
@@ -121,8 +128,8 @@ module AsciidoctorBibtex
     # Return an array of texts representing an asciidoc list.
     def build_bibliography_list
       result = []
-      @citations.each do |ref|
-        result << build_bibliography_item(ref)
+      @citations.each_with_index do |ref, index|
+        result << build_bibliography_item(ref, index)
         result << ''
       end
       result
@@ -133,16 +140,18 @@ module AsciidoctorBibtex
     #
 
     # Build bibliography text for a given reference
-    def build_bibliography_item(key)
+    def build_bibliography_item(key, index = 0)
+      index += 1
       result = ''
-      result << '. ' if StyleUtils.is_numeric? @style
 
       begin
         cptext = @citeproc.render :bibliography, id: key
       rescue Exception => e
         puts "Failed to render #{key}: #{e}"
       end
+
       result << "[[#{key}]]" if @links
+      result << "#{@bibtex_ob}#{index}#{@bibtex_cb} " if StyleUtils.is_numeric? @style
       if cptext.nil?
         return result + key
       else
@@ -177,8 +186,8 @@ module AsciidoctorBibtex
       else
         result = ''
         if StyleUtils.is_numeric? @style
-          ob = '+[+'
-          cb = '+]+'
+          ob = "+#{@bibtex_ob}+"
+          cb = "+#{@bibtex_cb}+"
           separator = ','
         elsif macro.type == 'cite'
           ob = '('
@@ -229,13 +238,13 @@ module AsciidoctorBibtex
         result << ' '
         # use p.x for single numerical page and pp.x for all others. This will
         # produce pp. 1 seq for complex locators, which is the correct behavior.
-        if @style.include? 'chicago'
-          result << cite.locator
-        elsif /^\d+$/ =~ cite.locator
-          result << "p.&#160;#{cite.locator}"
-        else
-          result << "pp.&#160;#{cite.locator}"
-        end
+        result << if @style.include? 'chicago'
+                    cite.locator
+                  elsif /^\d+$/ =~ cite.locator
+                    "p.&#160;#{cite.locator}"
+                  else
+                    "pp.&#160;#{cite.locator}"
+                  end
       end
 
       result
@@ -266,7 +275,7 @@ module AsciidoctorBibtex
         cite_text = @citeproc.render :citation, id: cite.key
         cite_text = cite_text.gsub('(', '')
         cite_text = cite_text.gsub(')', '')
-        cite_text = cite_text + format_locator(cite)
+        cite_text += format_locator(cite)
         year = @biblio[cite.key].year
         if !year.nil? && macro.type == 'citenp'
           segs = cite_text.partition(year.to_s)
