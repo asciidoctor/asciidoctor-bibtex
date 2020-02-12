@@ -1,0 +1,10 @@
+== Citations in nested definition list
+
+FIRST ITEM ::
+* This is a nested bullet1
+* This is a nested bullet2
+SECOND cite:[Lane12a] ITEM ::
+1. This is a nested enumerated item for cite:[Lane12b]
+2. This is a nested enumerated item2
+
+bibliography::[]

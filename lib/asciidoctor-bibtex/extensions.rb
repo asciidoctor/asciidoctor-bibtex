@@ -97,7 +97,9 @@ module AsciidoctorBibtex
         prose_blocks.each do |block|
           if block.context == :list_item || block.context == :table_cell
             line = block.text
-            processor.process_citation_macros line
+            unless line.nil? || line.empty?
+              processor.process_citation_macros line
+            end
           else
             block.lines.each do |line|
               processor.process_citation_macros line
@@ -112,7 +114,7 @@ module AsciidoctorBibtex
           if block.context == :list_item || block.context == :table_cell
             # NOTE: we access the instance variable @text for raw text.
             line = block.instance_variable_get(:@text)
-            unless line.empty?
+            unless line.nil? or line.empty?
               line = processor.replace_citation_macros(line)
               block.text = line
             end
