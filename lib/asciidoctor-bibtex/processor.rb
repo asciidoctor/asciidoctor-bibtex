@@ -65,7 +65,7 @@ module AsciidoctorBibtex
       @bibtex_ob = '['
       @bibtex_cb = ']'
       match = custom_citation_template.match(/^(.+?)\$id(.+)$/)
-      if not match.nil?
+      unless match.nil?
         @bibtex_ob = match[1]
         @bibtex_cb = match[2]
       end
@@ -145,7 +145,11 @@ module AsciidoctorBibtex
       result = ''
 
       begin
-        cptext = @citeproc.render :bibliography, id: key
+        if @biblio[key].nil?
+          cptext = nil
+        else
+          cptext = @citeproc.render :bibliography, id: key
+        end
       rescue Exception => e
         puts "Failed to render #{key}: #{e}"
       end
@@ -209,14 +213,14 @@ module AsciidoctorBibtex
           # if found, insert reference information
           if @biblio[cite.key].nil?
             if @throw_on_unknown
-              raise "Unknown reference: #{cite.ref}"
+              raise "Unknown reference: #{cite.key}"
             else
-              puts "Unknown reference: #{cite.ref}"
-              cite_text = cite.ref.to_s
+              puts "Unknown reference: #{cite.key}"
+              cite_text = cite.key.to_s
             end
           else
             cite_text = citation_text(macro, cite)
-           end
+          end
 
           result << StringUtils.html_to_asciidoc(cite_text)
           result << '>>' if @links
