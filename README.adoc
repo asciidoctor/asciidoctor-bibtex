@@ -52,7 +52,7 @@ asciidoctor-bibtex depends on https://github.com/inukshuk/bibtex-ruby[bibtex-rub
 Ensure the `ruby-dev` and `libxslt1-dev` packages are installed on your machine so the dependencies will compile properly.
 
 {url-asciidoctor}[Asciidoctor] must also be installed for 'asciidoctor-bibtex' to work.
-Asciidoctor version 1.5.2 or higher is required.
+Asciidoctor version 2.0.0 or higher is required.
 
 == Usage
 
