@@ -30,7 +30,7 @@ describe AsciidoctorBibtex do
 
   it "must return harvard style (APA) references" do
     p = Processor.new 'test/data/test.bib', false, 'apa'
-    p.build_bibliography_item('smith10').must_equal "Smith, D. (2010). _Book title_. Mahwah, NJ: Lawrence Erlbaum."
+    p.build_bibliography_item('smith10').must_equal "Smith, D. (2010). _Book title_. Lawrence Erlbaum."
     p.build_bibliography_item('brown09').must_equal "Brown, J. (Ed.). (2009). _Book title_. OUP."
   end
 
