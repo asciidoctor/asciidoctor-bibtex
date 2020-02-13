@@ -46,6 +46,17 @@ Shall also work in tables:
 
 Shall also work in a footnote footnote:[We cite cite:[Lane12a] for this.].
 
+Shall also work in block title:
+
+. This table is extracted from cite:[Lane12b]
+[cols="1,1",options="header"]
+|===
+| Term
+| Citation
+
+| Item 1
+| Illustrated in cite:[Lane12a].
+|===
 include::sample-include.adoc[]
 
 

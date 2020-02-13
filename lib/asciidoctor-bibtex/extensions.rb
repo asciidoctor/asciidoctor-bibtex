@@ -85,7 +85,8 @@ module AsciidoctorBibtex
         prose_blocks = document.find_by do |b|
           (b.content_model == :simple) ||
             (b.context == :list_item) ||
-            (b.context == :table_cell)
+            (b.context == :table_cell) ||
+            (b.title?)
         end
         return nil if prose_blocks.nil?
 
@@ -100,10 +101,13 @@ module AsciidoctorBibtex
             unless line.nil? || line.empty?
               processor.process_citation_macros line
             end
-          else
+          elsif block.content_model == :simple
             block.lines.each do |line|
               processor.process_citation_macros line
             end
+          else
+            line = block.title
+            processor.process_citation_macros line
           end
         end
         # Make processor finalize macro processing as required.
@@ -119,12 +123,18 @@ module AsciidoctorBibtex
               line = processor.replace_bibitem_macros(line)
               block.text = line
             end
-          else
+          elsif block.content_model == :simple
             block.lines.each_with_index do |line, index|
               line = processor.replace_citation_macros(line)
               line = processor.replace_bibitem_macros(line)
               block.lines[index] = line
             end
+          else
+            # NOTE: we access the instance variable @text for raw text.
+            line = block.instance_variable_get(:@title)
+            line = processor.replace_citation_macros(line)
+            # line = processor.replace_bibitem_macros(line)
+            block.title = line
           end
         end
 
