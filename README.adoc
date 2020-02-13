@@ -24,11 +24,9 @@ image:https://img.shields.io/travis/asciidoctor/asciidoctor-bibtex/master.svg[Bu
 image:https://img.shields.io/gem/v/asciidoctor-bibtex.svg[Latest Release, link=https://rubygems.org/gems/asciidoctor-bibtex]
 endif::[]
 
-asciidoctor-bibtex adds bibtex integration to AsciiDoc documents by introducing two new macros: `cite:[KEY]` and `bibliography::[]`.
-Citations are parsed and replaced with formatted inline texts, and reference lists are automatically generated and inserted into where `bibliography::[]` is placed. 
+asciidoctor-bibtex adds bibtex integration to AsciiDoc documents by introducing three new macros: `cite:[KEY]`, `bibitem:[KEY]` and `bibliography::[]`. Citations are parsed and replaced with formatted inline texts, and reference lists are automatically generated and inserted into where `bibliography::[]` is placed. `bibitem:[KEY]` will insert a rendered bibliography item directly into the text.
 
-asciidoctor-bibtex is designed to be used as an extension to {url-asciidoctor}[Asciidoctor].
-Thus this extension can be used together with other asciidoctor extensions such as {url-asciidoctor-mathematical}[asciidoctor-mathematical] and {url-asciidoctor-pdf}[asciidoctor-pdf] to enrich your AsciiDoc experience.
+asciidoctor-bibtex is designed to be used as an extension to {url-asciidoctor}[Asciidoctor]. Thus this extension can be used together with other asciidoctor extensions such as {url-asciidoctor-mathematical}[asciidoctor-mathematical] and {url-asciidoctor-pdf}[asciidoctor-pdf] to enrich your AsciiDoc experience.
 
 NOTE: asciidoctor-bibtex no longer supports AsciiDoc-to-AsciiDoc conversion.
 
@@ -84,6 +82,21 @@ For *ieee*, a numeric style:
 `cite:[Lane12,Lane11]` becomes "[1, 2]"
 
 To add a list of formatted references, place `bibliography::[]` on a line by itself.
+
+One can use `bibitem:[Lane12]` to insert a rendered bibliography item inline, maybe to generate a cv. For example:
+
+[source, asciidoc]
+----
+= My CV
+
+== Publications
+
+=== 2019
+
+- bibitem:[Me2019a]
+- bibitem:[Me2019b]
+- bibitem:[Me2019c]
+----
 
 === Configuration
 
