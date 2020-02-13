@@ -54,7 +54,7 @@ module AsciidoctorBibtex
 
     # Given a line, return a list of CitationData instances
     # containing information on each set of citation information
-    def self.extract_citations(line)
+    def self.extract_macros(line)
       result = []
       full = CITATION_MACRO.match line
       while full

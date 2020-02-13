@@ -83,7 +83,7 @@ module AsciidoctorBibtex
     # processor will build a list of all citation keys in the same order as they
     # appear in the original document.
     def process_citation_macros(line)
-      CitationMacro.extract_citations(line).each do |citation|
+      CitationMacro.extract_macros(line).each do |citation|
         @citations += citation.items.collect(&:key)
       end
     end
@@ -118,7 +118,7 @@ module AsciidoctorBibtex
     #
     # Return new text with all macros replaced.
     def replace_citation_macros(line)
-      CitationMacro.extract_citations(line).each do |citation|
+      CitationMacro.extract_macros(line).each do |citation|
         line = line.gsub(citation.text, build_citation_text(citation))
       end
       line
