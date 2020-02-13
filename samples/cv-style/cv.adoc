@@ -1,0 +1,16 @@
+= My CV
+:bibtex-file: references.bib
+:bibtex-style: ieee
+
+
+== My Publications
+
+=== Science
+
+- bibitem:[Lane12a]
+- bibitem:[Lane12b]
+
+=== Humanity
+
+- bibitem:[Anderson98]
+- bibitem:[Anderson04]

@@ -18,6 +18,7 @@ require 'set'
 
 require_relative 'citation_macro'
 require_relative 'citation_utils'
+require_relative 'bibitem_macro'
 require_relative 'string_utils'
 require_relative 'style_utils'
 
@@ -123,6 +124,16 @@ module AsciidoctorBibtex
       line
     end
 
+    # Replace bibitem macros with rendered bibitem.
+    #
+    # Return new text with all macros replaced.
+    def replace_bibitem_macros(line)
+      BibitemMacro.extract_macros(line).each do |item|
+        line = line.gsub(item.text, build_bibitem_text(item.key))
+      end
+      line
+    end
+
     # Build the bibliography list just as bibtex.
     #
     # Return an array of texts representing an asciidoc list.
@@ -139,23 +150,42 @@ module AsciidoctorBibtex
     # Internal functions
     #
 
+    # Build the asciidoc text for a single bibliography item
+    def build_bibitem_text(key)
+      begin
+        if @biblio[key].nil?
+          puts "Unknown reference: #{key}"
+          cptext = key
+        else
+          cptext = @citeproc.render :bibliography, id: key
+          cptext = cptext.first
+        end
+      rescue Exception => e
+        puts "Failed to render #{key}: #{e}"
+        cptext = key
+      end
+      StringUtils.html_to_asciidoc(cptext)
+    end
+
     # Build bibliography text for a given reference
     def build_bibliography_item(key, index = 0)
       index += 1
       result = ''
 
       begin
-        if @biblio[key].nil?
-          cptext = nil
-        else
-          cptext = @citeproc.render :bibliography, id: key
-        end
+        cptext = if @biblio[key].nil?
+                   nil
+                 else
+                   @citeproc.render :bibliography, id: key
+                 end
       rescue Exception => e
         puts "Failed to render #{key}: #{e}"
       end
 
       result << "[[#{key}]]" if @links
-      result << "#{@bibtex_ob}#{index}#{@bibtex_cb} " if StyleUtils.is_numeric? @style
+      if StyleUtils.is_numeric? @style
+        result << "#{@bibtex_ob}#{index}#{@bibtex_cb} "
+      end
       if cptext.nil?
         return result + key
       else

@@ -116,11 +116,13 @@ module AsciidoctorBibtex
             line = block.instance_variable_get(:@text)
             unless line.nil? or line.empty?
               line = processor.replace_citation_macros(line)
+              line = processor.replace_bibitem_macros(line)
               block.text = line
             end
           else
             block.lines.each_with_index do |line, index|
               line = processor.replace_citation_macros(line)
+              line = processor.replace_bibitem_macros(line)
               block.lines[index] = line
             end
           end
