@@ -71,6 +71,9 @@ module AsciidoctorBibtex
 
         # Fild bibtex file automatically if not supplied.
         if bibtex_file.empty?
+          bibtex_file = AsciidoctorBibtex::PathUtils.find_bibfile document.basedir
+        end
+        if bibtex_file.empty?
           bibtex_file = AsciidoctorBibtex::PathUtils.find_bibfile '.'
         end
         if bibtex_file.empty?
