@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.summary = 'An Asciidoctor extension that adds bibtex integration to AsciiDoc'
   s.license = 'OWL'
   s.description = 'asciidoctor-bibtex is an Asciidocotor extension that adds bibtex support for AsciiDoc documents. It does so by introducing two new macros: `cite:[KEY]` and `bibliography::[]`. Citations are parsed and replaced with formatted inline text, and reference lists are automatically generated and inserted where the `bibliography::[]` macro is placed. The references are formatted using styles provided by CSL.'
-  s.required_ruby_version = '>= 2.3.0'
+  s.required_ruby_version = '>= 2.4.0'
   s.files = Dir['lib/**/*'] + ['LICENSE.txt', 'README.adoc']
   s.add_runtime_dependency 'asciidoctor', '~> 2.0'
   s.add_runtime_dependency 'bibtex-ruby', '~> 5.1'
