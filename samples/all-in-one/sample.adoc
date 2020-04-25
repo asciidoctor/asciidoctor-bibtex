@@ -14,7 +14,7 @@ citenp:[Lane12a].
 
 Page numbers (locators) can be added: cite:[Lane12a(89)] or citenp:[Lane12a(89-93)].
 
-A bit of pretext can be included too: See cite:see[Lane12a(89)]
+A bit of pretext can be included too: cite:See[Lane12a(89)]
 
 We can include other files, which are also processed:
 
