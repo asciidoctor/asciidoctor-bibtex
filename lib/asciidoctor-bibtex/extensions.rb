@@ -71,7 +71,7 @@ module AsciidoctorBibtex
 
         # Fild bibtex file automatically if not supplied.
         if bibtex_file.empty?
-          bibtex_file = AsciidoctorBibtex::PathUtils.find_bibfile document.basedir
+          bibtex_file = AsciidoctorBibtex::PathUtils.find_bibfile document.base_dir
         end
         if bibtex_file.empty?
           bibtex_file = AsciidoctorBibtex::PathUtils.find_bibfile '.'
@@ -100,7 +100,10 @@ module AsciidoctorBibtex
         # First pass: extract all citations.
         prose_blocks.each do |block|
           if block.context == :list_item || block.context == :table_cell
-            line = block.text
+            # NOTE: we access the instance variable @text for raw text.
+            # Otherwise the footnotes in the text will be pre-processed and
+            # ghost footnotes will be inserted (as of asciidoctor 2.0.10).
+            line = block.instance_variable_get(:@text)
             unless line.nil? || line.empty?
               processor.process_citation_macros line
             end
@@ -109,7 +112,7 @@ module AsciidoctorBibtex
               processor.process_citation_macros line
             end
           else
-            line = block.title
+            line = block.instance_variable_get(:@title)
             processor.process_citation_macros line
           end
         end
@@ -136,7 +139,7 @@ module AsciidoctorBibtex
             # NOTE: we access the instance variable @text for raw text.
             line = block.instance_variable_get(:@title)
             line = processor.replace_citation_macros(line)
-            # line = processor.replace_bibitem_macros(line)
+            line = processor.replace_bibitem_macros(line)
             block.title = line
           end
         end

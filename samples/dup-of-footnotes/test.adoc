@@ -1,0 +1,10 @@
+= Test File
+
+== Heading 1
+
+Some text with footnote footnote:[words0]
+
+Some text with footnote footnote:[words1]
+
+* Some list text with footnote footnote:[list0]
+* Some list text with footnote footnote:[list1]
