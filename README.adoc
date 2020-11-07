@@ -125,6 +125,11 @@ Configuration is applied in the form of AsciiDoc document attributes, which must
 | `asciidoc`, `bibtex` or `biblatex`
 | `asciidoc`
 
+| bibtex-locale
+| Locale used to render the bibliography
+| strings supported by CSL
+| `en-US`
+
 | bibtex-throw
 | Throw an error on unknown references
 | `true` or `false`
