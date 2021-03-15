@@ -218,7 +218,7 @@ module AsciidoctorBibtex
         result << '+++'
         result
       else
-        result = '[.citation]#'
+        result = ''
         if StyleUtils.is_numeric? @style
           ob = "+#{@bibtex_ob}+"
           cb = "+#{@bibtex_cb}+"
@@ -260,8 +260,7 @@ module AsciidoctorBibtex
           result = StringUtils.combine_consecutive_numbers(result)
         end
 
-        include_pretext result, macro, ob, cb
-        result << "#"
+        "[.citation]\##{include_pretext(result, macro, ob, cb)}\#"
       end
     end
 

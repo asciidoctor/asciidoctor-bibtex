@@ -14,7 +14,7 @@ describe AsciidoctorBibtex do
   def check_complete_citation style, line, result, links = false
     p = Processor.new 'test/data/test.bib', links, style
     p.process_citation_macros(line)
-    p.build_citation_text(CitationMacro.extract_macros(line).first).must_equal result
+    _(p.build_citation_text(CitationMacro.extract_macros(line).first)).must_equal "[.citation]##{result}#"
   end
 
   it "must handle chicago style references with 'cite'" do
