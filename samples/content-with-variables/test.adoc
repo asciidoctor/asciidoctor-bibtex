@@ -1,0 +1,7 @@
+= Test doc
+:toc:
+:bibtex-file: 1.bib
+
+:who: World
+
+== Hello, {who}!

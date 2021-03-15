@@ -125,22 +125,25 @@ module AsciidoctorBibtex
             # NOTE: we access the instance variable @text for raw text.
             line = block.instance_variable_get(:@text)
             unless line.nil? or line.empty?
+              line_orig = line
               line = processor.replace_citation_macros(line)
               line = processor.replace_bibitem_macros(line)
-              block.text = line
+              block.text = line if line != line_orig
             end
           elsif block.content_model == :simple
             block.lines.each_with_index do |line, index|
+              line_orig = line
               line = processor.replace_citation_macros(line)
               line = processor.replace_bibitem_macros(line)
-              block.lines[index] = line
+              block.lines[index] = line if line != line_orig
             end
           else
             # NOTE: we access the instance variable @text for raw text.
             line = block.instance_variable_get(:@title)
+            line_orig = line
             line = processor.replace_citation_macros(line)
             line = processor.replace_bibitem_macros(line)
-            block.title = line
+            block.title = line if line != line_orig
           end
         end
 
