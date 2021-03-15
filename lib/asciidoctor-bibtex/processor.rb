@@ -218,7 +218,7 @@ module AsciidoctorBibtex
         result << '+++'
         result
       else
-        result = ''
+        result = '[.citation]#'
         if StyleUtils.is_numeric? @style
           ob = "+#{@bibtex_ob}+"
           cb = "+#{@bibtex_cb}+"
@@ -261,6 +261,7 @@ module AsciidoctorBibtex
         end
 
         include_pretext result, macro, ob, cb
+        result << "#"
       end
     end
 
