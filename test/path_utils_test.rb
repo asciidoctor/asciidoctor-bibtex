@@ -16,9 +16,9 @@ include AsciidoctorBibtex
 describe AsciidoctorBibtex do
   describe PathUtils do
     it 'should find biblio file' do
-      PathUtils.find_bibfile('test/data').wont_be_empty
-      PathUtils.find_bibfile('test/data').must_match %r/test\/data\/.+\.bib$/
-      PathUtils.find_bibfile('test').must_be_empty
+      _(PathUtils.find_bibfile('test/data')).wont_be_empty
+      _(PathUtils.find_bibfile('test/data')).must_match %r/test\/data\/.+\.bib$/
+      _(PathUtils.find_bibfile('test')).must_be_empty
     end
   end
 end
