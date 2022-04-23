@@ -5,3 +5,5 @@
 /samples/*/*.html
 /samples/*/*.pdf
 pkg
+.bundle
+sample
