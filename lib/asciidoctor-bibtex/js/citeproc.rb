@@ -2,12 +2,7 @@ module AsciidoctorBibtex
   `const __cite__ = require('citation-js')`
   module CiteProc
     class Processor
-      # TODO
-      def import(*arguments)
-        puts arguments
-        arguments.each do |argument|
-          puts argument
-        end
+      def import(data)
       end
     end
   end

@@ -97,6 +97,7 @@ module AsciidoctorBibtex
     # appear in the original document.
     def process_citation_macros(line)
       CitationMacro.extract_macros(line).each do |citation|
+        puts citation
         @citations += citation.items.collect(&:key)
       end
     end

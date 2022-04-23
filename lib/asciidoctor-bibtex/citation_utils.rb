@@ -12,6 +12,8 @@ module AsciidoctorBibtex
     def self.arrange_authors(authors, surname_first)
       return [] if authors.nil?
 
+      puts authors
+
       authors.split(/\band\b/).collect do |name|
         if name.include?(', ')
           parts = name.strip.rpartition(', ')
