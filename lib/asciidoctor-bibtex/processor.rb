@@ -3,17 +3,23 @@
 # and main operations.
 #
 
-require 'bibtex'
-require 'bibtex/filters'
-require 'citeproc'
-require 'csl/styles'
-require 'latex/decode/base'
-require 'latex/decode/maths'
-require 'latex/decode/accents'
-require 'latex/decode/diacritics'
-require 'latex/decode/punctuation'
-require 'latex/decode/symbols'
-require 'latex/decode/greek'
+if RUBY_ENGINE == 'opal'
+  require_relative 'js/citeproc.rb'
+  require_relative 'js/bibtex.rb'
+else
+  require 'bibtex'
+  require 'bibtex/filters'
+  require 'citeproc'
+  require 'csl/styles'
+  require 'latex/decode/base'
+  require 'latex/decode/maths'
+  require 'latex/decode/accents'
+  require 'latex/decode/diacritics'
+  require 'latex/decode/punctuation'
+  require 'latex/decode/symbols'
+  require 'latex/decode/greek'
+end
+
 require 'set'
 
 require_relative 'citation_macro'
@@ -28,19 +34,24 @@ module AsciidoctorBibtex
   # gem together with our custom replacement rules, but latex-decode eats up
   # all braces after it finishes all decoding. So we hack over the
   # LaTeX.decode function and insert our rules before `strip_braces`.
-  class LatexFilter < ::BibTeX::Filter
-    def apply(value)
-      text = value.to_s
-      LaTeX::Decode::Base.normalize(text)
-      LaTeX::Decode::Maths.decode!(text)
-      LaTeX::Decode::Accents.decode!(text)
-      LaTeX::Decode::Diacritics.decode!(text)
-      LaTeX::Decode::Punctuation.decode!(text)
-      LaTeX::Decode::Symbols.decode!(text)
-      LaTeX::Decode::Greek.decode!(text)
-      text = text.gsub(/\\url\{(.+?)\}/, ' \\1 ').gsub(/\\\w+(?=\s+\w)/, '').gsub(/\\\w+(?:\[.+?\])?\s*\{(.+?)\}/, '\\1')
-      LaTeX::Decode::Base.strip_braces(text)
-      LaTeX.normalize_C(text)
+  if RUBY_ENGINE == 'opal'
+    class LatexFilter
+    end
+  else
+    class LatexFilter < ::BibTeX::Filter
+      def apply(value)
+        text = value.to_s
+        LaTeX::Decode::Base.normalize(text)
+        LaTeX::Decode::Maths.decode!(text)
+        LaTeX::Decode::Accents.decode!(text)
+        LaTeX::Decode::Diacritics.decode!(text)
+        LaTeX::Decode::Punctuation.decode!(text)
+        LaTeX::Decode::Symbols.decode!(text)
+        LaTeX::Decode::Greek.decode!(text)
+        text = text.gsub(/\\url\{(.+?)\}/, ' \\1 ').gsub(/\\\w+(?=\s+\w)/, '').gsub(/\\\w+(?:\[.+?\])?\s*\{(.+?)\}/, '\\1')
+        LaTeX::Decode::Base.strip_braces(text)
+        LaTeX.normalize_C(text)
+      end
     end
   end
 
@@ -51,7 +62,9 @@ module AsciidoctorBibtex
     def initialize(bibfile, links = false, style = 'ieee', locale = 'en-US',
                    numeric_in_appearance_order = false, output = :asciidoc,
                    throw_on_unknown = false, custom_citation_template: '[$id]')
-      raise "File '#{bibfile}' is not found" unless FileTest.file? bibfile
+      
+      # TODO
+      # raise "File '#{bibfile}' is not found" unless FileTest.file? bibfile
 
       bibtex = BibTeX.open bibfile, filter: [LatexFilter]
       @biblio = bibtex
