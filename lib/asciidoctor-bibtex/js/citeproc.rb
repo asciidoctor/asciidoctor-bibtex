@@ -14,12 +14,17 @@ module AsciidoctorBibtex
         @locale = options[:locale]
 
         styleFilePath = "../vendor/styles/#{@style}.csl"
-        raise "Bibtex-style '#{@style}' does not exist" unless `Fs.existsSync(#{styleFilePath})`
+        raise "nibtex-style '#{@style}' does not exist" unless `Fs.existsSync(#{styleFilePath})`
+
+        localeFilePath = "../vendor/locales/locales-#{@locale}.xml"
+        raise "bibtex-locale '#{@locale}' does not exist" unless `Fs.existsSync(#{localeFilePath})`
 
         styleFile = File.read(styleFilePath, encoding: 'utf-8')
+        localeFile = File.read(localeFilePath, encoding: 'utf-8')
         %x{
           let csl_config = plugins.config.get('@csl')
           csl_config.templates.add(#{style}, #{styleFile})
+          csl_config.locales.add(#{locale}, #{localeFile})
 
           // This is used for style_utils.rb as the lib itself doesn't expose infos about the csl styles
           styles.set(#{style}, #{styleFile})
@@ -35,14 +40,14 @@ module AsciidoctorBibtex
         when :bibliography
           return %x{#{@js_bibliography}.format('bibliography', { 
             entry: #{cite_data[:id]}, 
-            template:  #{@style},
-            locale:  #{@locale}
+            template: #{@style},
+            lang: #{@locale}
           })}, ""
         when :citation
           return %x{#{@js_bibliography}.format('citation', { 
             entry: #{cite_data[:id]},
-            template:  #{@style},
-            locale:  #{@locale}
+            template: #{@style},
+            lang: #{@locale}
           })}
         else
           raise ArgumentError, "cannot render unknown mode: #{mode.inspect}"
