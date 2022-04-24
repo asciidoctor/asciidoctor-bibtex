@@ -2,10 +2,12 @@
 # Treeprocessor extension for asciidoctor
 #
 
-require 'asciidoctor' unless RUBY_PLATFORM == 'opal'
-require 'asciidoctor/extensions' unless RUBY_PLATFORM == 'opal'
-require 'asciidoctor/reader' unless RUBY_PLATFORM == 'opal'
-require 'asciidoctor/parser' unless RUBY_PLATFORM == 'opal'
+unless RUBY_PLATFORM == 'opal'
+  require 'asciidoctor'
+  require 'asciidoctor/extensions'
+  require 'asciidoctor/reader'
+  require 'asciidoctor/parser'
+end
 
 require_relative 'path_utils'
 require_relative 'processor'
