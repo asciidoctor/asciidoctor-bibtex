@@ -200,12 +200,12 @@ module AsciidoctorBibtex
         result << "#{@bibtex_ob}#{index}#{@bibtex_cb} "
       end
       if cptext.nil?
-        return result.join("") + key
+        return result.join + key
       else
         result << cptext.first
       end
 
-      StringUtils.html_to_asciidoc(result.join(""))
+      StringUtils.html_to_asciidoc(result.join)
     end
 
     # Build the complete citation text for given citation macro
@@ -227,7 +227,7 @@ module AsciidoctorBibtex
           end
           result << "[p. #{cite.locator}]" if cite.locator != ''
           result << "{#{cite.key.to_s}}"
-          cites << result.join("")
+          cites << result.join
         end
         return "+++#{cites.join(",")}+++"
       else
@@ -268,7 +268,7 @@ module AsciidoctorBibtex
           result << StringUtils.html_to_asciidoc(cite_text)
           result << '>>' if @links
         end
-        result = result.join("")
+        result = result.join
 
         if StyleUtils.is_numeric?(@style) && !@links
           result = StringUtils.combine_consecutive_numbers(result)
@@ -295,7 +295,7 @@ module AsciidoctorBibtex
                   end
       end
 
-      result.join("")
+      result.join
     end
 
     def include_pretext(result, macro, ob, cb)
@@ -315,7 +315,7 @@ module AsciidoctorBibtex
     def citation_text(macro, cite)
       if StyleUtils.is_numeric? @style
         cite_text = (@citations.index(cite.key) + 1).to_s
-        cite_text << format_locator(cite)
+        cite_text = cite_text + format_locator(cite)
       else
         # We generate the citation without locator using citeproc, then strip
         # the surrounding braces, finally add the locator and add braces for
