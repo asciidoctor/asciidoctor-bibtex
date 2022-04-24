@@ -204,7 +204,7 @@ module AsciidoctorBibtex
       result << "[[#{key}]]" if @links
       if StyleUtils.is_numeric? @style
         result << "#{@bibtex_ob}#{index}#{@bibtex_cb} "
-        if RUBY_ENGINE == 'opal'
+        if RUBY_ENGINE == 'opal' and not cptext.nil?
           # Numbering is added by asciidoctor-bibtex and therefore should be stripped here
           cptext = cptext.first.gsub(/^[\[\d\.\]]*/, ""), ""
         end

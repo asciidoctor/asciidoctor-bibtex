@@ -18,7 +18,11 @@ module AsciidoctorBibtex
       end
 
       def [](key)
-        return Entry.new(%x{#{@js_bibliography}.format('bibtex', { format: 'object'}).find(cite => cite.label === #{key})})
+        js_entry = %x{#{@js_bibliography}.format('bibtex', { format: 'object'}).find(cite => cite.label === #{key})}
+        if `js_entry === undefined`
+          return nil
+        end
+        return Entry.new(js_entry)
       end
     end
 
