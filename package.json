@@ -1,7 +1,7 @@
 {
   "name": "asciidoctor-bibtex",
   "version": "0.8.0",
-  "description": "asciidoctor-bibtex: bibtex integration for AsciiDoc",
+  "description": "An Asciidoctor.js extension that allows to use BibTeX references",
   "main": "dist/main.js",
   "engines": {
     "node": ">=16.0",
