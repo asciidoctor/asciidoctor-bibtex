@@ -14,7 +14,7 @@ module AsciidoctorBibtex
         @locale = options[:locale]
 
         styleFilePath = "../vendor/styles/#{@style}.csl"
-        raise "nibtex-style '#{@style}' does not exist" unless `Fs.existsSync(#{styleFilePath})`
+        raise "bibtex-style '#{@style}' does not exist" unless `Fs.existsSync(#{styleFilePath})`
 
         localeFilePath = "../vendor/locales/locales-#{@locale}.xml"
         raise "bibtex-locale '#{@locale}' does not exist" unless `Fs.existsSync(#{localeFilePath})`
