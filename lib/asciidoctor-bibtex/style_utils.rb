@@ -6,9 +6,6 @@
 require 'citeproc'
 require 'csl/styles'
 
-require 'citeproc'
-require 'csl/styles'
-
 module AsciidoctorBibtex
   module StyleUtils
     def self.available
