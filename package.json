@@ -1,0 +1,26 @@
+{
+  "name": "asciidoctor-bibtex",
+  "version": "0.8.0",
+  "description": "asciidoctor-bibtex: bibtex integration for AsciiDoc",
+  "main": "dist/main.js",
+  "engines": {
+    "node": ">=8.11",
+    "npm": ">=5.0.0"
+  },
+  "authors": [
+    "ProgramFan (https://github.com/ProgramFan)",
+    "Leon De Andrade (https://github.com/Leon0402)"
+  ],
+  "license": "Open Works",
+  "bugs": {
+    "url": "https://github.com/asciidoctor/asciidoctor-bibtex/issues"
+  },
+  "homepage": "https://github.com/asciidoctor/asciidoctor-bibtex",
+  "dependencies": {
+    "@asciidoctor/core": "^2.2.6",
+    "@citation-js/core": "^0.5.7",
+    "@citation-js/plugin-bibtex": "^0.5.7",
+    "@citation-js/plugin-csl": "^0.5.7",
+    "csl-js": "^0.0.2"
+  }
+}

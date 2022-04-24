@@ -1,5 +1,9 @@
 module AsciidoctorBibtex
-  `const Cite = require('citation-js')`
+  `const {Cite, plugins} = require('@citation-js/core')`
+  `require('@citation-js/plugin-csl')`
+  `const Fs = require('fs')`
+  `const { styles } = require('csl-js')`
+
   module CiteProc
     class Processor
       attr_reader :style, :format, :locale
@@ -8,6 +12,18 @@ module AsciidoctorBibtex
         @style = options[:style]
         @format = options[:format]
         @locale = options[:locale]
+
+        styleFilePath = "../vendor/styles/#{@style}.csl"
+        raise "Bibtex-style '#{@style}' does not exist" unless `Fs.existsSync(#{styleFilePath})`
+
+        styleFile = File.read(styleFilePath, encoding: 'utf-8')
+        %x{
+          let csl_config = plugins.config.get('@csl')
+          csl_config.templates.add(#{style}, #{styleFile})
+
+          // This is used for style_utils.rb as the lib itself doesn't expose infos about the csl styles
+          styles.set(#{style}, #{styleFile})
+        }
       end 
 
       def import(js_bibliography)
@@ -19,13 +35,13 @@ module AsciidoctorBibtex
         when :bibliography
           return %x{#{@js_bibliography}.format('bibliography', { 
             entry: #{cite_data[:id]}, 
-            template:  #{@template},
+            template:  #{@style},
             locale:  #{@locale}
           })}, ""
         when :citation
           return %x{#{@js_bibliography}.format('citation', { 
             entry: #{cite_data[:id]},
-            template:  #{@template},
+            template:  #{@style},
             locale:  #{@locale}
           })}
         else

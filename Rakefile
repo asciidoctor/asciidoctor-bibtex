@@ -28,7 +28,7 @@ task :default => default_tasks unless default_tasks.empty?
 
 
 JS_FILE = 'build/asciidoctor-bibtex.js'
-DIST_FILE = 'sample/dist/asciidoctor-bibtex.js'
+DIST_FILE = 'dist/main.js'
 
 task :js do
   require 'opal'

@@ -1,5 +1,7 @@
 module AsciidoctorBibtex
-  `const Cite = require('citation-js')`
+  `const {Cite, plugins} = require('@citation-js/core')`
+  `require('@citation-js/plugin-bibtex')`
+  
   module BibTeX
     def self.open(path, options = {})
       file = File.read(path, encoding: 'utf-8')

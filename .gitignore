@@ -6,4 +6,6 @@
 /samples/*/*.pdf
 pkg
 .bundle
+node_modules
+dist
 sample

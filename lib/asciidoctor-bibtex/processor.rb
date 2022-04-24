@@ -6,6 +6,7 @@
 if RUBY_ENGINE == 'opal'
   require_relative 'js/citeproc.rb'
   require_relative 'js/bibtex.rb'
+  require_relative 'js/style_utils.rb'
 else
   require 'bibtex'
   require 'bibtex/filters'
@@ -18,6 +19,8 @@ else
   require 'latex/decode/punctuation'
   require 'latex/decode/symbols'
   require 'latex/decode/greek'
+
+  require_relative 'style_utils'
 end
 
 require 'set'
@@ -26,7 +29,6 @@ require_relative 'citation_macro'
 require_relative 'citation_utils'
 require_relative 'bibitem_macro'
 require_relative 'string_utils'
-require_relative 'style_utils'
 
 module AsciidoctorBibtex
   # This filter extends the original latex filter in bibtex-ruby to handle
@@ -62,9 +64,13 @@ module AsciidoctorBibtex
     def initialize(bibfile, links = false, style = 'ieee', locale = 'en-US',
                    numeric_in_appearance_order = false, output = :asciidoc,
                    throw_on_unknown = false, custom_citation_template: '[$id]')
-      
-      # TODO
-      # raise "File '#{bibfile}' is not found" unless FileTest.file? bibfile
+
+      if RUBY_ENGINE == 'opal'
+        `const Fs = require('fs')`
+        raise "File '#{bibfile}' is not found" unless `Fs.existsSync(#{bibfile})`
+      else
+        raise "File '#{bibfile}' is not found" unless FileTest.file? bibfile
+      end
 
       bibtex = BibTeX.open bibfile, filter: [LatexFilter]
       @biblio = bibtex
