@@ -1,7 +1,6 @@
 module AsciidoctorBibtex
   `const {Cite, plugins} = require('@citation-js/core')`
   `require('@citation-js/plugin-csl')`
-  `const Fs = require('fs')`
   `const { styles } = require('csl-js')`
 
   module CiteProc
@@ -14,10 +13,10 @@ module AsciidoctorBibtex
         @locale = options[:locale]
 
         styleFilePath = "../vendor/styles/#{@style}.csl"
-        raise "bibtex-style '#{@style}' does not exist" unless `Fs.existsSync(#{styleFilePath})`
+        raise "bibtex-style '#{@style}' does not exist" unless File.file?(styleFilePath)
 
         localeFilePath = "../vendor/locales/locales-#{@locale}.xml"
-        raise "bibtex-locale '#{@locale}' does not exist" unless `Fs.existsSync(#{localeFilePath})`
+        raise "bibtex-locale '#{@locale}' does not exist" unless  File.file?(localeFilePath)
 
         styleFile = File.read(styleFilePath, encoding: 'utf-8')
         localeFile = File.read(localeFilePath, encoding: 'utf-8')

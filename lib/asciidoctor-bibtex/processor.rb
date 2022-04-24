@@ -64,13 +64,7 @@ module AsciidoctorBibtex
     def initialize(bibfile, links = false, style = 'ieee', locale = 'en-US',
                    numeric_in_appearance_order = false, output = :asciidoc,
                    throw_on_unknown = false, custom_citation_template: '[$id]')
-
-      if RUBY_ENGINE == 'opal'
-        `const Fs = require('fs')`
-        raise "File '#{bibfile}' is not found" unless `Fs.existsSync(#{bibfile})`
-      else
-        raise "File '#{bibfile}' is not found" unless FileTest.file? bibfile
-      end
+      raise "File '#{bibfile}' is not found" unless File.file? bibfile
 
       bibtex = BibTeX.open bibfile, filter: [LatexFilter]
       @biblio = bibtex
