@@ -4,8 +4,8 @@
   "description": "asciidoctor-bibtex: bibtex integration for AsciiDoc",
   "main": "dist/main.js",
   "engines": {
-    "node": ">=8.11",
-    "npm": ">=5.0.0"
+    "node": ">=16.0",
+    "npm": ">=8.0.0"
   },
   "authors": [
     "ProgramFan (https://github.com/ProgramFan)",
@@ -17,10 +17,12 @@
   },
   "homepage": "https://github.com/asciidoctor/asciidoctor-bibtex",
   "dependencies": {
-    "@asciidoctor/core": "^2.2.6",
     "@citation-js/core": "^0.5.7",
     "@citation-js/plugin-bibtex": "^0.5.7",
     "@citation-js/plugin-csl": "^0.5.7",
     "csl-js": "^0.0.2"
+  },
+  "devDependencies": {
+    "@asciidoctor/core": "^2.2.6"
   }
 }
