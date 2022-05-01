@@ -13,6 +13,12 @@ module AsciidoctorBibtex
       def initialize(js_bibliography)
           @js_bibliography = js_bibliography
 
+          %x{
+            // TODO: Doesn't seem to work if the name contains a ":"
+            const config = plugins.config.get('@bibtex')
+            config.format.useIdAsLabel = true;
+          }
+
           @entries = Hash.new(%x{#{@js_bibliography}.format('bibtex', { format: 'object'}).reduce((map, cite) => {
               map[cite.label] = cite;
               return map;
