@@ -5,7 +5,5 @@
 /samples/*/*.html
 /samples/*/*.pdf
 pkg
-.bundle
-node_modules
-dist
-sample
+node_modules/
+dist/
