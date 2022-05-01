@@ -3,24 +3,32 @@
 # and main operations.
 #
 
-require 'bibtex'
-require 'bibtex/filters'
-require 'citeproc'
-require 'csl/styles'
-require 'latex/decode/base'
-require 'latex/decode/maths'
-require 'latex/decode/accents'
-require 'latex/decode/diacritics'
-require 'latex/decode/punctuation'
-require 'latex/decode/symbols'
-require 'latex/decode/greek'
+if RUBY_ENGINE == 'opal'
+  require_relative 'js/citeproc.rb'
+  require_relative 'js/bibtex.rb'
+  require_relative 'js/style_utils.rb'
+else
+  require 'bibtex'
+  require 'bibtex/filters'
+  require 'citeproc'
+  require 'csl/styles'
+  require 'latex/decode/base'
+  require 'latex/decode/maths'
+  require 'latex/decode/accents'
+  require 'latex/decode/diacritics'
+  require 'latex/decode/punctuation'
+  require 'latex/decode/symbols'
+  require 'latex/decode/greek'
+
+  require_relative 'style_utils'
+end
+
 require 'set'
 
 require_relative 'citation_macro'
 require_relative 'citation_utils'
 require_relative 'bibitem_macro'
 require_relative 'string_utils'
-require_relative 'style_utils'
 
 module AsciidoctorBibtex
   # This filter extends the original latex filter in bibtex-ruby to handle
@@ -28,19 +36,24 @@ module AsciidoctorBibtex
   # gem together with our custom replacement rules, but latex-decode eats up
   # all braces after it finishes all decoding. So we hack over the
   # LaTeX.decode function and insert our rules before `strip_braces`.
-  class LatexFilter < ::BibTeX::Filter
-    def apply(value)
-      text = value.to_s
-      LaTeX::Decode::Base.normalize(text)
-      LaTeX::Decode::Maths.decode!(text)
-      LaTeX::Decode::Accents.decode!(text)
-      LaTeX::Decode::Diacritics.decode!(text)
-      LaTeX::Decode::Punctuation.decode!(text)
-      LaTeX::Decode::Symbols.decode!(text)
-      LaTeX::Decode::Greek.decode!(text)
-      text = text.gsub(/\\url\{(.+?)\}/, ' \\1 ').gsub(/\\\w+(?=\s+\w)/, '').gsub(/\\\w+(?:\[.+?\])?\s*\{(.+?)\}/, '\\1')
-      LaTeX::Decode::Base.strip_braces(text)
-      LaTeX.normalize_C(text)
+  if RUBY_ENGINE == 'opal'
+    class LatexFilter
+    end
+  else
+    class LatexFilter < ::BibTeX::Filter
+      def apply(value)
+        text = value.to_s
+        LaTeX::Decode::Base.normalize(text)
+        LaTeX::Decode::Maths.decode!(text)
+        LaTeX::Decode::Accents.decode!(text)
+        LaTeX::Decode::Diacritics.decode!(text)
+        LaTeX::Decode::Punctuation.decode!(text)
+        LaTeX::Decode::Symbols.decode!(text)
+        LaTeX::Decode::Greek.decode!(text)
+        text = text.gsub(/\\url\{(.+?)\}/, ' \\1 ').gsub(/\\\w+(?=\s+\w)/, '').gsub(/\\\w+(?:\[.+?\])?\s*\{(.+?)\}/, '\\1')
+        LaTeX::Decode::Base.strip_braces(text)
+        LaTeX.normalize_C(text)
+      end
     end
   end
 
@@ -51,7 +64,7 @@ module AsciidoctorBibtex
     def initialize(bibfile, links = false, style = 'ieee', locale = 'en-US',
                    numeric_in_appearance_order = false, output = :asciidoc,
                    throw_on_unknown = false, custom_citation_template: '[$id]')
-      raise "File '#{bibfile}' is not found" unless FileTest.file? bibfile
+      raise "File '#{bibfile}' is not found" unless File.file? bibfile
 
       bibtex = BibTeX.open bibfile, filter: [LatexFilter]
       @biblio = bibtex
@@ -170,7 +183,6 @@ module AsciidoctorBibtex
     # Build bibliography text for a given reference
     def build_bibliography_item(key, index = 0)
       index += 1
-      result = ''
 
       begin
         cptext = if @biblio[key].nil?
@@ -182,43 +194,47 @@ module AsciidoctorBibtex
         puts "Failed to render #{key}: #{e}"
       end
 
+      result = []
       result << "[[#{key}]]" if @links
       if StyleUtils.is_numeric? @style
         result << "#{@bibtex_ob}#{index}#{@bibtex_cb} "
+        if RUBY_ENGINE == 'opal' and not cptext.nil?
+          # Numbering is added by asciidoctor-bibtex and therefore should be stripped here
+          cptext = cptext.first.gsub(/^[\[\d\.\]]*/, ""), ""
+        end
       end
       if cptext.nil?
-        return result + key
+        return result.join + key
       else
         result << cptext.first
       end
 
-      StringUtils.html_to_asciidoc(result)
+      StringUtils.html_to_asciidoc(result.join)
     end
 
     # Build the complete citation text for given citation macro
     def build_citation_text(macro)
       if (@output == :latex) || (@output == :bibtex) || (@output == :biblatex)
-        result = '+++'
+        cites = []
         macro.items.each do |cite|
           # NOTE: xelatex does not support "\citenp", so we output all
           # references as "cite" here unless we're using biblatex.
-          result << '\\' << if @output == :biblatex
-                              if macro.type == 'citenp'
-                                'textcite'
-                              else
-                                'parencite'
-                                                end
-                            else
-                              'cite'
-                            end
-          result << '[p. ' << cite.locator << ']' if cite.locator != ''
-          result << '{' << cite.key.to_s << '},'
+          result = '[]' 
+          if @output == :biblatex
+            if macro.type == 'citenp'
+              result << 'textcite'
+            else 
+              result << 'parencite'
+            end
+          else 
+            result << 'cite'
+          end
+          result << "[p. #{cite.locator}]" if cite.locator != ''
+          result << "{#{cite.key.to_s}}"
+          cites << result.join
         end
-        result = result[0..-2] if result[-1] == ','
-        result << '+++'
-        result
+        return "+++#{cites.join(",")}+++"
       else
-        result = ''
         if StyleUtils.is_numeric? @style
           ob = "+#{@bibtex_ob}+"
           cb = "+#{@bibtex_cb}+"
@@ -233,6 +249,7 @@ module AsciidoctorBibtex
           separator = ';'
         end
 
+        result = []
         macro.items.each_with_index do |cite, index|
           # before all items apart from the first, insert appropriate separator
           result << "#{separator} " unless index.zero?
@@ -255,6 +272,7 @@ module AsciidoctorBibtex
           result << StringUtils.html_to_asciidoc(cite_text)
           result << '>>' if @links
         end
+        result = result.join
 
         if StyleUtils.is_numeric?(@style) && !@links
           result = StringUtils.combine_consecutive_numbers(result)
@@ -266,7 +284,7 @@ module AsciidoctorBibtex
 
     # Format locator with pp/p as appropriate
     def format_locator(cite)
-      result = ''
+      result = []
       unless cite.locator.empty?
         result << ',' unless StyleUtils.is_numeric? @style
         result << ' '
@@ -281,7 +299,7 @@ module AsciidoctorBibtex
                   end
       end
 
-      result
+      result.join
     end
 
     def include_pretext(result, macro, ob, cb)
@@ -301,7 +319,7 @@ module AsciidoctorBibtex
     def citation_text(macro, cite)
       if StyleUtils.is_numeric? @style
         cite_text = (@citations.index(cite.key) + 1).to_s
-        cite_text << format_locator(cite)
+        cite_text = cite_text + format_locator(cite)
       else
         # We generate the citation without locator using citeproc, then strip
         # the surrounding braces, finally add the locator and add braces for

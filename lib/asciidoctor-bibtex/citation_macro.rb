@@ -46,11 +46,11 @@ module AsciidoctorBibtex
     # matches a citation item (key + locator), such as 'Dan2012(99-100)'
     CITATION_ITEM = /([^\s,()\[\]]+)(\([^)]*\))?/.freeze
     # matches a citation list
-    CITATION_LIST_TAIL = /(\s*,\s*#{CITATION_ITEM})*/.freeze
-    CITATION_LIST = /(?:#{CITATION_ITEM}#{CITATION_LIST_TAIL})/.freeze
+    CITATION_LIST_TAIL = /(\s*,\s*#{CITATION_ITEM.source})*/.freeze
+    CITATION_LIST = /(?:#{CITATION_ITEM.source}#{CITATION_LIST_TAIL.source})/.freeze
     CITATION_PRETEXT = /[^\[]*/.freeze
     # matches the full citation macro
-    CITATION_MACRO = /(#{CITATION_TYPE}):(#{CITATION_PRETEXT})\[(#{CITATION_LIST})\]/.freeze
+    CITATION_MACRO = /(#{CITATION_TYPE.source}):(#{CITATION_PRETEXT.source})\[(#{CITATION_LIST.source})\]/.freeze
 
     # Given a line, return a list of CitationData instances
     # containing information on each set of citation information
