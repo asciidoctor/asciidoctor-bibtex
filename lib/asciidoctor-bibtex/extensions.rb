@@ -85,7 +85,7 @@ module AsciidoctorBibtex
         end
 
         # Extract all AST nodes that can contain citations.
-        prose_blocks = document.find_by do |b|
+        prose_blocks = document.find_by traverse_documents: true do |b|
           (b.content_model == :simple) ||
             (b.context == :list_item) ||
             (b.context == :table_cell) ||
@@ -159,7 +159,7 @@ module AsciidoctorBibtex
 
         # Third pass: replace the bibliography paragraph with the bibliography
         # list.
-        biblio_blocks = document.find_by do |b|
+        biblio_blocks = document.find_by traverse_documents: true do |b|
           # for fast search (since most searches shall fail)
           (b.content_model == :simple) && (b.lines.size == 1) \
             && (b.lines[0] == BibliographyBlockMacroPlaceholder)
