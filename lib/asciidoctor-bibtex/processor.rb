@@ -207,7 +207,7 @@ module AsciidoctorBibtex
                                 'textcite'
                               else
                                 'parencite'
-                                                end
+                              end
                             else
                               'cite'
                             end
