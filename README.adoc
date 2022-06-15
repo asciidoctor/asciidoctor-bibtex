@@ -20,7 +20,7 @@ endif::[]
 :url-gem: https://rubygems.org/gems/asciidoctor-bibtex
 
 ifdef::status[]
-image:https://img.shields.io/travis/asciidoctor/asciidoctor-bibtex/master.svg[Build Status (Travis CI),link=https://travis-ci.org/asciidoctor/asciidoctor-bibtex]
+image:https://github.com/asciidoctor/asciidoctor-bibtex/workflows/CI/badge.svg[GitHub Actions Status,link=https://github.com/asciidoctor/asciidoctor-bibtex/actions]
 image:https://img.shields.io/gem/v/asciidoctor-bibtex.svg[Latest Release, link=https://rubygems.org/gems/asciidoctor-bibtex]
 endif::[]
 
