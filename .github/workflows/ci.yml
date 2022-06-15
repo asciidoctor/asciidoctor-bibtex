@@ -27,8 +27,8 @@ jobs:
         include:
         - os: ubuntu-latest
           ruby: jruby-9.2
-        - os: ubuntu-latest
-          ruby: truffleruby
+        #- os: ubuntu-latest
+        #  ruby: truffleruby
         - os: macos-latest
           ruby: '3.1'
     runs-on: ${{ matrix.os }}
