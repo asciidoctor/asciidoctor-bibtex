@@ -13,7 +13,7 @@ require_relative 'processor'
 module AsciidoctorBibtex
   module Asciidoctor
     # Placeholder paragraph for the bibliography paragraph. Choose a uuid so
-    # that it is a special word unlikeky to conflict with normal texts.
+    # that it is a special word unlikely to conflict with normal texts.
     BibliographyBlockMacroPlaceholder = %(a5d42deb-3cfc-4293-b96a-fcb47316ce56)
 
     # BibliographyBlockMacro
@@ -32,7 +32,7 @@ module AsciidoctorBibtex
 
       def process(parent, target, attrs)
         # NOTE: bibtex-file and bibtex-style set by this macro shall be
-        # overridable by document attributes and commandline arguments. So we
+        # overridable by document attributes and command line arguments. So we
         # respect the convention here.
         if target && (!parent.document.attr? 'bibtex-file')
           parent.document.set_attribute 'bibtex-file', target
@@ -53,7 +53,7 @@ module AsciidoctorBibtex
     #
     # This processor scans the document, generates a list of citations, replaces
     # each citation with citation text and the reference block macro placeholder
-    # with the final bibliography list. It relys on the block macro processor to
+    # with the final bibliography list. It relies on the block macro processor to
     # generate the place holder.
     #
     # NOTE: According to the asiidoctor extension policy, the tree processor can
