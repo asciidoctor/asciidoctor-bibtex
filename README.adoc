@@ -110,6 +110,11 @@ Configuration is applied in the form of AsciiDoc document attributes, which must
 | any string, or empty
 | Automatic searching
 
+| bibtex-files
+| Bibtex database files
+| comma separated strings, or empty
+| Falls back on `bibtex-file` if not set.
+
 | bibtex-style
 | Reference formatting style
 | any style supported by csl-styles
