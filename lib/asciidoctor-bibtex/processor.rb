@@ -48,13 +48,17 @@ module AsciidoctorBibtex
   # current document, and run the different steps to add the citations
   # and bibliography
   class Processor
-    def initialize(bibfile, links = false, style = 'ieee', locale = 'en-US',
+    def initialize(bibfiles, links = false, style = 'ieee', locale = 'en-US',
                    numeric_in_appearance_order = false, output = :asciidoc,
                    throw_on_unknown = false, custom_citation_template: '[$id]')
-      raise "File '#{bibfile}' is not found" unless FileTest.file? bibfile
-
-      bibtex = BibTeX.open bibfile, filter: [LatexFilter]
-      @biblio = bibtex
+      bibfiles.each do |bibfile|
+        raise "File '#{bibfile}' is not found" unless FileTest.file? bibfile
+      end
+      @biblio = []
+      bibfiles.each do |bibfile|
+        bibtex = BibTeX.open bibfile, filter: [LatexFilter]
+        @biblio += [bibtex]
+      end
       @links = links
       @numeric_in_appearance_order = numeric_in_appearance_order
       @style = style
@@ -73,10 +77,22 @@ module AsciidoctorBibtex
 
       if (output != :latex) && (output != :bibtex) && (output != :biblatex)
         @citeproc = CiteProc::Processor.new style: @style, format: :html, locale: @locale
-        @citeproc.import @biblio.to_citeproc
+        @biblio.each do | biblio_item |
+          @citeproc.import biblio_item.to_citeproc
+        end
       end
     end
 
+    def get_bibitem(key)
+      bibitem = nil
+      @biblio.each do |bib|
+        bibitem = bib[key]
+        if !bibitem.nil?
+          break
+        end
+      end
+      return bibitem
+    end
     # Scan a line and process citation macros.
     #
     # As this function being called iteratively on the lines of the document,
@@ -97,7 +113,8 @@ module AsciidoctorBibtex
       return if StyleUtils.is_numeric?(@style) && @numeric_in_appearance_order
 
       @citations = @citations.sort_by do |ref|
-        bibitem = @biblio[ref]
+        bibitem = get_bibitem(ref)
+
         if bibitem.nil?
           [ref]
         else
@@ -153,7 +170,9 @@ module AsciidoctorBibtex
     # Build the asciidoc text for a single bibliography item
     def build_bibitem_text(key)
       begin
-        if @biblio[key].nil?
+        bibitem = get_bibitem(key)
+        
+        if bibitem.nil?
           puts "Unknown reference: #{key}"
           cptext = key
         else
@@ -173,7 +192,7 @@ module AsciidoctorBibtex
       result = ''
 
       begin
-        cptext = if @biblio[key].nil?
+        cptext = if get_bibitem(key).nil?
                    nil
                  else
                    @citeproc.render :bibliography, id: key
@@ -241,7 +260,7 @@ module AsciidoctorBibtex
           result << "<<#{cite.key}," if @links
 
           # if found, insert reference information
-          if @biblio[cite.key].nil?
+          if get_bibitem(cite.key).nil?
             if @throw_on_unknown
               raise "Unknown reference: #{cite.key}"
             else
@@ -310,7 +329,8 @@ module AsciidoctorBibtex
         cite_text = cite_text.gsub('(', '')
         cite_text = cite_text.gsub(')', '')
         cite_text += format_locator(cite)
-        year = @biblio[cite.key].year
+
+        year = get_bibitem(cite.key).year
         if !year.nil? && macro.type == 'citenp'
           segs = cite_text.partition(year.to_s)
           head = segs[0].gsub(', ', ' ')

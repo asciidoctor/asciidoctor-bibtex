@@ -62,6 +62,7 @@ module AsciidoctorBibtex
     class CitationProcessor < ::Asciidoctor::Extensions::Treeprocessor
       def process(document)
         bibtex_file = (document.attr 'bibtex-file').to_s
+        bibtex_files = (document.attr 'bibtex-files').to_s.split(',').map(&:strip)
         bibtex_style = ((document.attr 'bibtex-style') || 'ieee').to_s
         bibtex_locale = ((document.attr 'bibtex-locale') || 'en-US').to_s
         bibtex_order = ((document.attr 'bibtex-order') || 'appearance').to_sym
@@ -70,20 +71,22 @@ module AsciidoctorBibtex
         bibtex_citation_template = ((document.attr 'bibtex-citation-template') || '[$id]').to_s
 
         # Fild bibtex file automatically if not supplied.
-        if bibtex_file.empty?
-          bibtex_file = AsciidoctorBibtex::PathUtils.find_bibfile document.base_dir
+        if bibtex_files.empty?
+          if bibtex_file.empty?
+            bibtex_file = AsciidoctorBibtex::PathUtils.find_bibfile document.base_dir
+          end
+          if bibtex_file.empty?
+            bibtex_file = AsciidoctorBibtex::PathUtils.find_bibfile '.'
+          end
+          if bibtex_file.empty?
+            bibtex_file = AsciidoctorBibtex::PathUtils.find_bibfile "#{ENV['HOME']}/Documents"
+          end
+          if bibtex_file.empty?
+            puts 'Error: bibtex-file is not set and automatic search failed'
+            exit
+          end
+          bibtex_files = [bibtex_file]
         end
-        if bibtex_file.empty?
-          bibtex_file = AsciidoctorBibtex::PathUtils.find_bibfile '.'
-        end
-        if bibtex_file.empty?
-          bibtex_file = AsciidoctorBibtex::PathUtils.find_bibfile "#{ENV['HOME']}/Documents"
-        end
-        if bibtex_file.empty?
-          puts 'Error: bibtex-file is not set and automatic search failed'
-          exit
-        end
-
         # Extract all AST nodes that can contain citations.
         prose_blocks = document.find_by traverse_documents: true do |b|
           (b.content_model == :simple) ||
@@ -93,7 +96,7 @@ module AsciidoctorBibtex
         end
         return nil if prose_blocks.nil?
 
-        processor = Processor.new bibtex_file, true, bibtex_style, bibtex_locale,
+        processor = Processor.new bibtex_files, true, bibtex_style, bibtex_locale,
                                   bibtex_order == :appearance, bibtex_format,
                                   bibtex_throw == 'true', custom_citation_template: bibtex_citation_template
 
