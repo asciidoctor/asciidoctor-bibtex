@@ -1,0 +1,8 @@
+= Test doc
+:bibtex-files: 1.bib, 2.bib
+
+== Hello
+
+To refer to cite:[foo] and cite:[bar]
+
+bibliography::[]
