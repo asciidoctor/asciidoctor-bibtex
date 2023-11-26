@@ -61,8 +61,7 @@ module AsciidoctorBibtex
     #
     class CitationProcessor < ::Asciidoctor::Extensions::Treeprocessor
       def process(document)
-        bibtex_file = (document.attr 'bibtex-file').to_s
-        bibtex_files = (document.attr 'bibtex-files').to_s.split(',').map(&:strip)
+        bibtex_files = (document.attr 'bibtex-file').to_s.split(',').map(&:strip)
         bibtex_style = ((document.attr 'bibtex-style') || 'ieee').to_s
         bibtex_locale = ((document.attr 'bibtex-locale') || 'en-US').to_s
         bibtex_order = ((document.attr 'bibtex-order') || 'appearance').to_sym
@@ -70,23 +69,35 @@ module AsciidoctorBibtex
         bibtex_throw = ((document.attr 'bibtex-throw') || 'false').to_s.downcase
         bibtex_citation_template = ((document.attr 'bibtex-citation-template') || '[$id]').to_s
 
-        # Fild bibtex file automatically if not supplied.
-        if bibtex_files.empty?
-          if bibtex_file.empty?
-            bibtex_file = AsciidoctorBibtex::PathUtils.find_bibfile document.base_dir
-          end
-          if bibtex_file.empty?
-            bibtex_file = AsciidoctorBibtex::PathUtils.find_bibfile '.'
-          end
-          if bibtex_file.empty?
-            bibtex_file = AsciidoctorBibtex::PathUtils.find_bibfile "#{ENV['HOME']}/Documents"
-          end
-          if bibtex_file.empty?
-            puts 'Error: bibtex-file is not set and automatic search failed'
-            exit
-          end
-          bibtex_files = [bibtex_file]
+        if bibtex_files.nil?
+          bibtex_files = []
         end
+        bibtex_files.delete_if {|file_name| file_name.empty? }
+
+        # Find bibtex file automatically if not supplied.
+        if bibtex_files.empty?
+          bibtex_file = AsciidoctorBibtex::PathUtils.find_bibfile document.base_dir
+          if !bibtex_file.nil?
+            bibtex_files += [bibtex_file]
+          end
+        end
+        if bibtex_files.empty?
+          bibtex_file = AsciidoctorBibtex::PathUtils.find_bibfile '.'
+          if !bibtex_file.nil?
+            bibtex_files += [bibtex_file]
+          end
+        end
+        if bibtex_files.empty?
+          bibtex_file = AsciidoctorBibtex::PathUtils.find_bibfile "#{ENV['HOME']}/Documents"
+          if !bibtex_file.nil?
+            bibtex_files += [bibtex_file]
+          end
+        end
+        if bibtex_files.empty?
+          puts 'Error: bibtex-file is not set and automatic search failed'
+          exit
+        end
+
         # Extract all AST nodes that can contain citations.
         prose_blocks = document.find_by traverse_documents: true do |b|
           (b.content_model == :simple) ||

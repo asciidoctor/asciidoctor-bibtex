@@ -1,5 +1,5 @@
 = Test doc
-:bibtex-files: 1.bib, 2.bib
+:bibtex-file: 1.bib, 2.bib
 
 == Hello
 
