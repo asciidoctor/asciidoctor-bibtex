@@ -54,11 +54,8 @@ module AsciidoctorBibtex
       bibfiles.each do |bibfile|
         raise "File '#{bibfile}' is not found" unless FileTest.file? bibfile
       end
-      @biblio = []
-      bibfiles.each do |bibfile|
-        bibtex = BibTeX.open bibfile, filter: [LatexFilter]
-        @biblio += [bibtex]
-      end
+      @biblio = bibfiles.map {|bibfile| BibTeX.open bibfile, filter: [LatexFilter] }
+
       @links = links
       @numeric_in_appearance_order = numeric_in_appearance_order
       @style = style
