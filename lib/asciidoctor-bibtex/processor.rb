@@ -48,9 +48,13 @@ module AsciidoctorBibtex
   # current document, and run the different steps to add the citations
   # and bibliography
   class Processor
-    def initialize(bibfiles, links = false, style = 'ieee', locale = 'en-US',
+    def initialize(bibfile, links = false, style = 'ieee', locale = 'en-US',
                    numeric_in_appearance_order = false, output = :asciidoc,
                    throw_on_unknown = false, custom_citation_template: '[$id]')
+      bibfiles = bibfile
+      if bibfile.is_a? String
+        bibfiles = [bibfile]
+      end
       bibfiles.each do |bibfile|
         raise "File '#{bibfile}' is not found" unless FileTest.file? bibfile
       end
