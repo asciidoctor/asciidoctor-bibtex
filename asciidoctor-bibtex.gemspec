@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '>= 2.4.0'
   s.files = Dir['lib/**/*'] + ['LICENSE.txt', 'README.adoc']
   s.add_runtime_dependency 'asciidoctor', '~> 2.0'
-  s.add_runtime_dependency 'bibtex-ruby', '~> 5.1'
+  s.add_runtime_dependency 'bibtex-ruby', '~> 6.1'
   s.add_runtime_dependency 'citeproc-ruby', '~> 1'
   s.add_runtime_dependency 'csl-styles', '~> 1'
   s.add_runtime_dependency 'latex-decode', '~> 0.2'
