@@ -20,6 +20,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'citeproc-ruby', '~> 1'
   s.add_runtime_dependency 'csl-styles', '~> 1'
   s.add_runtime_dependency 'latex-decode', '~> 0.2'
+  s.add_runtime_dependency 'rexml', '3.2.6' # lock rexml to 3.2.6 since >= 3.2.7 breaks JRuby and adds installation requirements for CRuby
 
   s.add_development_dependency 'minitest', '~> 5.11.0'
   s.add_development_dependency 'rake', '~> 12.3.0'
