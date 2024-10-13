@@ -14,7 +14,7 @@ jobs:
     if: |
       (github.event_name == 'schedule' && github.repository_owner == 'asciidoctor') ||
       (github.event_name == 'push') || (github.event_name == 'pull_request')
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
     - name: Proceed
       run: echo ok go
@@ -22,12 +22,12 @@ jobs:
     needs: activate
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-22.04, windows-latest]
         ruby: [jruby-9.4, '2.7', '3.3']
         include:
-        - os: ubuntu-latest
+        - os: ubuntu-22.04
           ruby: jruby-9.2
-        #- os: ubuntu-latest
+        #- os: ubuntu-22.04
         #  ruby: truffleruby
         - os: macos-latest
           ruby: '3.3'
