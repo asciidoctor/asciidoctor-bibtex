@@ -138,7 +138,11 @@ module AsciidoctorBibtex
     #
     # Return an array of texts representing an asciidoc list.
     def build_bibliography_list
+
       result = []
+      result << '[.text-left]'
+      result << '[unstyled]'
+
       @citations.each_with_index do |ref, index|
         result << build_bibliography_item(ref, index)
         result << ''
@@ -170,7 +174,7 @@ module AsciidoctorBibtex
     # Build bibliography text for a given reference
     def build_bibliography_item(key, index = 0)
       index += 1
-      result = ''
+      result = '* '
 
       begin
         cptext = if @biblio[key].nil?
