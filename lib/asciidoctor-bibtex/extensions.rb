@@ -123,7 +123,6 @@ module AsciidoctorBibtex
                                   bibtex_order == :appearance, bibtex_format,
                                   bibtex_throw == 'true', custom_citation_template: bibtex_citation_template
 
-
         # First pass: extract all citations.
         prose_blocks.each do |block|
           if block.attributes[:attribute_entries]
