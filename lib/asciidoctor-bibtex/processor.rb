@@ -117,9 +117,9 @@ module AsciidoctorBibtex
     # Replace citation macros with corresponding citation texts.
     #
     # Return new text with all macros replaced.
-    def replace_citation_macros(line)
+    def replace_citation_macros(line, attribute = false)
       CitationMacro.extract_macros(line).each do |citation|
-        line = line.gsub(citation.text, build_citation_text(citation))
+        line = line.gsub(citation.text, build_citation_text(citation, attribute))
       end
       line
     end
@@ -196,71 +196,71 @@ module AsciidoctorBibtex
     end
 
     # Build the complete citation text for given citation macro
-    def build_citation_text(macro)
+    def build_citation_text(macro, attribute = false)
       if (@output == :latex) || (@output == :bibtex) || (@output == :biblatex)
         result = '+++'
         macro.items.each do |cite|
-          # NOTE: xelatex does not support "\citenp", so we output all
-          # references as "cite" here unless we're using biblatex.
           result << '\\' << if @output == :biblatex
-                              if macro.type == 'citenp'
-                                'textcite'
-                              else
-                                'parencite'
-                              end
+                              macro.type == 'citenp' ? 'textcite' : 'parencite'
                             else
                               'cite'
                             end
           result << '[p. ' << cite.locator << ']' if cite.locator != ''
           result << '{' << cite.key.to_s << '},'
         end
-        result = result[0..-2] if result[-1] == ','
+        result.chop! if result[-1] == ','
         result << '+++'
-        result
+        return result
+      end
+
+      result = ''
+      if StyleUtils.is_numeric? @style
+        ob = "+#{@bibtex_ob}+"
+        cb = "+#{@bibtex_cb}+"
+        separator = ','
+      elsif macro.type == 'cite'
+        ob = '('
+        cb = ')'
+        separator = ';'
       else
-        result = ''
-        if StyleUtils.is_numeric? @style
-          ob = "+#{@bibtex_ob}+"
-          cb = "+#{@bibtex_cb}+"
-          separator = ','
-        elsif macro.type == 'cite'
-          ob = '('
-          cb = ')'
-          separator = ';'
-        else
-          ob = ''
-          cb = ''
-          separator = ';'
-        end
+        ob = ''
+        cb = ''
+        separator = ';'
+      end
 
-        macro.items.each_with_index do |cite, index|
-          # before all items apart from the first, insert appropriate separator
-          result << "#{separator} " unless index.zero?
+      macro.items.each_with_index do |cite, index|
+        # before all items apart from the first, insert appropriate separator
+        result << "#{separator} " unless index.zero?
+        # @links requires adding hyperlink to reference
+        result << "<<#{cite.key}," if @links
 
-          # @links requires adding hyperlink to reference
-          result << "<<#{cite.key}," if @links
+        cite_text = if @biblio[cite.key].nil?
+                      if @throw_on_unknown
+                        raise "Unknown reference: #{cite.key}"
+                      else
+                        puts "Unknown reference: #{cite.key}"
+                        cite.key.to_s
+                      end
+                    else
+                      citation_text(macro, cite)
+                    end
 
-          # if found, insert reference information
-          if @biblio[cite.key].nil?
-            if @throw_on_unknown
-              raise "Unknown reference: #{cite.key}"
-            else
-              puts "Unknown reference: #{cite.key}"
-              cite_text = cite.key.to_s
-            end
-          else
-            cite_text = citation_text(macro, cite)
-          end
+        result << StringUtils.html_to_asciidoc(cite_text)
+        result << '>>' if @links
+      end
 
-          result << StringUtils.html_to_asciidoc(cite_text)
-          result << '>>' if @links
-        end
+      if StyleUtils.is_numeric?(@style) && !@links
+        result = StringUtils.combine_consecutive_numbers(result)
+      end
 
-        if StyleUtils.is_numeric?(@style) && !@links
-          result = StringUtils.combine_consecutive_numbers(result)
-        end
+      citation_output = include_pretext(result, macro, ob, cb)
 
-        "[.citation]\##{include_pretext(result, macro, ob, cb)}\#"
+      if attribute
+        # Return an HTML citation instead of Asciidoc if attribute is true
+        citation_output = citation_output.gsub('<', '&lt;').gsub('>', '&gt;').gsub('+', '')
+        "<span class=\"citation\">#{citation_output}</span>"
+      else
+        "[.citation]\##{citation_output}\#"
       end
     end
 

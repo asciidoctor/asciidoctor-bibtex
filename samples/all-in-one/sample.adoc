@@ -2,6 +2,7 @@
 :bibtex-file: references.bib
 :bibtex-order: alphabetical
 :bibtex-style: ieee
+:document-attribute: This text is included from a document attribute. See cite:[Lane12a].
 
 
 == Samples
@@ -58,6 +59,12 @@ Shall also work in block title:
 | Illustrated in cite:[Lane12a].
 |===
 include::sample-include.adoc[]
+
+:block-attribute: This text is included from a block attribute. See cite:[Lane12a].
+
+Shall also work in a document asciidoc attribute: {block-attribute}
+
+Shall also work in a block asciidoc attribute: {document-attribute}
 
 
 [sect2] 

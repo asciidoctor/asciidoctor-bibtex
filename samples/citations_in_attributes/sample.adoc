@@ -1,0 +1,15 @@
+= Sample of using asciidoctor-bibtex
+:bibtex-file: references.bib
+:bibtex-style: ieee
+:document-attribute: This text is included from a document attribute. Must be 3 cite:[Anderson98].
+
+:block-attribute: This text is included from a block attribute. Must be 2 cite:[Lane12b].
+
+Order of the citations must be correct, must be 1: cite:[Lane12a], {block-attribute}
+
+Shall also work in a block asciidoc attribute: {document-attribute} Must be 4 cite:[Anderson04].
+
+[sect2]
+== Bibliography
+
+bibliography::references.bib[ieee]
