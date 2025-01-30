@@ -200,15 +200,21 @@ module AsciidoctorBibtex
       if (@output == :latex) || (@output == :bibtex) || (@output == :biblatex)
         result = '+++'
         macro.items.each do |cite|
+          # NOTE: xelatex does not support "\citenp", so we output all
+          # references as "cite" here unless we're using biblatex.
           result << '\\' << if @output == :biblatex
-                              macro.type == 'citenp' ? 'textcite' : 'parencite'
+                              if macro.type == 'citenp'
+                                'textcite'
+                              else
+                                'parencite'
+                              end
                             else
                               'cite'
                             end
           result << '[p. ' << cite.locator << ']' if cite.locator != ''
           result << '{' << cite.key.to_s << '},'
         end
-        result.chop! if result[-1] == ','
+        result = result[0..-2] if result[-1] == ','
         result << '+++'
         return result
       end
@@ -231,19 +237,21 @@ module AsciidoctorBibtex
       macro.items.each_with_index do |cite, index|
         # before all items apart from the first, insert appropriate separator
         result << "#{separator} " unless index.zero?
+
         # @links requires adding hyperlink to reference
         result << "<<#{cite.key}," if @links
 
-        cite_text = if @biblio[cite.key].nil?
-                      if @throw_on_unknown
-                        raise "Unknown reference: #{cite.key}"
-                      else
-                        puts "Unknown reference: #{cite.key}"
-                        cite.key.to_s
-                      end
-                    else
-                      citation_text(macro, cite)
-                    end
+        # if found, insert reference information
+        if @biblio[cite.key].nil?
+          if @throw_on_unknown
+            raise "Unknown reference: #{cite.key}"
+          else
+            puts "Unknown reference: #{cite.key}"
+            cite_text = cite.key.to_s
+          end
+        else
+          cite_text = citation_text(macro, cite)
+        end
 
         result << StringUtils.html_to_asciidoc(cite_text)
         result << '>>' if @links
