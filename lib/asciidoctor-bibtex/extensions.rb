@@ -110,8 +110,10 @@ module AsciidoctorBibtex
         end
 
         pending_attributes = {}
-        document.attributes.each do |name, value|
-          pending_attributes[name] = value
+        if bibtex_attributes == 'true'
+          document.attributes.each do |name, value|
+            pending_attributes[name] = value
+          end
         end
 
         # Extract all AST nodes that can contain citations.
@@ -130,7 +132,7 @@ module AsciidoctorBibtex
 
         # First pass: extract all citations.
         prose_blocks.each do |block|
-          if block.attributes[:attribute_entries]
+          if bibtex_attributes == 'true' && block.attributes[:attribute_entries]
             block.attributes[:attribute_entries].each do |attr|
               pending_attributes[attr.name] = attr.value
             end
