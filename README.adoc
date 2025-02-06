@@ -139,6 +139,11 @@ Configuration is applied in the form of AsciiDoc document attributes, which must
 | Custom citation template for numeric style
 | Any string matching `/(.+?)\$id(.+)/`
 | `[$id]`
+
+| bibtex-attributes
+| Also process attributes
+| `true` or `false`
+| `false`
 |===
 
 === Commandline

@@ -2,6 +2,7 @@
 :bibtex-file: references.bib
 :bibtex-order: alphabetical
 :bibtex-style: ieee
+:bibtex-attributes: true
 :document-attribute: This text is included from a document attribute. See cite:[Lane12a].
 
 

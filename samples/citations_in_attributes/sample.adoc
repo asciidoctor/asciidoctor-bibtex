@@ -1,6 +1,7 @@
 = Sample of using asciidoctor-bibtex
 :bibtex-file: references.bib
 :bibtex-style: ieee
+:bibtex-attributes: true
 :document-attribute: This text is included from a document attribute. Must be 3 cite:[Anderson98].
 
 :block-attribute: This text is included from a block attribute. Must be 2 cite:[Lane12b].

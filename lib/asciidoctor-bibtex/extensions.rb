@@ -61,8 +61,12 @@ module AsciidoctorBibtex
     #
     class CitationProcessor < ::Asciidoctor::Extensions::Treeprocessor
 
-      def process_line_with_attributes(line, processor, pending_attributes)
+      def process_line_with_attributes(line, processor, pending_attributes, bibtex_attributes)
         return if line.nil? || line.empty?
+        if bibtex_attributes == 'false'
+          processor.process_citation_macros(line)
+          return
+        end
 
         while line.match(/(?<!\\)\{([^} ]+)\}/)
           attribute = $1
@@ -87,6 +91,7 @@ module AsciidoctorBibtex
         bibtex_order = ((document.attr 'bibtex-order') || 'appearance').to_sym
         bibtex_format = ((document.attr 'bibtex-format') || 'asciidoc').to_sym
         bibtex_throw = ((document.attr 'bibtex-throw') || 'false').to_s.downcase
+        bibtex_attributes = ((document.attr 'bibtex-attributes') || 'false').to_s.downcase
         bibtex_citation_template = ((document.attr 'bibtex-citation-template') || '[$id]').to_s
 
         # Fild bibtex file automatically if not supplied.
@@ -137,30 +142,32 @@ module AsciidoctorBibtex
             # ghost footnotes will be inserted (as of asciidoctor 2.0.10).
             line = block.instance_variable_get(:@text)
             unless line.nil? || line.empty?
-              process_line_with_attributes(line, processor, pending_attributes)
+              process_line_with_attributes(line, processor, pending_attributes, bibtex_attributes)
             end
           elsif block.content_model == :simple
             block.lines.each do |line|
-              process_line_with_attributes(line, processor, pending_attributes)
+              process_line_with_attributes(line, processor, pending_attributes, bibtex_attributes)
             end
           else
             line = block.instance_variable_get(:@title)
-            process_line_with_attributes(line, processor, pending_attributes)
+            process_line_with_attributes(line, processor, pending_attributes, bibtex_attributes)
           end
         end
         # Make processor finalize macro processing as required.
         processor.finalize_macro_processing
 
         # Second pass: replace citations with citation texts.
-        document.attributes.each do |name, orig_value|
-          if !orig_value.is_a?(String)
-            next
-          end
-          value = orig_value.clone
-          value = processor.replace_citation_macros(value.to_s, true)
-          value = processor.replace_bibitem_macros(value)
-          if value != orig_value
-            document.attributes[name] = value
+        if bibtex_attributes == 'true'
+          document.attributes.each do |name, orig_value|
+            if !orig_value.is_a?(String)
+              next
+            end
+            value = orig_value.clone
+            value = processor.replace_citation_macros(value.to_s, true)
+            value = processor.replace_bibitem_macros(value)
+            if value != orig_value
+              document.attributes[name] = value
+            end
           end
         end
 
@@ -189,16 +196,16 @@ module AsciidoctorBibtex
             line = processor.replace_bibitem_macros(line)
             block.title = line if line != line_orig
           end
-        if block.attributes[:attribute_entries] != nil
-          block.attributes[:attribute_entries].each_with_index do |attr_orig, index|
-            attr = attr_orig.clone
-            attr.instance_variable_set("@value", processor.replace_citation_macros(attr.value, true))
-            attr.instance_variable_set("@value", processor.replace_bibitem_macros(attr.value))
-            if attr.value != attr_orig.value
-              block.attributes[:attribute_entries][index].instance_variable_set("@value", attr.value)
+          if bibtex_attributes == 'true' && block.attributes[:attribute_entries] != nil
+            block.attributes[:attribute_entries].each_with_index do |attr_orig, index|
+              attr = attr_orig.clone
+              attr.instance_variable_set("@value", processor.replace_citation_macros(attr.value, true))
+              attr.instance_variable_set("@value", processor.replace_bibitem_macros(attr.value))
+              if attr.value != attr_orig.value
+                block.attributes[:attribute_entries][index].instance_variable_set("@value", attr.value)
+              end
             end
           end
-        end
         end
 
         references_asciidoc = []
