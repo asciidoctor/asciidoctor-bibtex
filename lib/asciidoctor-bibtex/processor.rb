@@ -88,6 +88,33 @@ module AsciidoctorBibtex
       end
     end
 
+    # Process a line with attributes.
+    #
+    # This function takes a line of text and processes it based on the presence of attributes.
+    def process_line_with_attributes(line, pending_attributes, bibtex_attributes)
+      if line.nil? || line.empty?
+        return
+      end
+      if bibtex_attributes == 'false'
+        process_citation_macros(line)
+        return
+      end
+
+      while line.match(/(?<!\\)\{([^} ]+)\}/)
+        attribute = $1
+        line_before_attribute = $`
+        line_after_attribute = $'
+
+        process_citation_macros(line_before_attribute)
+        if pending_attributes.include?(attribute)
+          process_citation_macros(pending_attributes[attribute])
+        end
+
+        line = line_after_attribute
+      end
+      process_citation_macros(line)
+    end
+
     # Finalize citation macro processing and build internal citation list.
     #
     # As this function being called, processor will clean up the list of

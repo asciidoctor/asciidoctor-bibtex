@@ -60,30 +60,6 @@ module AsciidoctorBibtex
     # only produce texts with inline macros.
     #
     class CitationProcessor < ::Asciidoctor::Extensions::Treeprocessor
-
-      def process_line_with_attributes(line, processor, pending_attributes, bibtex_attributes)
-        return if line.nil? || line.empty?
-        if bibtex_attributes == 'false'
-          processor.process_citation_macros(line)
-          return
-        end
-
-        while line.match(/(?<!\\)\{([^} ]+)\}/)
-          attribute = $1
-          line_before_attribute = $`
-          line_after_attribute = $'
-
-          processor.process_citation_macros(line_before_attribute)
-          if pending_attributes.include?(attribute)
-            processor.process_citation_macros(pending_attributes[attribute])
-          end
-
-          line = line_after_attribute
-        end
-        processor.process_citation_macros(line)
-
-      end
-      
       def process(document)
         bibtex_file = (document.attr 'bibtex-file').to_s
         bibtex_style = ((document.attr 'bibtex-style') || 'ieee').to_s
@@ -144,15 +120,15 @@ module AsciidoctorBibtex
             # ghost footnotes will be inserted (as of asciidoctor 2.0.10).
             line = block.instance_variable_get(:@text)
             unless line.nil? || line.empty?
-              process_line_with_attributes(line, processor, pending_attributes, bibtex_attributes)
+              processor.process_line_with_attributes(line, pending_attributes, bibtex_attributes)
             end
           elsif block.content_model == :simple
             block.lines.each do |line|
-              process_line_with_attributes(line, processor, pending_attributes, bibtex_attributes)
+              processor.process_line_with_attributes(line, pending_attributes, bibtex_attributes)
             end
           else
             line = block.instance_variable_get(:@title)
-            process_line_with_attributes(line, processor, pending_attributes, bibtex_attributes)
+            processor.process_line_with_attributes(line, pending_attributes, bibtex_attributes)
           end
         end
         # Make processor finalize macro processing as required.
