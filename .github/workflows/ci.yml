@@ -48,7 +48,9 @@ jobs:
         bundle config --local path vendor/bundle
         bundle --jobs 3 --retry 3
     - name: Remove date gem
-      if: ${{ matrix.os == 'windows-latest' && !startsWith(matrix.ruby, 'jruby-') }}
-      run: Remove-Item -Path (bundle show date) -Recurse
+      if: ${{ matrix.os == 'windows-latest' && matrix.ruby == '3.3' }}
+      run: |
+        Remove-Item -Path (bundle show date) -Recurse
+        Remove-Item -Path (bundle exec gem which date_core)
     - name: Run tests
       run: bundle exec rake test
