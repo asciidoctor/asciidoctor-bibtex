@@ -22,7 +22,8 @@ jobs:
     needs: activate
     strategy:
       matrix:
-        os: [ubuntu-22.04, windows-latest]
+        os: [windows-latest]
+        #os: [ubuntu-22.04, windows-latest]
         ruby: [jruby-9.4, '2.7', '3.3']
         include:
         - os: ubuntu-22.04
@@ -47,7 +48,7 @@ jobs:
         bundle config --local path vendor/bundle
         bundle --jobs 3 --retry 3
     - name: Remove date gem
-      if: ${{ matrix.os == 'windows-latest' }}
+      if: ${{ matrix.os == 'windows-latest' && !startsWith(matrix.ruby, 'jruby-') }}
       run: |
         bundle exec gem uninstall --force date
     - name: Run tests
