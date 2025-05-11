@@ -49,7 +49,6 @@ jobs:
         bundle --jobs 3 --retry 3
     - name: Remove date gem
       if: ${{ matrix.os == 'windows-latest' && !startsWith(matrix.ruby, 'jruby-') }}
-      run: |
-        for /f %P IN ('bundle show date') DO rd /s /q "%~P"
+      run: Remove-Item -Path (bundle show date) -Recurse
     - name: Run tests
       run: bundle exec rake test
