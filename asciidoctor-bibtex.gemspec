@@ -23,5 +23,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'rexml', '3.2.6' # lock rexml to 3.2.6 since >= 3.2.7 breaks JRuby and adds installation requirements for CRuby
 
   s.add_development_dependency 'minitest', '~> 5.11.0'
-  s.add_development_dependency 'rake', '~> 12.3.0'
+  s.add_development_dependency 'rake', '~> 13.2.0'
 end
