@@ -31,14 +31,10 @@ jobs:
         #  ruby: truffleruby
         - os: macos-latest
           ruby: '3.3'
-        exclude:
-        # Ruby 3.3 on Windows is just confused
-        - os: windows-latest
-          ruby: '3.3'
     runs-on: ${{ matrix.os }}
-    env:
-      # work around `Permission denied - NUL' error when installing/using the bundler gem on JRuby for Windows
-      JRUBY_OPTS: '-J-Djdk.io.File.enableADS=true'
+    #env:
+    #  # work around `Permission denied - NUL' error when installing/using the bundler gem on JRuby for Windows
+    #  JRUBY_OPTS: '-J-Djdk.io.File.enableADS=true'
     steps:
     - name: Checkout
       uses: actions/checkout@v3
