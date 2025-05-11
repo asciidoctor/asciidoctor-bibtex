@@ -25,13 +25,13 @@ jobs:
         os: [windows-latest]
         #os: [ubuntu-22.04, windows-latest]
         ruby: [jruby-9.4, '2.7', '3.3']
-        include:
-        - os: ubuntu-22.04
-          ruby: jruby-9.2
+        #include:
         #- os: ubuntu-22.04
-        #  ruby: truffleruby
-        - os: macos-latest
-          ruby: '3.3'
+        #  ruby: jruby-9.2
+        ##- os: ubuntu-22.04
+        ##  ruby: truffleruby
+        #- os: macos-latest
+        #  ruby: '3.3'
     runs-on: ${{ matrix.os }}
     steps:
     - name: Checkout
@@ -50,6 +50,6 @@ jobs:
     - name: Remove date gem
       if: ${{ matrix.os == 'windows-latest' && !startsWith(matrix.ruby, 'jruby-') }}
       run: |
-        bundle exec gem uninstall --force date
+        for /f %P IN ('bundle show date') DO rd /s /q "%~P"
     - name: Run tests
       run: bundle exec rake test
