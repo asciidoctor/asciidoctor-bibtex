@@ -22,7 +22,8 @@ jobs:
     needs: activate
     strategy:
       matrix:
-        os: [ubuntu-22.04, windows-latest]
+        os: [ubuntu-22.04]
+        #os: [ubuntu-22.04, windows-latest]
         ruby: [jruby-9.4, '2.7', '3.3']
         include:
         - os: ubuntu-22.04
@@ -42,9 +43,9 @@ jobs:
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
-        #bundler-cache: ${{ github.event_name != 'schedule' }}
+        bundler-cache: ${{ github.event_name != 'schedule' }}
     - name: Install dependencies (scheduled build only)
-      #if: github.event_name == 'schedule'
+      if: github.event_name == 'schedule'
       run: |
         bundle config --local path vendor/bundle
         bundle --jobs 3 --retry 3
