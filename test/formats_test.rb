@@ -11,89 +11,185 @@ include AsciidoctorBibtex
 
 describe AsciidoctorBibtex do
 
-  def check_complete_citation style, line, result, links = false
+  def check_complete_citation style, line, result, attribute_result, link_result
+    links = false
     p = Processor.new 'test/data/test.bib', links, style
     p.process_citation_macros(line)
-    _(p.build_citation_text(CitationMacro.extract_macros(line).first)).must_equal "[.citation]##{result}#"
+    p.finalize_macro_processing()
+    _(p.build_citation_text(CitationMacro.extract_macros(line).first, false)).must_equal "[.citation]##{result}#"
+
+    _(p.build_citation_text(CitationMacro.extract_macros(line).first, true)).must_equal "<span class=\"citation\">#{attribute_result}</span>"
+
+    links = true
+    p = Processor.new 'test/data/test.bib', links, style
+    p.process_citation_macros(line)
+    p.finalize_macro_processing()
+    _(p.build_citation_text(CitationMacro.extract_macros(line).first, false)).must_equal "[.citation]##{link_result}#"
+
+    _(p.build_citation_text(CitationMacro.extract_macros(line).first, true)).must_equal "<span class=\"citation\">#{link_result.gsub('<<', '&lt;&lt;').gsub('>>', '&gt;&gt;').gsub('+', '')}</span>"
   end
 
   it "must handle chicago style references with 'cite'" do
-    check_complete_citation 'chicago-author-date', 'cite:[smith10]', '(Smith 2010)'
-    check_complete_citation 'chicago-author-date', 'cite:[smith10(11)]', '(Smith 2010, 11)'
+    check_complete_citation 'chicago-author-date', 'cite:[smith10]',
+                            '(Smith 2010)',
+                            '(Smith 2010)',
+                            '(<<smith10,Smith 2010>>)'
+    check_complete_citation 'chicago-author-date', 'cite:[smith10(11)]',
+                            '(Smith 2010, 11)',
+                            '(Smith 2010, 11)',
+                            '(<<smith10,Smith 2010&#44; 11>>)'
   end
 
   it "must handle chicago style references with 'citenp'" do
-    check_complete_citation 'chicago-author-date', 'citenp:[smith10]', 'Smith (2010)'
-    check_complete_citation 'chicago-author-date', 'citenp:[smith10(11)]', 'Smith (2010, 11)'
+    check_complete_citation 'chicago-author-date', 'citenp:[smith10]',
+                            'Smith (2010)',
+                            'Smith (2010)',
+                            '<<smith10,Smith (2010)>>'
+    check_complete_citation 'chicago-author-date', 'citenp:[smith10(11)]',
+                            'Smith (2010, 11)',
+                            'Smith (2010, 11)',
+                            '<<smith10,Smith (2010&#44; 11)>>'
   end
 
   it "must handle chicago style references with 'cite' and multiple authors" do
-    check_complete_citation 'chicago-author-date', 'cite:[jones11,smith10]', '(Jones 2011; Smith 2010)'
-    check_complete_citation 'chicago-author-date', 'cite:[jones11,smith10(11)]', '(Jones 2011; Smith 2010, 11)'
+    check_complete_citation 'chicago-author-date', 'cite:[jones11,smith10]',
+                            '(Jones 2011; Smith 2010)',
+                            '(Jones 2011; Smith 2010)',
+                            '(<<jones11,Jones 2011>>; <<smith10,Smith 2010>>)'
+    check_complete_citation 'chicago-author-date', 'cite:[jones11,smith10(11)]',
+                            '(Jones 2011; Smith 2010, 11)',
+                            '(Jones 2011; Smith 2010, 11)',
+                            '(<<jones11,Jones 2011>>; <<smith10,Smith 2010&#44; 11>>)'
   end
 
   it "must handle chicago style references with 'cite' and complex locators" do
-    check_complete_citation 'chicago-author-date', 'cite:[smith10(11 seq.)]', '(Smith 2010, 11 seq.)'
+    check_complete_citation 'chicago-author-date', 'cite:[smith10(11 seq.)]',
+                            '(Smith 2010, 11 seq.)',
+                            '(Smith 2010, 11 seq.)',
+                            '(<<smith10,Smith 2010&#44; 11 seq.>>)'
   end
   
   it "must handle chicago style references with 'citenp' and multiple authors" do 
-    check_complete_citation 'chicago-author-date', 'citenp:[jones11,smith10]', 'Jones (2011); Smith (2010)'
-    check_complete_citation 'chicago-author-date', 'citenp:[jones11,smith10(11)]', 'Jones (2011); Smith (2010, 11)'
+    check_complete_citation 'chicago-author-date', 'citenp:[jones11,smith10]',
+                            'Jones (2011); Smith (2010)',
+                            'Jones (2011); Smith (2010)',
+                            '<<jones11,Jones (2011)>>; <<smith10,Smith (2010)>>'
+    check_complete_citation 'chicago-author-date', 'citenp:[jones11,smith10(11)]',
+                            'Jones (2011); Smith (2010, 11)',
+                            'Jones (2011); Smith (2010, 11)',
+                            '<<jones11,Jones (2011)>>; <<smith10,Smith (2010&#44; 11)>>'
   end
 
   it "must handle numeric references with 'cite'" do
-    check_complete_citation 'ieee', 'cite:[smith10]', '+[+1+]+'
-    check_complete_citation 'ieee', 'cite:[smith10(11)]', '+[+1 p.&#160;11+]+'
+    check_complete_citation 'ieee', 'cite:[smith10]',
+                            '+[+1+]+',
+                            '[1]',
+                            '+[+<<smith10,1>>+]+'
+    check_complete_citation 'ieee', 'cite:[smith10(11)]',
+                            '+[+1 p.&#160;11+]+',
+                            '[1 p.&#160;11]',
+                            '+[+<<smith10,1 p.&#160;11>>+]+'
   end
   
   it "must handle numeric references with 'citenp'" do
-    check_complete_citation 'ieee', 'citenp:[smith10]', '+[+1+]+'
-    check_complete_citation 'ieee', 'citenp:[smith10(11)]', '+[+1 p.&#160;11+]+'
+    check_complete_citation 'ieee', 'citenp:[smith10]',
+                            '+[+1+]+',
+                            '[1]',
+                            '+[+<<smith10,1>>+]+'
+    check_complete_citation 'ieee', 'citenp:[smith10(11)]',
+                            '+[+1 p.&#160;11+]+',
+                            '[1 p.&#160;11]',
+                            '+[+<<smith10,1 p.&#160;11>>+]+'
   end
 
   it "must handle numeric references with 'cite' and multiple authors" do
-    check_complete_citation 'ieee', 'cite:[jones11,smith10]', '+[+1, 2+]+'
-    check_complete_citation 'ieee', 'cite:[jones11,smith10(11)]', '+[+1, 2 p.&#160;11+]+'
+    check_complete_citation 'ieee', 'cite:[jones11,smith10]',
+                            '+[+1, 2+]+',
+                            '[1, 2]',
+                            '+[+<<jones11,1>>, <<smith10,2>>+]+'
+    check_complete_citation 'ieee', 'cite:[jones11,smith10(11)]',
+                            '+[+1, 2 p.&#160;11+]+',
+                            '[1, 2 p.&#160;11]',
+                            '+[+<<jones11,1>>, <<smith10,2 p.&#160;11>>+]+'
   end
   
   it "must handle numeric references with 'citenp' and multiple authors" do
-    check_complete_citation 'ieee', 'citenp:[jones11,smith10]', '+[+1, 2+]+'
-    check_complete_citation 'ieee', 'citenp:[jones11,smith10(11)]', '+[+1, 2 p.&#160;11+]+'
+    check_complete_citation 'ieee', 'citenp:[jones11,smith10]',
+                            '+[+1, 2+]+',
+                            '[1, 2]',
+                            '+[+<<jones11,1>>, <<smith10,2>>+]+'
+    check_complete_citation 'ieee', 'citenp:[jones11,smith10(11)]',
+                            '+[+1, 2 p.&#160;11+]+',
+                            '[1, 2 p.&#160;11]',
+                            '+[+<<jones11,1>>, <<smith10,2 p.&#160;11>>+]+'
   end
 
   it "must handle numeric style references with 'cite' and complex locators" do
-    check_complete_citation 'ieee', 'cite:[smith10(11 seq.)]', '+[+1 pp.&#160;11 seq.+]+'
+    check_complete_citation 'ieee', 'cite:[smith10(11 seq.)]',
+                            '+[+1 pp.&#160;11 seq.+]+',
+                            '[1 pp.&#160;11 seq.]',
+                            '+[+<<smith10,1 pp.&#160;11 seq.>>+]+'
   end
 
   it "must handle harvard style references with 'cite'" do
-    check_complete_citation 'apa', 'cite:[smith10]', '(Smith, 2010)'
-    check_complete_citation 'apa', 'cite:[smith10(11)]', '(Smith, 2010, p.&#160;11)'
+    check_complete_citation 'apa', 'cite:[smith10]',
+                            '(Smith, 2010)',
+                            '(Smith, 2010)',
+                            '(<<smith10,Smith&#44; 2010>>)'
+    check_complete_citation 'apa', 'cite:[smith10(11)]',
+                            '(Smith, 2010, p.&#160;11)',
+                            '(Smith, 2010, p.&#160;11)',
+                            '(<<smith10,Smith&#44; 2010&#44; p.&#160;11>>)'
   end
 
   it "must handle harvard style references with 'citenp'" do
-    check_complete_citation 'apa', 'citenp:[smith10]', 'Smith (2010)'
-    check_complete_citation 'apa', 'citenp:[smith10(11)]', 'Smith (2010, p.&#160;11)'
+    check_complete_citation 'apa', 'citenp:[smith10]',
+                            'Smith (2010)',
+                            'Smith (2010)',
+                            '<<smith10,Smith (2010)>>'
+    check_complete_citation 'apa', 'citenp:[smith10(11)]',
+                            'Smith (2010, p.&#160;11)',
+                            'Smith (2010, p.&#160;11)',
+                            '<<smith10,Smith (2010&#44; p.&#160;11)>>'
   end
   
   it "must handle harvard style references with 'cite' and multiple authors" do
-    check_complete_citation 'apa', 'cite:[jones11,smith10]', '(Jones, 2011; Smith, 2010)'
-    check_complete_citation 'apa', 'cite:[jones11,smith10(11)]', '(Jones, 2011; Smith, 2010, p.&#160;11)'
+    check_complete_citation 'apa', 'cite:[jones11,smith10]',
+                            '(Jones, 2011; Smith, 2010)',
+                            '(Jones, 2011; Smith, 2010)',
+                            '(<<jones11,Jones&#44; 2011>>; <<smith10,Smith&#44; 2010>>)'
+    check_complete_citation 'apa', 'cite:[jones11,smith10(11)]',
+                            '(Jones, 2011; Smith, 2010, p.&#160;11)',
+                            '(Jones, 2011; Smith, 2010, p.&#160;11)',
+                            '(<<jones11,Jones&#44; 2011>>; <<smith10,Smith&#44; 2010&#44; p.&#160;11>>)'
   end
   
   it "must handle harvard style references with 'citenp' and multiple authors" do
-    check_complete_citation 'apa', 'citenp:[jones11,smith10]', 'Jones (2011); Smith (2010)'
+    check_complete_citation 'apa', 'citenp:[jones11,smith10]',
+                            'Jones (2011); Smith (2010)',
+                            'Jones (2011); Smith (2010)',
+                            '<<jones11,Jones (2011)>>; <<smith10,Smith (2010)>>'
   end
   
   it "must handle harvard style references with 'cite' and complex locators" do
-    check_complete_citation 'apa', 'cite:[smith10(11 seq.)]', '(Smith, 2010, pp.&#160;11 seq.)'
+    check_complete_citation 'apa', 'cite:[smith10(11 seq.)]',
+                            '(Smith, 2010, pp.&#160;11 seq.)',
+                            '(Smith, 2010, pp.&#160;11 seq.)',
+                            '(<<smith10,Smith&#44; 2010&#44; pp.&#160;11 seq.>>)'
   end
 
   it "must handle references with no author but editor in biblio entry" do
-    check_complete_citation 'chicago-author-date', 'cite:[brown09]', '(Brown 2009)'
+    check_complete_citation 'chicago-author-date', 'cite:[brown09]',
+                            '(Brown 2009)',
+                            '(Brown 2009)',
+                            '(<<brown09,Brown 2009>>)'
   end
 
   it "must combine numeric references, e.g. [1, 2, 3] -> [1-3]" do
-    check_complete_citation 'ieee', 'cite:[brown09,jones11,smith10]', '+[+1-3+]+'
+    check_complete_citation 'ieee', 'cite:[brown09,jones11,smith10]',
+                            '+[+1-3+]+',
+                            '[1-3]',
+                            '+[+<<brown09,1>>, <<jones11,2>>, <<smith10,3>>+]+'
   end
 
 end
