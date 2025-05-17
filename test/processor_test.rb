@@ -43,5 +43,13 @@ describe AsciidoctorBibtex do
       fail 'Should not throw exception when sorting citations'
     end
   end
+
+  it "must handle multiple bibliographies" do
+    p = Processor.new ['test/data/test.bib', 'test/data/test-multiple.bib'], false, 'ieee'
+    _(p.build_bibliography_item('brown10', 0)).must_equal "[1] J. B. Jr, Ed., _Other book title_. OUP, 2010."
+    _(p.build_bibliography_item('smith10', 1)).must_equal "[2] D. Smith, _Book title_. Mahwah, NJ: Lawrence Erlbaum, 2010."
+    _(p.build_bibliography_item('brown09', 2)).must_equal "[3] J. Brown, Ed., _Book title_. OUP, 2009."
+  end
+
 end
 
